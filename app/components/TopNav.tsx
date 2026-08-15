@@ -5,6 +5,7 @@ import Image from "next/image";
 import { IoDownloadOutline } from "react-icons/io5";
 import { useAuthState } from "../context/AuthContext";
 import { formatINR } from "../lib/format";
+import { BCWIN_APK_FILENAME, BCWIN_APK_HREF } from "../lib/apk";
 
 interface TopNavProps {
   onLoginClick?: () => void;
@@ -41,13 +42,15 @@ export default function TopNav({
       </div>
 
       <div className="ml-auto flex min-w-0 max-w-[62%] items-center justify-end gap-1 sm:gap-1.5">
-        <button
-          type="button"
+        <a
+          href={BCWIN_APK_HREF}
+          download={BCWIN_APK_FILENAME}
           className="home-icon-btn home-nav-secondary"
-          aria-label="Download"
+          aria-label="Download BCWin Android app"
+          title="Download Android app"
         >
           <IoDownloadOutline size={15} color="#FED358" />
-        </button>
+        </a>
 
         {isLoggedIn ? (
           <button

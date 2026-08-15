@@ -134,6 +134,23 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      {
+        source: "/apk/:path*",
+        headers: [
+          {
+            key: "Content-Type",
+            value: "application/vnd.android.package-archive",
+          },
+          {
+            key: "Content-Disposition",
+            value: 'attachment; filename="bcwin.apk"',
+          },
+          {
+            key: "Cache-Control",
+            value: "public, max-age=3600",
+          },
+        ],
+      },
     ];
   },
 };

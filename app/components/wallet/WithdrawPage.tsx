@@ -150,6 +150,11 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
 
   const balance = Number(user?.balance ?? 0);
   const amount = Number(amountStr) || 0;
+  /** Any open wager (recharge / bonus / penalty-on-recharge) ≥ ₹1 → nothing withdrawable */
+  const wagerLocked =
+    needToBet != null &&
+    (needToBet >= 1 || depositWagerNeeded >= 1 || rewardWagerNeeded >= 1);
+  const withdrawable = wagerLocked ? 0 : needToBet == null ? null : balance;
 
   const usdtAddrs = useMemo(() => resolveUsdtAddresses(bank), [bank]);
   const hasTrc20 = !!usdtAddrs.trc20;
@@ -233,6 +238,10 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
     }
     if (amount > MAX_WD) {
       setError(`Maximum withdrawal is ${formatINR(MAX_WD)}`);
+      return;
+    }
+    if (wagerLocked) {
+      setError("Complete remaining wager before withdrawing");
       return;
     }
     if (amount > balance) {
@@ -540,7 +549,7 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
             <p className="break-words">
               Withdrawable balance{" "}
               <span className="text-white/70 font-bold tabular-nums">
-                {formatINR(balance)}
+                {withdrawable == null ? "…" : formatINR(withdrawable)}
               </span>
             </p>
             <p className="break-words">
@@ -557,7 +566,9 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
           </div>
           <button
             type="button"
-            onClick={() => setAmountStr(String(Math.floor(balance)))}
+            onClick={() =>
+              setAmountStr(String(Math.floor(withdrawable ?? 0)))
+            }
             className="shrink-0 self-end sm:self-auto h-8 min-w-[3.25rem] px-4 rounded-full text-[12px] font-bold text-[#110D14]"
             style={{
               background: "linear-gradient(180deg,#FED358,#E8A84A)",
