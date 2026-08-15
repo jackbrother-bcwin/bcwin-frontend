@@ -1,10 +1,15 @@
-FROM oven/bun:latest AS base
+# Pin bun — `latest` (1.3.14) fails extracting the Next 16 tarball in Docker.
+FROM oven/bun:1.3.4 AS base
 
 # Install dependencies
 FROM base AS deps
 WORKDIR /app
 COPY package.json bun.lock ./
-RUN bun install --frozen-lockfile
+# Next's tarball is large; Docker's default /tmp tmpfs often cannot hold the extract.
+ENV TMPDIR=/app/.tmp
+RUN mkdir -p "$TMPDIR" \
+    && bun install --frozen-lockfile --network-concurrency 1 \
+    || bun install --frozen-lockfile --network-concurrency 1
 
 # Build the app
 FROM base AS builder
