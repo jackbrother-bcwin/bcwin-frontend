@@ -36,6 +36,7 @@ import { themeFromBet } from "./game/BetSlip";
 import BetHistoryCard from "./game/BetHistoryCard";
 import { createOncePerKey, setCountdownIfChanged } from "../lib/game-refresh";
 import { useLotteryBetDepositGate } from "../hooks/useLotteryBetDepositGate";
+import LotteryBetDepositGate from "./home/LotteryBetDepositGate";
 import {
   useSettledResultPopup,
   samePeriodId,
@@ -83,10 +84,7 @@ interface Props {
 
 export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Props) {
   const isTrx = variant === "trxwingo";
-  const { ensureCanBet, depositGate } = useLotteryBetDepositGate(
-    isTrx ? "Trx Win Go" : "Win Go",
-    onNavigate
-  );
+  const { ensureCanBet, gate, closeGate } = useLotteryBetDepositGate();
   const tabs = isTrx ? TRX_TABS : WINGO_TABS;
   const gameApi = isTrx ? "trxwingo" : "wingo";
   const wsPeriodTopic = isTrx ? "trx-wingo-period-creation" : "wingo-period-creation";
@@ -1191,7 +1189,12 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
           </div>
         </div>
       )}
-      {depositGate}
+      <LotteryBetDepositGate
+        gate={gate}
+        closeGate={closeGate}
+        gameName={isTrx ? "Trx Win Go" : "Win Go"}
+        onNavigate={onNavigate}
+      />
     </div>
   );
 }
