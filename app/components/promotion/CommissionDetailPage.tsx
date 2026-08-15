@@ -3,8 +3,9 @@
 /**
  * Commission Details — Agency → "Commission detail"
  *
- * ADR-0011: rebate-only. Primary data = team rebate for the IST calendar day
+ * ADR-0011: rebate-only. Primary data = team rebate for one IST calendar day
  * (accrued on place-bet; wallet settle 01:30 IST next day).
+ * Default / max date = yesterday — settled day only (docs/adr/0004).
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -20,16 +21,11 @@ import DatePickerSheet from "./shared/DatePickerSheet";
 import EmptyState from "./shared/EmptyState";
 import CommissionDetailInnerPage from "./CommissionDetailInnerPage";
 import { useSpaBackClose } from "../../hooks/useSpaBackClose";
-import { formatRatePct } from "./dateRange";
+import { latestSettledYmd } from "./dateRange";
 
 interface Props {
   onBack: () => void;
   onOpenRebateRules?: () => void;
-}
-
-function today() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
 function fmtAmt(n: number) {
@@ -136,7 +132,8 @@ export default function CommissionDetailPage({
   onBack,
   onOpenRebateRules,
 }: Props) {
-  const [date, setDate] = useState(today());
+  const maxDate = useMemo(() => latestSettledYmd(), []);
+  const [date, setDate] = useState(maxDate);
   const [dateOpen, setDateOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [rows, setRows] = useState<CommissionBreakdownItem[]>([]);
@@ -160,15 +157,16 @@ export default function CommissionDetailPage({
   const load = useCallback(async () => {
     setLoading(true);
     try {
+      const day = date && date <= maxDate ? date : maxDate;
       const [rebateHist, rebateRes] = await Promise.all([
         api.getRebateHistory({
-          startDate: date,
-          endDate: date,
+          startDate: day,
+          endDate: day,
           settled: true,
           page: 1,
           limit: 500,
         }),
-        api.getRebateDaily({ date }).catch(() => null),
+        api.getRebateDaily({ date: day }).catch(() => null),
       ]);
 
       const raw = Array.isArray(rebateHist.data) ? rebateHist.data : [];
@@ -211,7 +209,7 @@ export default function CommissionDetailPage({
     } finally {
       setLoading(false);
     }
-  }, [date]);
+  }, [date, maxDate]);
 
   useEffect(() => {
     void load();
@@ -321,10 +319,11 @@ export default function CommissionDetailPage({
 
       <DatePickerSheet
         open={dateOpen}
-        value={date}
+        value={date && date <= maxDate ? date : maxDate}
+        maxYmd={maxDate}
         onCancel={() => setDateOpen(false)}
         onConfirm={(d) => {
-          setDate(d);
+          setDate(d && d <= maxDate ? d : maxDate);
           setDateOpen(false);
         }}
       />
