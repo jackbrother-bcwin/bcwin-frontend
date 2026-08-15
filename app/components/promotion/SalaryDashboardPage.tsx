@@ -32,16 +32,16 @@ const HISTORY_PRESETS: { id: DatePreset; label: string }[] = [
 const FALLBACK_SLAB_DEFS = [
   { reward: 300, direct: 2, active: 3, teamDeposit: 6_000 },
   { reward: 500, direct: 3, active: 6, teamDeposit: 10_000 },
-  { reward: 800, direct: 5, active: 8, teamDeposit: 18_000 },
-  { reward: 1_200, direct: 6, active: 12, teamDeposit: 30_000 },
-  { reward: 2_000, direct: 7, active: 20, teamDeposit: 50_000 },
-  { reward: 3_000, direct: 8, active: 50, teamDeposit: 80_000 },
-  { reward: 4_500, direct: 10, active: 80, teamDeposit: 150_000 },
-  { reward: 6_000, direct: 10, active: 120, teamDeposit: 200_000 },
-  { reward: 10_000, direct: 12, active: 200, teamDeposit: 400_000 },
-  { reward: 20_000, direct: 12, active: 400, teamDeposit: 1_000_000 },
-  { reward: 50_000, direct: 15, active: 750, teamDeposit: 1_800_000 },
-  { reward: 100_000, direct: 15, active: 1_500, teamDeposit: 3_000_000 },
+  { reward: 800, direct: 3, active: 10, teamDeposit: 18_000 },
+  { reward: 1_200, direct: 4, active: 14, teamDeposit: 30_000 },
+  { reward: 2_000, direct: 5, active: 22, teamDeposit: 50_000 },
+  { reward: 3_000, direct: 6, active: 52, teamDeposit: 80_000 },
+  { reward: 4_500, direct: 6, active: 84, teamDeposit: 150_000 },
+  { reward: 6_000, direct: 6, active: 124, teamDeposit: 200_000 },
+  { reward: 10_000, direct: 6, active: 206, teamDeposit: 400_000 },
+  { reward: 20_000, direct: 6, active: 406, teamDeposit: 1_000_000 },
+  { reward: 50_000, direct: 6, active: 759, teamDeposit: 1_800_000 },
+  { reward: 100_000, direct: 6, active: 1_509, teamDeposit: 3_000_000 },
 ] as const;
 
 const FALLBACK_SLABS = FALLBACK_SLAB_DEFS.map((s, index) => ({
@@ -80,7 +80,7 @@ const EMPTY_DASH: SalaryDashboardData = {
   nextSlab: {
     reward: FIRST_SLAB.reward,
     directNeed: FIRST_SLAB.direct,
-    activeNeed: FIRST_SLAB.active,
+    activeNeed: FIRST_SLAB.direct + FIRST_SLAB.active,
     depositNeed: FIRST_SLAB.teamDeposit,
   },
   eligibility: [
@@ -100,7 +100,7 @@ const EMPTY_DASH: SalaryDashboardData = {
       id: "active_members",
       title: "Active members (direct/indirect)",
       ok: false,
-      detail: "0 active members (bet ≥₹150 in last 24h — need ≥3).",
+      detail: "0 active (need ≥5 total, ≥2 active L1). Bet ≥₹150 in last 24h.",
     },
     {
       id: "shared_ip",
@@ -124,13 +124,13 @@ const EMPTY_DASH: SalaryDashboardData = {
   howto: [
     {
       id: "direct",
-      title: `Refer ${FIRST_SLAB.direct} more direct members`,
-      body: `Invite ${FIRST_SLAB.direct} more people with your referral code — they join directly under you (Level 1).`,
+      title: `Get ${FIRST_SLAB.direct} more active directs`,
+      body: `${FIRST_SLAB.direct} Level-1 members must bet at least ₹150 in the last 24 hours. Empty invites do not count.`,
     },
     {
       id: "active",
-      title: `Get ${FIRST_SLAB.active} more active members`,
-      body: `${FIRST_SLAB.active} more of your team must bet at least ₹150 in the last 24 hours (all games combined).`,
+      title: `Get ${FIRST_SLAB.direct + FIRST_SLAB.active} active members`,
+      body: `Need ${FIRST_SLAB.direct + FIRST_SLAB.active} actives in total (≥${FIRST_SLAB.direct} L1). Extra can be more directs or L2–L6.`,
     },
     {
       id: "deposit",
@@ -307,7 +307,7 @@ export default function SalaryDashboardPage({
         <div className="sal-chip-grid">
           <div className="sal-chip">
             <p className="sal-chip-val">{m.direct}</p>
-            <p className="sal-chip-lab">DIRECT</p>
+            <p className="sal-chip-lab">ACTIVE L1</p>
           </div>
           <div className="sal-chip">
             <p className="sal-chip-val">{m.teamL1to6}</p>
