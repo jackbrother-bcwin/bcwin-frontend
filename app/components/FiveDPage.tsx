@@ -45,7 +45,6 @@ import { createOncePerKey, setCountdownIfChanged } from "../lib/game-refresh";
 import { initCountdownAudioMute } from "../lib/countdown-audio";
 import { pickLivePeriod } from "../lib/period-live";
 import { useLotteryBetDepositGate } from "../hooks/useLotteryBetDepositGate";
-import LotteryBetDepositGate from "./home/LotteryBetDepositGate";
 
 type GameTab = "30s" | "1min" | "3min" | "5min";
 type HistoryTab = "game" | "my";
@@ -92,7 +91,7 @@ type PendingBet = {
 export default function FiveDPage({ onBack, onNavigate }: Props) {
   const { user, refreshUser } = useAuth();
   const { toast } = useToast();
-  const { ensureCanBet, gate, closeGate } = useLotteryBetDepositGate();
+  const { ensureCanBet, depositModal } = useLotteryBetDepositGate("5D", onNavigate);
   const [activeGame, setActiveGame] = useState<GameTab>("30s");
   const [pos, setPos] = useState<Pos>("A");
   const [period, setPeriod] = useState<FiveDPeriod | null>(null);
@@ -803,12 +802,7 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
         periodNumber={resultPopup?.periodNumber}
         onClose={closeResultPopup}
       />
-      <LotteryBetDepositGate
-        gate={gate}
-        closeGate={closeGate}
-        gameName="5D"
-        onNavigate={onNavigate}
-      />
+      {depositModal}
     </div>
   );
 }

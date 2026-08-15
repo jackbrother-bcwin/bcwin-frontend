@@ -48,7 +48,6 @@ import type { PodiumResult, RaceCanvasHandle } from "./moto/types";
 import { HistoryStrip } from "./moto/HistoryStrip";
 import { BetPanel, type MotoBetOpen } from "./moto/BetPanel";
 import { useLotteryBetDepositGate } from "../hooks/useLotteryBetDepositGate";
-import LotteryBetDepositGate from "./home/LotteryBetDepositGate";
 import "./moto/moto-feel.css";
 
 const RaceCanvas = lazy(() =>
@@ -66,7 +65,10 @@ export default function MotoPage({
 }) {
   const { user, refreshUser } = useAuth();
   const { toast } = useToast();
-  const { ensureCanBet, gate, closeGate } = useLotteryBetDepositGate();
+  const { ensureCanBet, depositModal } = useLotteryBetDepositGate(
+    "Moto Race",
+    onNavigate
+  );
 
   const [activeGame, setActiveGame] = useState<MotoTabId>("30s");
   const [target, setTarget] = useState<TargetPos>("FIRST");
@@ -734,12 +736,7 @@ export default function MotoPage({
         periodNumber={resultPopup?.periodNumber}
         onClose={closeResultPopup}
       />
-      <LotteryBetDepositGate
-        gate={gate}
-        closeGate={closeGate}
-        gameName="Moto Race"
-        onNavigate={onNavigate}
-      />
+      {depositModal}
     </div>
   );
 }

@@ -33,7 +33,6 @@ import { createOncePerKey, setCountdownIfChanged } from "../lib/game-refresh";
 import { initCountdownAudioMute } from "../lib/countdown-audio";
 import { pickLivePeriod } from "../lib/period-live";
 import { useLotteryBetDepositGate } from "../hooks/useLotteryBetDepositGate";
-import LotteryBetDepositGate from "./home/LotteryBetDepositGate";
 
 type GameTab = "30s" | "1min" | "3min" | "5min";
 type HistoryTab = "game" | "my";
@@ -56,7 +55,7 @@ interface Props {
 export default function K3Page({ onBack, onNavigate }: Props) {
   const { user, refreshUser } = useAuth();
   const { toast } = useToast();
-  const { ensureCanBet, gate, closeGate } = useLotteryBetDepositGate();
+  const { ensureCanBet, depositModal } = useLotteryBetDepositGate("K3", onNavigate);
   const [activeGame, setActiveGame] = useState<GameTab>("30s");
   const [historyTab, setHistoryTab] = useState<HistoryTab>("game");
   const [period, setPeriod] = useState<K3Period | null>(null);
@@ -740,12 +739,7 @@ export default function K3Page({ onBack, onNavigate }: Props) {
         periodNumber={resultPopup?.periodNumber}
         onClose={closeResultPopup}
       />
-      <LotteryBetDepositGate
-        gate={gate}
-        closeGate={closeGate}
-        gameName="K3"
-        onNavigate={onNavigate}
-      />
+      {depositModal}
     </div>
   );
 }
