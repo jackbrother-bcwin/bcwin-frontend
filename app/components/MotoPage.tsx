@@ -65,11 +65,6 @@ export default function MotoPage({
 }) {
   const { user, refreshUser } = useAuth();
   const { toast } = useToast();
-  const { ensureCanBet, depositModal } = useLotteryBetDepositGate(
-    "Moto Race",
-    onNavigate
-  );
-
   const [activeGame, setActiveGame] = useState<MotoTabId>("30s");
   const [target, setTarget] = useState<TargetPos>("FIRST");
   const [period, setPeriod] = useState<MotoPeriod | null>(null);
@@ -81,6 +76,11 @@ export default function MotoPage({
   const [lastPodium, setLastPodium] = useState<PodiumResult | null>(null);
   const [pending, setPending] = useState<PendingBet | null>(null);
   const [betting, setBetting] = useState(false);
+  const { ensureCanBet, depositModal } = useLotteryBetDepositGate(
+    "Moto Race",
+    onNavigate,
+    () => setPending(null)
+  );
 
   const endRef = useRef<string | null>(null);
   const activePeriodIdRef = useRef<string | null>(null);

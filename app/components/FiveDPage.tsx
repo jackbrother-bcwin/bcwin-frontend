@@ -91,7 +91,6 @@ type PendingBet = {
 export default function FiveDPage({ onBack, onNavigate }: Props) {
   const { user, refreshUser } = useAuth();
   const { toast } = useToast();
-  const { ensureCanBet, depositModal } = useLotteryBetDepositGate("5D", onNavigate);
   const [activeGame, setActiveGame] = useState<GameTab>("30s");
   const [pos, setPos] = useState<Pos>("A");
   const [period, setPeriod] = useState<FiveDPeriod | null>(null);
@@ -105,6 +104,11 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
   const [totalPages, setTotalPages] = useState(1);
   const [pending, setPending] = useState<PendingBet | null>(null);
   const [betting, setBetting] = useState(false);
+  const { ensureCanBet, depositModal } = useLotteryBetDepositGate(
+    "5D",
+    onNavigate,
+    () => setPending(null)
+  );
 
   const endTimeRef = useRef<string | null>(null);
   const periodIdRef = useRef<string | null>(null);

@@ -83,10 +83,6 @@ interface Props {
 
 export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Props) {
   const isTrx = variant === "trxwingo";
-  const { ensureCanBet, depositModal } = useLotteryBetDepositGate(
-    isTrx ? "Trx Win Go" : "Win Go",
-    onNavigate
-  );
   const tabs = isTrx ? TRX_TABS : WINGO_TABS;
   const gameApi = isTrx ? "trxwingo" : "wingo";
   const wsPeriodTopic = isTrx ? "trx-wingo-period-creation" : "wingo-period-creation";
@@ -114,6 +110,11 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
     betChoice: string;
     label: string;
   } | null>(null);
+  const { ensureCanBet, depositModal } = useLotteryBetDepositGate(
+    isTrx ? "Trx Win Go" : "Win Go",
+    onNavigate,
+    () => setBetSheet(null)
+  );
   const [showHowTo, setShowHowTo] = useState(false);
   const [showRules, setShowRules] = useState(false);
   const [loading, setLoading] = useState(true);

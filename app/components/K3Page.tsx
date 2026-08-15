@@ -55,7 +55,6 @@ interface Props {
 export default function K3Page({ onBack, onNavigate }: Props) {
   const { user, refreshUser } = useAuth();
   const { toast } = useToast();
-  const { ensureCanBet, depositModal } = useLotteryBetDepositGate("K3", onNavigate);
   const [activeGame, setActiveGame] = useState<GameTab>("30s");
   const [historyTab, setHistoryTab] = useState<HistoryTab>("game");
   const [period, setPeriod] = useState<K3Period | null>(null);
@@ -72,6 +71,11 @@ export default function K3Page({ onBack, onNavigate }: Props) {
     choice: string;
     label: string;
   } | null>(null);
+  const { ensureCanBet, depositModal } = useLotteryBetDepositGate(
+    "K3",
+    onNavigate,
+    () => setPending(null)
+  );
   /** Wall-clock end of the live period — source of truth for the timer */
   const endTimeRef = useRef<string | null>(null);
   const periodIdRef = useRef<string | null>(null);

@@ -6,7 +6,10 @@ import { useSpaBackClose } from "../../hooks/useSpaBackClose";
 import { useBodyScrollLock } from "../../hooks/useBodyScrollLock";
 import { formatINR } from "../../lib/format";
 
-import { MIN_LIFETIME_DEPOSIT_TO_PLAY } from "../../lib/play-deposit-gate";
+import {
+  MIN_LIFETIME_DEPOSIT_TO_PLAY,
+  PLAY_DEPOSIT_GATE_Z,
+} from "../../lib/play-deposit-gate";
 
 /** @deprecated use MIN_LIFETIME_DEPOSIT_TO_PLAY — same ₹100 play gate */
 export const INOUT_MIN_TOTAL_DEPOSIT = MIN_LIFETIME_DEPOSIT_TO_PLAY;
@@ -46,7 +49,8 @@ export default function ThirdPartyDepositGate({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[200] flex items-center justify-center px-6"
+      className="fixed inset-0 flex items-center justify-center px-6"
+      style={{ zIndex: PLAY_DEPOSIT_GATE_Z }}
       role="dialog"
       aria-modal="true"
       aria-labelledby="inout-gate-title"

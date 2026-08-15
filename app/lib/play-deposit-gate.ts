@@ -9,6 +9,9 @@ import { getTotalSuccessfulDeposit } from "./deposit-total";
 
 export const MIN_LIFETIME_DEPOSIT_TO_PLAY = 100;
 
+/** Must sit above the lottery bet slip (220) — ADR-0003 */
+export const PLAY_DEPOSIT_GATE_Z = 240;
+
 export const PLAY_GATED_SCREENS: Record<string, string> = {
   wingo: "Win Go",
   trxwingo: "Trx Win Go",
