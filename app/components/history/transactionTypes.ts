@@ -87,7 +87,8 @@ export const TX_FILTERS: TxFilterOption[] = [
   { id: "WINNING_SLOT", label: "Winning slot" },
   { id: "BANK_BINDING_BONUS", label: "Bank binding bonus" },
   { id: "GAME_REFUNDED", label: "Game refunded" },
-  { id: "BETTING_REBATE", label: "Betting rebate" },
+  /** Alias of AGENT_COMMISSION — not shown in the type picker */
+  { id: "BETTING_REBATE", label: "Agent commission" },
   { id: "USDT_DEPOSIT", label: "USDT deposit" },
   { id: "VIP_LEVEL_UP_REWARD", label: "VIP level up reward" },
   { id: "VIP_MONTHLY_REWARD", label: "VIP monthly reward" },

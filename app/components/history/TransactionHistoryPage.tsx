@@ -314,8 +314,8 @@ async function loadLedger(): Promise<{ items: TxItem[]; failed: LedgerSource[] }
     for (const [day, v] of byDay) {
       push(out, {
         id: `reb-day-${day}`,
-        type: "BETTING_REBATE",
-        title: labelForTxType("BETTING_REBATE"),
+        type: "AGENT_COMMISSION",
+        title: labelForTxType("AGENT_COMMISSION"),
         amount: Number(v.amount),
         credit: true,
         // Show at settle-ish time for that day (display only)
@@ -323,7 +323,7 @@ async function loadLedger(): Promise<{ items: TxItem[]; failed: LedgerSource[] }
         detail:
           v.count > 1
             ? `${v.count} team bets settled`
-            : "Team rebate settled",
+            : "Agent commission settled",
       });
     }
   }
@@ -564,7 +564,12 @@ export default function TransactionHistoryPage({ onBack }: Props) {
     const yKey = yesterdayKey();
     const lm = lastMonthRange();
     return items.filter((it) => {
-      if (filterId !== "ALL" && it.type !== filterId) return false;
+      if (filterId !== "ALL" && it.type !== filterId) {
+        const commissionAlias =
+          (filterId === "AGENT_COMMISSION" && it.type === "BETTING_REBATE") ||
+          (filterId === "BETTING_REBATE" && it.type === "AGENT_COMMISSION");
+        if (!commissionAlias) return false;
+      }
       const k = dateKey(it.createdAt);
       if (datePreset === "all") return true;
       if (datePreset === "yesterday") return k === yKey;
@@ -780,7 +785,7 @@ export default function TransactionHistoryPage({ onBack }: Props) {
           title={null}
         >
           <div className="max-h-[48vh] overflow-y-auto no-scrollbar py-2">
-            {TX_FILTERS.map((f) => {
+            {TX_FILTERS.filter((f) => f.id !== "BETTING_REBATE").map((f) => {
               const on = draftType === f.id;
               return (
                 <button

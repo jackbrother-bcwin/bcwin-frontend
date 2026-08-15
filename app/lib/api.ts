@@ -759,6 +759,8 @@ export interface TeamMember {
   serialNumber?: number;
   layer: number;
   totalBetting: number;
+  /** Number of bets in the selected day */
+  betCount?: number;
   totalDeposit: number;
   commissionGenerated: number;
   createdAt: string;
