@@ -15,7 +15,9 @@ jobs:
       - name: Copy to Deployment Path
         run: |
           mkdir -p /root/bcwin/frontend
-          rsync -avz --exclude '.git' --exclude 'node_modules' --exclude '.next' ./ /root/bcwin/frontend/
+          rsync -avz --delete \
+            --exclude '.git' --exclude 'node_modules' --exclude '.next' \
+            ./ /root/bcwin/frontend/
 
       # BACKEND_URL → Next rewrites /api/v1/* (server-side)
       # NEXT_PUBLIC_WS_URL → browser WebSocket (path is /api/v1/ws, not /ws)

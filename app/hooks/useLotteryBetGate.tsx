@@ -14,10 +14,10 @@ export type LotteryBetGateResult = {
 };
 
 /**
- * Lottery (Wingo / TRX / K3 / 5D / Moto): open the game freely,
- * block confirming a bet until lifetime SUCCESS recharge meets the minimum.
+ * Lottery screens open freely. Confirming a bet requires
+ * lifetime SUCCESS recharge ≥ MIN_LIFETIME_DEPOSIT_TO_PLAY.
  */
-export function useLotteryBetDepositGate(
+export function useLotteryBetGate(
   gameName: string,
   onNavigate?: (screen: string) => void
 ): LotteryBetGateResult {
@@ -36,20 +36,21 @@ export function useLotteryBetDepositGate(
     return false;
   }, [user?.isDemo]);
 
-  const depositModal = (
-    <ThirdPartyDepositGate
-      open={open}
-      gameName={gameName}
-      totalDeposit={totalDeposit}
-      required={MIN_LIFETIME_DEPOSIT_TO_PLAY}
-      intent="bet"
-      onClose={closeGate}
-      onDeposit={() => {
-        closeGate();
-        onNavigate?.("deposit");
-      }}
-    />
-  );
-
-  return { ensureCanBet, depositModal };
+  return {
+    ensureCanBet,
+    depositModal: (
+      <ThirdPartyDepositGate
+        open={open}
+        gameName={gameName}
+        totalDeposit={totalDeposit}
+        required={MIN_LIFETIME_DEPOSIT_TO_PLAY}
+        intent="bet"
+        onClose={closeGate}
+        onDeposit={() => {
+          closeGate();
+          onNavigate?.("deposit");
+        }}
+      />
+    ),
+  };
 }
