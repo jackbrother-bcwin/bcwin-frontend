@@ -203,7 +203,7 @@ export default function AppShell() {
 
     let stack = parseHash(window.location.hash);
 
-    // Query deep links: ?screen=register&ref=CODE (invitation) · ?go=wingo
+    // Query deep links: ?ref=CODE (invite → register) · legacy ?screen=register&ref= · ?go=wingo
     let inviteRef: string | null = null;
     try {
       const q = new URLSearchParams(window.location.search);

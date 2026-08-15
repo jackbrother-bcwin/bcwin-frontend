@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import QRCode from "qrcode";
+import { toPng } from "html-to-image";
 import { FaWhatsapp, FaTelegram, FaFacebookF, FaXTwitter } from "react-icons/fa6";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../ui/Toast";
@@ -44,15 +45,18 @@ export default function InvitePage({ onBack }: Props) {
   const [idx, setIdx] = useState(0);
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [qrBusy, setQrBusy] = useState(false);
+  const [savingCard, setSavingCard] = useState(false);
   const touchX = useRef<number | null>(null);
+  const posterRef = useRef<HTMLDivElement>(null);
   const code = user?.referralCode ?? "";
+  const nick = (user?.username ?? "").trim() || "BCWin";
 
-  /** Opens app on Register with invite code prefilled */
+  /** Canonical invite: https://host/?ref=CODE (no screen=). Old ?screen=register&ref= still works. */
   const inviteUrl = useMemo(() => {
     if (typeof window === "undefined") return "";
-    const base = window.location.origin;
-    if (!code) return `${base}/?screen=register`;
-    return `${base}/?screen=register&ref=${encodeURIComponent(code)}`;
+    const base = window.location.origin.replace(/\/$/, "");
+    if (!code) return base;
+    return `${base}/?ref=${encodeURIComponent(code)}`;
   }, [code]);
 
   // Build scannable QR for the invite link
@@ -95,22 +99,31 @@ export default function InvitePage({ onBack }: Props) {
     }
   };
 
-  const downloadQr = () => {
-    if (!qrDataUrl) {
-      toast(code ? "QR not ready yet" : "No invitation code", "error");
+  const downloadCard = async () => {
+    const el = posterRef.current;
+    if (!el || !qrDataUrl) {
+      toast(code ? "Card not ready yet" : "No invitation code", "error");
       return;
     }
+    setSavingCard(true);
     try {
+      const dataUrl = await toPng(el, {
+        cacheBust: true,
+        pixelRatio: 3,
+        backgroundColor: undefined,
+      });
       const a = document.createElement("a");
-      a.href = qrDataUrl;
-      a.download = `bcwin-invite-${code || "qr"}.png`;
+      a.href = dataUrl;
+      a.download = `bcwin-invite-${code || nick}.png`;
       a.rel = "noopener";
       document.body.appendChild(a);
       a.click();
       a.remove();
-      toast("QR code saved", "success");
+      toast("Invite card saved", "success");
     } catch {
       toast("Download failed", "error");
+    } finally {
+      setSavingCard(false);
     }
   };
 
@@ -149,7 +162,11 @@ export default function InvitePage({ onBack }: Props) {
             if (dx > 40) setIdx((i) => Math.max(0, i - 1));
           }}
         >
-          <div className="agency-poster" style={{ background: poster.bg }}>
+          <div
+            ref={posterRef}
+            className="agency-poster"
+            style={{ background: poster.bg }}
+          >
             <div className="agency-poster-tags">
               <span>{poster.tag1}</span>
               <span>{poster.tag2}</span>
@@ -220,6 +237,16 @@ export default function InvitePage({ onBack }: Props) {
                 )}
               </div>
             </div>
+
+            <div className="agency-poster-who">
+              <p className="agency-poster-nick" title={nick}>
+                {nick}
+              </p>
+              {code ? (
+                <p className="agency-poster-code">Code · {code}</p>
+              ) : null}
+              <p className="agency-poster-host">BCWin</p>
+            </div>
           </div>
         </div>
 
@@ -249,11 +276,15 @@ export default function InvitePage({ onBack }: Props) {
         <button
           type="button"
           className="agency-btn-primary"
-          onClick={downloadQr}
-          disabled={!qrDataUrl || qrBusy}
-          style={{ opacity: !qrDataUrl || qrBusy ? 0.55 : 1 }}
+          onClick={() => void downloadCard()}
+          disabled={!qrDataUrl || qrBusy || savingCard}
+          style={{ opacity: !qrDataUrl || qrBusy || savingCard ? 0.55 : 1 }}
         >
-          {qrBusy ? "GENERATING QR…" : "DOWNLOAD QR CODE"}
+          {savingCard
+            ? "SAVING CARD…"
+            : qrBusy
+              ? "GENERATING CARD…"
+              : "DOWNLOAD INVITE CARD"}
         </button>
         <button type="button" className="agency-btn-outline" onClick={() => void copyLink()}>
           Copy invitation link

@@ -3860,6 +3860,42 @@ select {
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }
 
+.agency-poster-who {
+  margin-top: 14px;
+  text-align: center;
+}
+
+.agency-poster-nick {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  color: #ffe9a8;
+  letter-spacing: 0.02em;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.35);
+}
+
+.agency-poster-code {
+  margin: 4px 0 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.agency-poster-host {
+  margin: 2px 0 0;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 233, 168, 0.7);
+}
+
 .agency-qr-dummy {
   position: relative;
   width: 110px;
