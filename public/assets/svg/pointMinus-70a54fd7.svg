@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="50" height="51" viewBox="0 0 50 51" fill="none">
+  <circle cx="25" cy="25.5" r="25" fill="var(--main-color)"/>
+  <line x1="12" y1="26.5" x2="38" y2="26.5" stroke="var(--text_color_L4)" stroke-width="4" stroke-linecap="round"/>
+</svg>

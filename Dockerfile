@@ -1,0 +1,47 @@
+FROM oven/bun:latest AS base
+
+# Install dependencies
+FROM base AS deps
+WORKDIR /app
+COPY package.json bun.lock ./
+RUN bun install --frozen-lockfile
+
+# Build the app
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Server-side rewrite target for /api/v1/* (also needed at runtime)
+ARG BACKEND_URL
+ENV BACKEND_URL=$BACKEND_URL
+
+# Baked into the browser bundle — must be correct at docker build time
+ARG NEXT_PUBLIC_WS_URL
+ENV NEXT_PUBLIC_WS_URL=$NEXT_PUBLIC_WS_URL
+ARG NEXT_PUBLIC_WS_HOST
+ENV NEXT_PUBLIC_WS_HOST=$NEXT_PUBLIC_WS_HOST
+
+RUN bun run build
+
+# Runner environment
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+# Fallback if not passed at runtime; prefer compose/env override
+ENV BACKEND_URL=https://api.bcwin.club
+
+# Copy standalone build
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+
+EXPOSE 3000
+
+CMD ["bun", "run", "server.js"]
