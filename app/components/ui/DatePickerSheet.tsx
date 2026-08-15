@@ -184,27 +184,58 @@ export function DateOdometer({
   day,
   onChange,
   yearsBack = 5,
+  maxYmd,
 }: {
   year: number;
   month: number;
   day: number;
   onChange: (y: number, m: number, d: number) => void;
-  /** Inclusive years from (now - yearsBack) .. now */
+  /** Inclusive years from (cap year - yearsBack) .. cap year */
   yearsBack?: number;
+  /** YYYY-MM-DD inclusive upper bound (hides later days) */
+  maxYmd?: string;
 }) {
+  const max = maxYmd ? parseYmd(maxYmd) : null;
   const years = useMemo(() => {
-    const now = new Date().getFullYear();
+    const capY = max?.y ?? new Date().getFullYear();
     const list: number[] = [];
-    for (let y = now - yearsBack; y <= now; y++) list.push(y);
+    for (let y = capY - yearsBack; y <= capY; y++) list.push(y);
     return list;
-  }, [yearsBack]);
-  const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  }, [yearsBack, max?.y]);
+  const months = useMemo(() => {
+    const last = max && year === max.y ? max.m : 12;
+    return Array.from({ length: last }, (_, i) => i + 1);
+  }, [max, year]);
   const daysInMonth = new Date(year, month, 0).getDate();
+  const maxDay =
+    max && year === max.y && month === max.m
+      ? Math.min(daysInMonth, max.d)
+      : daysInMonth;
   const days = useMemo(
-    () => Array.from({ length: daysInMonth }, (_, i) => i + 1),
-    [daysInMonth]
+    () => Array.from({ length: maxDay }, (_, i) => i + 1),
+    [maxDay]
   );
-  const safeDay = Math.min(day, daysInMonth);
+  const safeDay = Math.min(day, maxDay);
+
+  const emit = (yy: number, mm: number, dd: number) => {
+    let y = yy;
+    let m = mm;
+    let d = dd;
+    if (max) {
+      if (y > max.y) {
+        y = max.y;
+        m = max.m;
+        d = max.d;
+      } else if (y === max.y && m > max.m) {
+        m = max.m;
+        d = Math.min(d, max.d);
+      } else if (y === max.y && m === max.m && d > max.d) {
+        d = max.d;
+      }
+    }
+    const dim = new Date(y, m, 0).getDate();
+    onChange(y, m, Math.min(d, dim));
+  };
 
   return (
     <div className="relative flex gap-0 px-3 py-1">
@@ -232,18 +263,18 @@ export function DateOdometer({
       <DateOdoColumn
         values={years}
         value={year}
-        onChange={(y) => onChange(y, month, safeDay)}
+        onChange={(y) => emit(y, month, safeDay)}
       />
       <DateOdoColumn
         values={months}
         value={month}
-        onChange={(m) => onChange(year, m, safeDay)}
+        onChange={(m) => emit(year, m, safeDay)}
         pad
       />
       <DateOdoColumn
         values={days}
         value={safeDay}
-        onChange={(d) => onChange(year, month, d)}
+        onChange={(d) => emit(year, month, d)}
         pad
       />
     </div>
@@ -259,6 +290,8 @@ export type DatePickerSheetProps = {
   title?: string;
   yearsBack?: number;
   zIndex?: number;
+  /** Inclusive YYYY-MM-DD cap (e.g. yesterday for settled stats) */
+  maxYmd?: string;
 };
 
 /**
@@ -272,6 +305,7 @@ export default function DatePickerSheet({
   title = "Choose a date",
   yearsBack = 5,
   zIndex = 140,
+  maxYmd,
 }: DatePickerSheetProps) {
   const [mounted, setMounted] = useState(false);
   const parsed = parseYmd(value);
@@ -285,11 +319,12 @@ export default function DatePickerSheet({
   useEffect(() => setMounted(true), []);
   useEffect(() => {
     if (!open) return;
-    const p = parseYmd(value);
+    const raw = value && maxYmd && value > maxYmd ? maxYmd : value;
+    const p = parseYmd(raw);
     setY(p.y);
     setM(p.m);
     setD(p.d);
-  }, [open, value]);
+  }, [open, value, maxYmd]);
 
   if (!open || !mounted) return null;
 
@@ -319,7 +354,10 @@ export default function DatePickerSheet({
           <span className="text-[15px] font-bold text-[#FED358]">{title}</span>
           <button
             type="button"
-            onClick={() => onConfirm(ymdFromParts(y, m, d))}
+            onClick={() => {
+              const picked = ymdFromParts(y, m, d);
+              onConfirm(maxYmd && picked > maxYmd ? maxYmd : picked);
+            }}
             className="text-[14px] font-bold text-[#FED358] min-w-[64px] text-right"
           >
             Confirm
@@ -333,6 +371,7 @@ export default function DatePickerSheet({
           month={m}
           day={d}
           yearsBack={yearsBack}
+          maxYmd={maxYmd}
           onChange={(yy, mm, dd) => {
             setY(yy);
             setM(mm);

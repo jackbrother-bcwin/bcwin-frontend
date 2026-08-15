@@ -7,6 +7,21 @@ export function ymdLocal(d = new Date()): string {
   return `${y}-${m}-${day}`;
 }
 
+/** Calendar day in Asia/Kolkata (YYYY-MM-DD). Agency settled stats use IST. */
+export function ymdIst(d = new Date()): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(d);
+}
+
+/** Latest IST day with settled team stats: yesterday. */
+export function latestSettledYmd(d = new Date()): string {
+  return shiftYmd(ymdIst(d), -1);
+}
+
 export function shiftYmd(ymd: string, days: number): string {
   const [y, m, d] = ymd.split("-").map(Number);
   const dt = new Date(y!, (m ?? 1) - 1, d ?? 1);

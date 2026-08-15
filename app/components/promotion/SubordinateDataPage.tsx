@@ -13,7 +13,7 @@ import AgencyHeader from "./shared/AgencyHeader";
 import EmptyState from "./shared/EmptyState";
 import DatePickerSheet from "./shared/DatePickerSheet";
 import TierPickerSheet from "./shared/TierPickerSheet";
-import { ymdLocal } from "./dateRange";
+import { latestSettledYmd } from "./dateRange";
 
 interface Props {
   onBack: () => void;
@@ -53,10 +53,12 @@ function CopyUidButton({ uid }: { uid: string }) {
 }
 
 export default function SubordinateDataPage({ onBack }: Props) {
+  const maxDate = useMemo(() => latestSettledYmd(), []);
   const [search, setSearch] = useState("");
-  const [tier, setTier] = useState("");
-  /** Empty = all-time stats; YYYY-MM-DD = single IST day (defaults to Today) */
-  const [date, setDate] = useState<string>(() => ymdLocal());
+  /** Settled stats only — no All-layers view */
+  const [tier, setTier] = useState("1");
+  /** Single IST day, default yesterday (latest settled). Never today / all-time. */
+  const [date, setDate] = useState<string>(maxDate);
   const [tierOpen, setTierOpen] = useState(false);
   const [dateOpen, setDateOpen] = useState(false);
   const [members, setMembers] = useState<TeamMember[]>([]);
@@ -66,13 +68,13 @@ export default function SubordinateDataPage({ onBack }: Props) {
   const load = useCallback(async () => {
     setLoading(true);
     try {
+      const day = date && date <= maxDate ? date : maxDate;
       const res = await api.getTeamMembers({
         page: 1,
         limit: 100,
-        layer: tier || undefined,
+        layer: tier || "1",
         username: search.trim() || undefined,
-        // omit date → lifetime deposit / rebate from that sub
-        date: date || undefined,
+        date: day,
       });
       setMembers(asArray<TeamMember>(res.data));
       setSummary(res.summary ?? null);
@@ -82,14 +84,14 @@ export default function SubordinateDataPage({ onBack }: Props) {
     } finally {
       setLoading(false);
     }
-  }, [tier, search, date]);
+  }, [tier, search, date, maxDate]);
 
   useEffect(() => {
     void load();
   }, [load]);
 
-  const tierLabel = tier ? `Tier ${tier}` : "All";
-  const dateLabel = date || "All time";
+  const tierLabel = `Tier ${tier || "1"}`;
+  const dateLabel = date && date <= maxDate ? date : maxDate;
 
   return (
     <div className="agency-page min-h-screen flex flex-col bg-[#110D14] text-[#FDE4BC]">
@@ -137,30 +139,6 @@ export default function SubordinateDataPage({ onBack }: Props) {
             >
               <span className="truncate">{dateLabel}</span>
               <span className="text-[#837064] text-[10px]">▼</span>
-            </button>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              className={`h-8 flex-1 rounded-lg text-[11px] font-bold border transition-colors ${
-                !date
-                  ? "border-[#FED358]/50 bg-[#FED358]/15 text-[#FED358]"
-                  : "border-[#3D363A]/60 bg-[#181316] text-[#837064]"
-              }`}
-              onClick={() => setDate("")}
-            >
-              All time
-            </button>
-            <button
-              type="button"
-              className={`h-8 flex-1 rounded-lg text-[11px] font-bold border transition-colors ${
-                date === ymdLocal()
-                  ? "border-[#FED358]/50 bg-[#FED358]/15 text-[#FED358]"
-                  : "border-[#3D363A]/60 bg-[#181316] text-[#837064]"
-              }`}
-              onClick={() => setDate(ymdLocal())}
-            >
-              Today
             </button>
           </div>
         </div>
@@ -256,21 +234,13 @@ export default function SubordinateDataPage({ onBack }: Props) {
                     <div className="flex justify-between items-center">
                       <span className="text-[#837064] font-medium">
                         Deposit amount
-                        {!date ? (
-                          <span className="text-[#837064]/70"> · all</span>
-                        ) : null}
                       </span>
                       <span className="text-[#FED358] font-semibold">
                         {formatINR(m.totalDeposit ?? 0)}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-[#837064] font-medium">
-                        Bets
-                        {!date ? (
-                          <span className="text-[#837064]/70"> · all</span>
-                        ) : null}
-                      </span>
+                      <span className="text-[#837064] font-medium">Bets</span>
                       <span className="text-[#FED358] font-semibold">
                         {formatINR(m.totalBetting ?? 0)}
                       </span>
@@ -278,9 +248,6 @@ export default function SubordinateDataPage({ onBack }: Props) {
                     <div className="flex justify-between items-center">
                       <span className="text-[#837064] font-medium">
                         Commission
-                        {!date ? (
-                          <span className="text-[#837064]/70"> · all</span>
-                        ) : null}
                       </span>
                       <span className="text-[#FED358] font-semibold">
                         {formatINR(m.commissionGenerated ?? 0)}
@@ -309,10 +276,11 @@ export default function SubordinateDataPage({ onBack }: Props) {
       />
       <DatePickerSheet
         open={dateOpen}
-        value={date}
+        value={dateLabel}
+        maxYmd={maxDate}
         onCancel={() => setDateOpen(false)}
         onConfirm={(d) => {
-          setDate(d);
+          setDate(d && d <= maxDate ? d : maxDate);
           setDateOpen(false);
         }}
       />
