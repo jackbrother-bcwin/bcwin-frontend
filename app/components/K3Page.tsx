@@ -32,6 +32,7 @@ import { k3ResultChips, RESULT_HEADINGS } from "./game/resultChips";
 import { createOncePerKey, setCountdownIfChanged } from "../lib/game-refresh";
 import { initCountdownAudioMute } from "../lib/countdown-audio";
 import { pickLivePeriod } from "../lib/period-live";
+import { useLotteryBetDepositGate } from "../hooks/useLotteryBetDepositGate";
 
 type GameTab = "30s" | "1min" | "3min" | "5min";
 type HistoryTab = "game" | "my";
@@ -54,6 +55,7 @@ interface Props {
 export default function K3Page({ onBack, onNavigate }: Props) {
   const { user, refreshUser } = useAuth();
   const { toast } = useToast();
+  const { ensureCanBet, depositGate } = useLotteryBetDepositGate("K3", onNavigate);
   const [activeGame, setActiveGame] = useState<GameTab>("30s");
   const [historyTab, setHistoryTab] = useState<HistoryTab>("game");
   const [period, setPeriod] = useState<K3Period | null>(null);
@@ -356,6 +358,7 @@ export default function K3Page({ onBack, onNavigate }: Props) {
 
   const confirm = async (total?: number) => {
     if (!pending || !period?.id) return;
+    if (!(await ensureCanBet())) return;
     const betAmount = total ?? baseAmount * mult;
     if (user && betAmount > user.balance) {
       toast("Insufficient balance", "error");
@@ -736,6 +739,7 @@ export default function K3Page({ onBack, onNavigate }: Props) {
         periodNumber={resultPopup?.periodNumber}
         onClose={closeResultPopup}
       />
+      {depositGate}
     </div>
   );
 }

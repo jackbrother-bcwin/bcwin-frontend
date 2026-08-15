@@ -35,6 +35,7 @@ import {
 import { themeFromBet } from "./game/BetSlip";
 import BetHistoryCard from "./game/BetHistoryCard";
 import { createOncePerKey, setCountdownIfChanged } from "../lib/game-refresh";
+import { useLotteryBetDepositGate } from "../hooks/useLotteryBetDepositGate";
 import {
   useSettledResultPopup,
   samePeriodId,
@@ -82,6 +83,10 @@ interface Props {
 
 export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Props) {
   const isTrx = variant === "trxwingo";
+  const { ensureCanBet, depositGate } = useLotteryBetDepositGate(
+    isTrx ? "Trx Win Go" : "Win Go",
+    onNavigate
+  );
   const tabs = isTrx ? TRX_TABS : WINGO_TABS;
   const gameApi = isTrx ? "trxwingo" : "wingo";
   const wsPeriodTopic = isTrx ? "trx-wingo-period-creation" : "wingo-period-creation";
@@ -537,6 +542,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
 
   const confirmBet = async (payload: BetSlipConfirmPayload) => {
     if (!betSheet || !period?.id) return;
+    if (!(await ensureCanBet())) return;
     const betAmount = payload.total;
     if (user && betAmount > user.balance) {
       toast("Insufficient balance", "error");
@@ -1185,6 +1191,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
           </div>
         </div>
       )}
+      {depositGate}
     </div>
   );
 }

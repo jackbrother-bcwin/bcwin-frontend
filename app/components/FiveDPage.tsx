@@ -44,6 +44,7 @@ import { fiveDResultChips, RESULT_HEADINGS } from "./game/resultChips";
 import { createOncePerKey, setCountdownIfChanged } from "../lib/game-refresh";
 import { initCountdownAudioMute } from "../lib/countdown-audio";
 import { pickLivePeriod } from "../lib/period-live";
+import { useLotteryBetDepositGate } from "../hooks/useLotteryBetDepositGate";
 
 type GameTab = "30s" | "1min" | "3min" | "5min";
 type HistoryTab = "game" | "my";
@@ -90,6 +91,7 @@ type PendingBet = {
 export default function FiveDPage({ onBack, onNavigate }: Props) {
   const { user, refreshUser } = useAuth();
   const { toast } = useToast();
+  const { ensureCanBet, depositGate } = useLotteryBetDepositGate("5D", onNavigate);
   const [activeGame, setActiveGame] = useState<GameTab>("30s");
   const [pos, setPos] = useState<Pos>("A");
   const [period, setPeriod] = useState<FiveDPeriod | null>(null);
@@ -424,6 +426,7 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
 
   const confirm = async (total?: number) => {
     if (!pending || !period?.id) return;
+    if (!(await ensureCanBet())) return;
     const betAmount = total ?? baseAmount * mult;
     if (user && betAmount > user.balance) {
       toast("Insufficient balance", "error");
@@ -799,6 +802,7 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
         periodNumber={resultPopup?.periodNumber}
         onClose={closeResultPopup}
       />
+      {depositGate}
     </div>
   );
 }

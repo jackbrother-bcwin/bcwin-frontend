@@ -1,6 +1,8 @@
 /**
- * Lifetime SUCCESS recharge required to play Inout + first-party lottery.
- * Same ₹100 as Config.GAME_MIN_LIFETIME_DEPOSIT / ADR-0007 third-party gate.
+ * Lifetime SUCCESS recharge required to launch Inout, or to place a bet
+ * on first-party lottery (Wingo / TRX / K3 / 5D / Moto). Lottery screens
+ * themselves are not gated.
+ * Same ₹100 as Config.GAME_MIN_LIFETIME_DEPOSIT.
  */
 
 import { getTotalSuccessfulDeposit } from "./deposit-total";

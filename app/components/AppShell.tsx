@@ -28,14 +28,6 @@ import {
   trapSpaHistory,
 } from "../lib/spa-history";
 import { consumeSpaOverlayPop } from "../lib/spa-overlay";
-import ThirdPartyDepositGate, {
-  INOUT_MIN_TOTAL_DEPOSIT,
-} from "./home/ThirdPartyDepositGate";
-import {
-  PLAY_GATED_SCREENS,
-  checkMinLifetimeDeposit,
-  isPlayGatedScreen,
-} from "../lib/play-deposit-gate";
 
 // ─── Heavy screens: code-split (Next 16 lazy-loading best practice) ──────────
 
@@ -174,17 +166,12 @@ function sanitizeStack(stack: string[]): string[] {
  * - Header back / swipe-back / browser back → popstate → same stack
  */
 export default function AppShell() {
-  const { isLoggedIn, isLoading, user } = useAuthState();
+  const { isLoggedIn, isLoading } = useAuthState();
   const { logout } = useAuthActions();
 
   const [navStack, setNavStack] = useState<string[]>(["home"]);
   const [redirectTab, setRedirectTab] = useState<string | null>(null);
   const [historyReady, setHistoryReady] = useState(false);
-  const [playGate, setPlayGate] = useState<{
-    open: boolean;
-    gameName?: string;
-    totalDeposit: number;
-  }>({ open: false, totalDeposit: 0 });
   const [tpGameOpen, setTpGameOpen] = useState(false);
 
   /** Skip writing history when applying popstate */
@@ -398,27 +385,9 @@ export default function AppShell() {
       const s = navStackRef.current;
       if (s[s.length - 1] === tab) return;
 
-      // Lottery screens: same ₹100 lifetime recharge as Inout
-      if (isPlayGatedScreen(tab) && isLoggedIn && !user?.isDemo) {
-        void checkMinLifetimeDeposit().then(({ ok, total }) => {
-          if (ok) {
-            const cur = navStackRef.current;
-            if (cur[cur.length - 1] === tab) return;
-            commitStack([...cur, tab], "push");
-            return;
-          }
-          setPlayGate({
-            open: true,
-            gameName: PLAY_GATED_SCREENS[tab],
-            totalDeposit: total,
-          });
-        });
-        return;
-      }
-
       commitStack([...s, tab], "push");
     },
-    [isLoggedIn, user?.isDemo, commitStack]
+    [isLoggedIn, commitStack]
   );
 
   /**
@@ -648,17 +617,6 @@ export default function AppShell() {
             spinActive={activeTab === "spin"}
           />
         )}
-        <ThirdPartyDepositGate
-          open={playGate.open}
-          gameName={playGate.gameName}
-          totalDeposit={playGate.totalDeposit}
-          required={INOUT_MIN_TOTAL_DEPOSIT}
-          onClose={() => setPlayGate((g) => ({ ...g, open: false }))}
-          onDeposit={() => {
-            setPlayGate((g) => ({ ...g, open: false }));
-            pushScreen("deposit");
-          }}
-        />
       </main>
     </div>
   );

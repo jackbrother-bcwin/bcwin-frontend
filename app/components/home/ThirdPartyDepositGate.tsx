@@ -17,6 +17,8 @@ interface Props {
   /** User's lifetime successful deposit total (for message) */
   totalDeposit?: number;
   required?: number;
+  /** Inout launch vs lottery bet confirm */
+  intent?: "play" | "bet";
   onClose: () => void;
   onDeposit: () => void;
 }
@@ -29,6 +31,7 @@ export default function ThirdPartyDepositGate({
   gameName,
   totalDeposit = 0,
   required = INOUT_MIN_TOTAL_DEPOSIT,
+  intent = "play",
   onClose,
   onDeposit,
 }: Props) {
@@ -90,13 +93,17 @@ export default function ThirdPartyDepositGate({
         <p className="mb-1 text-center text-[12px] leading-relaxed text-white/55">
           {gameName ? (
             <>
-              To play <span className="font-semibold text-[#FED358]">{gameName}</span>
+              {intent === "bet" ? "To place a bet on" : "To play"}{" "}
+              <span className="font-semibold text-[#FED358]">{gameName}</span>
               , you need a lifetime recharge of at least{" "}
               <span className="font-bold text-white">{formatINR(required, 0)}</span>.
             </>
           ) : (
             <>
-              Games require a lifetime recharge of at least{" "}
+              {intent === "bet"
+                ? "Placing a bet requires"
+                : "Games require"}{" "}
+              a lifetime recharge of at least{" "}
               <span className="font-bold text-white">{formatINR(required, 0)}</span>.
             </>
           )}

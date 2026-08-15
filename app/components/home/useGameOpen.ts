@@ -20,7 +20,8 @@ export type InoutDepositGateState = {
 
 /**
  * Shared game open handler for home grids.
- * SPA lottery + Inout require lifetime SUCCESS recharge ≥ MIN_LIFETIME_DEPOSIT_TO_PLAY.
+ * Inout launch requires lifetime SUCCESS recharge ≥ MIN_LIFETIME_DEPOSIT_TO_PLAY.
+ * First-party lottery screens open freely; the bet confirm path is gated.
  * Third-party URLs open in an in-app iframe shell (not a new browser tab).
  */
 export function useGameOpen(onOpenSpa?: (screen: string) => void) {
@@ -87,8 +88,6 @@ export function useGameOpen(onOpenSpa?: (screen: string) => void) {
       const { action } = game;
 
       if (action.type === "spa") {
-        const ok = await ensureDepositAllowed(game.name);
-        if (!ok) return;
         onOpenSpa?.(action.screen);
         return;
       }
