@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
-const backendUrl = process.env.BACKEND_URL ?? "http://localhost:3000";
+// Empty string from `ENV BACKEND_URL=$BACKEND_URL` (unset ARG) is not nullish.
+// In Docker, rewrite must hit the compose service (`http://api:3000`), not
+// https://api.bcwin.club — that hairpins through Cloudflare and Next returns 500.
+const backendUrl =
+  process.env.BACKEND_URL?.trim() || "http://localhost:3000";
 
 /**
  * Production-ready Next config

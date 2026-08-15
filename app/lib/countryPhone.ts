@@ -432,6 +432,22 @@ export function normalizeCountryCode(v: string): string {
   return isCountryCode(d) ? d : "91";
 }
 
+/** Strip trunk-prefix 0 (09876… / 0628…) for 91 / 92 / 880. */
+export function normalizeNationalNumber(
+  countryCode: string,
+  nationalNumber: string
+): string {
+  let national = String(nationalNumber ?? "").replace(/\D/g, "");
+  const code = String(countryCode ?? "").replace(/\D/g, "");
+  if (
+    (code === "91" || code === "92" || code === "880") &&
+    national.startsWith("0")
+  ) {
+    national = national.replace(/^0+/, "");
+  }
+  return national;
+}
+
 /**
  * Split stored user mobile (E.164 or legacy bare national) for OTP API.
  * Longer country codes checked first.

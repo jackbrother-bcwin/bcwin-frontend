@@ -22,7 +22,7 @@ jobs:
       - name: Build Frontend Image
         run: |
           docker build -t bcwin-frontend:latest \
-            --build-arg BACKEND_URL=https://api.bcwin.club \
+            --build-arg BACKEND_URL=http://api:3000 \
             --build-arg NEXT_PUBLIC_WS_URL=wss://api.bcwin.club/api/v1/ws \
             /root/bcwin/frontend
 

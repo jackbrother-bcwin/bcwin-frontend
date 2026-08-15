@@ -19,8 +19,9 @@ COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Server-side rewrite target for /api/v1/* (also needed at runtime)
-ARG BACKEND_URL
+# Next inlines this at `next build`. Use the Docker-network API hostname
+# so rewrites never loop out through Cloudflare.
+ARG BACKEND_URL=http://api:3000
 ENV BACKEND_URL=$BACKEND_URL
 
 # Baked into the browser bundle — must be correct at docker build time
@@ -40,7 +41,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 # Fallback if not passed at runtime; prefer compose/env override
-ENV BACKEND_URL=https://api.bcwin.club
+ENV BACKEND_URL=http://api:3000
 
 # Copy standalone build
 COPY --from=builder /app/public ./public

@@ -444,8 +444,14 @@ export async function sendOtp(
     );
   }
 
-  const mobileNumber = opts.mobileNumber.replace(/\D/g, "");
   const countryCode = String(opts.countryCode ?? "91").replace(/\D/g, "");
+  let mobileNumber = opts.mobileNumber.replace(/\D/g, "");
+  if (
+    (countryCode === "91" || countryCode === "92" || countryCode === "880") &&
+    mobileNumber.startsWith("0")
+  ) {
+    mobileNumber = mobileNumber.replace(/^0+/, "");
+  }
   if (!mobileNumber) {
     throw new Error("Enter a valid mobile number");
   }
@@ -488,12 +494,20 @@ export async function login(
   if (!opts.mobileNumber) {
     throw new Error("Mobile number or email is required");
   }
+  const countryCode = String(opts.countryCode ?? "91").replace(/\D/g, "");
+  let mobileNumber = opts.mobileNumber.replace(/\D/g, "");
+  if (
+    (countryCode === "91" || countryCode === "92" || countryCode === "880") &&
+    mobileNumber.startsWith("0")
+  ) {
+    mobileNumber = mobileNumber.replace(/^0+/, "");
+  }
   return request("/auth/login", {
     method: "POST",
     body: JSON.stringify({
-      mobileNumber: opts.mobileNumber.replace(/\D/g, ""),
+      mobileNumber,
       password: opts.password,
-      countryCode: String(opts.countryCode ?? "91").replace(/\D/g, ""),
+      countryCode,
     }),
   });
 }
