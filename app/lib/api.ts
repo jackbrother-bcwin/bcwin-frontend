@@ -425,10 +425,13 @@ export async function sendOtp(
         mobileNumber: string;
         /** Digits only: 91 | 92 | 880 */
         countryCode?: string;
+        /** reset = forgot password; user must already exist */
+        purpose?: "register" | "reset";
       }
     | {
         method: "email";
         email: string;
+        purpose?: "register" | "reset";
       }
 ): Promise<{ success: true }> {
   if (opts.method === "email") {
@@ -440,6 +443,7 @@ export async function sendOtp(
       `/otp${buildQuery({
         method: "email",
         email,
+        purpose: opts.purpose,
       })}`
     );
   }
@@ -460,6 +464,7 @@ export async function sendOtp(
       method: "mobileNumber",
       mobileNumber,
       countryCode,
+      purpose: opts.purpose,
     })}`
   );
 }

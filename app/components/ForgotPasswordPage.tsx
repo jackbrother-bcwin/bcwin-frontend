@@ -79,6 +79,7 @@ export default function ForgotPasswordPage({ onBack, onLoginClick }: Props) {
         method: "mobileNumber",
         mobileNumber: phone.trim(),
         countryCode,
+        purpose: "reset",
       });
       recordOtpSend(countryCode, phone.trim());
       setCountdown(60);

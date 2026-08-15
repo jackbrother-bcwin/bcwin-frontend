@@ -62,6 +62,27 @@ export function sanitizeErrorMessage(input: unknown, fallback = "Something went 
 
   if (!msg) return fallback;
   if (msg.length > 200) msg = `${msg.slice(0, 197)}…`;
+  return friendlyAuthError(msg);
+}
+
+/** Login / reset copy — map older API strings too */
+export function friendlyAuthError(msg: string): string {
+  const n = msg.trim().toLowerCase();
+  if (
+    n === "invalid credentials" ||
+    n === "invalid email or password" ||
+    n === "incorrect password"
+  ) {
+    return "Wrong account or password";
+  }
+  if (
+    n === "user not found" ||
+    n === "user not found with this mobile number" ||
+    n === "user not found with this email" ||
+    n.startsWith("user not found")
+  ) {
+    return "User does not exist";
+  }
   return msg;
 }
 
