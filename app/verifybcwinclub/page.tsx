@@ -1,6 +1,36 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
+
+/** Only these six hosts are official. Prefix match / "contains bcwin" is not enough. */
+const OFFICIAL_HOSTS = [
+  "bcwin.club",
+  "bcwin7.site",
+  "bcwin7.live",
+  "bcwin.click",
+  "bcwin7.xyz",
+  "bcwin.best",
+] as const;
+
+const OFFICIAL_SET = new Set<string>(OFFICIAL_HOSTS);
+
+/** Hostname only. Strips protocol, www, path, query, port. */
+function extractHostname(raw: string): string | null {
+  const t = raw.trim().toLowerCase();
+  if (!t) return null;
+  try {
+    const href = /^[a-z][a-z0-9+.-]*:\/\//.test(t) ? t : `https://${t}`;
+    const host = new URL(href).hostname.replace(/^www\./, "");
+    return host || null;
+  } catch {
+    const host = t
+      .replace(/^(https?:\/\/)?(www\.)?/, "")
+      .split(/[/?#:]/)[0]
+      ?.replace(/\.$/, "");
+    return host || null;
+  }
+}
 
 export default function VerifyBcwinClubPage() {
   const [inputUrl, setInputUrl] = useState("");
@@ -10,33 +40,22 @@ export default function VerifyBcwinClubPage() {
   const [isMuted, setIsMuted] = useState(true);
   const [copiedDomain, setCopiedDomain] = useState<string | null>(null);
 
-  const domainList = [
-    "bcwin.club",
-    "bcwin7.site",
-    "bcwin7.live",
-    "bcwin.click",
-    "bcwin7.xyz",
-    "bcwin.best",
-  ];
+  const domainList = OFFICIAL_HOSTS;
 
   const handleVerify = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!inputUrl.trim()) return;
 
     setVerifyStatus("verifying");
-    const cleaned = inputUrl.toLowerCase().trim().replace(/^(https?:\/\/)?(www\.)?/, "");
+    const host = extractHostname(inputUrl);
 
     setTimeout(() => {
-      if (
-        domainList.some((d) => cleaned.includes(d)) ||
-        cleaned.includes("bcwin.club") ||
-        cleaned.includes("bcwin")
-      ) {
+      if (host && OFFICIAL_SET.has(host)) {
         setVerifyStatus("success");
-        setVerifiedDomain(cleaned || "bcwin.club");
+        setVerifiedDomain(host);
       } else {
         setVerifyStatus("invalid");
-        setVerifiedDomain(cleaned);
+        setVerifiedDomain(host || inputUrl.trim());
       }
     }, 600);
   };
@@ -53,21 +72,16 @@ export default function VerifyBcwinClubPage() {
       <div className="w-full max-w-[480px] min-h-screen bg-[#131924] flex flex-col shadow-2xl border-x border-[#1e2738] pb-12">
         
         {/* 1. Header Section */}
-        <header className="bg-[#151c28] border-b border-[#242e42] pt-4 pb-3 px-4 flex flex-col items-center justify-center relative shadow-md">
-          {/* Top Gold Ornament */}
-          <div className="flex items-center gap-1.5 mb-1 opacity-90">
-            <div className="w-4 h-[1px] bg-gradient-to-r from-transparent via-[#ffc832] to-transparent"></div>
-            <svg className="w-4 h-4 text-[#ffc832]" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2L15 9L22 12L15 15L12 22L9 15L2 12L9 9L12 2Z" />
-            </svg>
-            <div className="w-4 h-[1px] bg-gradient-to-r from-transparent via-[#ffc832] to-transparent"></div>
-          </div>
-
-          {/* Logo Frame matching screenshot typography */}
-          <div className="flex flex-col items-center justify-center border-y-2 border-[#ffc832] py-0.5 px-6 tracking-widest my-1">
-            <h1 className="text-2xl sm:text-3xl font-black text-[#ffc832] uppercase tracking-[0.18em] font-serif drop-shadow-[0_2px_4px_rgba(255,200,50,0.3)]">
-              BCWIN CLUB
-            </h1>
+        <header className="bg-[#151c28] border-b border-[#242e42] pt-5 pb-4 px-4 flex flex-col items-center justify-center relative shadow-md">
+          <div className="relative h-10 w-[168px] sm:h-12 sm:w-[200px]">
+            <Image
+              src="/assets/png/bcwin.png"
+              alt="BCWin"
+              fill
+              sizes="200px"
+              className="object-contain"
+              priority
+            />
           </div>
         </header>
 
