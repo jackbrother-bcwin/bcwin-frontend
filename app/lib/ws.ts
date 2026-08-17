@@ -9,6 +9,8 @@
  * Topics: wingo/k3/5d/moto/trx-wingo period-creation & results, account-balance, bet-settlement.
  */
 
+import { isOfficialWebHost, OFFICIAL_WS_URL } from "./official-hosts";
+
 /** Path on the Bun API (not bare `/ws`) */
 export const WS_PATH = "/api/v1/ws";
 
@@ -46,6 +48,11 @@ function resolveWsUrl(clientId: string): string {
   if (typeof window === "undefined") {
     return `ws://localhost:3000${WS_PATH}?id=${clientId}`;
   }
+  // Official sites: Next cannot upgrade WS. Hit the API host unless Traefik
+  // routes /api/v1/ws on the same host (still fine to use api.bcwin.club).
+  if (isOfficialWebHost(window.location.hostname)) {
+    return `${OFFICIAL_WS_URL}?id=${clientId}`;
+  }
   const proto = window.location.protocol === "https:" ? "wss:" : "ws:";
   const host = process.env.NEXT_PUBLIC_WS_HOST || window.location.host;
   let wsHost = host;
@@ -66,6 +73,10 @@ class GameWebSocket {
   private pingTimer: ReturnType<typeof setInterval> | null = null;
   private intentionalClose = false;
   private reconnectAttempt = 0;
+
+  isOpen(): boolean {
+    return this.ws?.readyState === WebSocket.OPEN;
+  }
 
   connect() {
     if (typeof window === "undefined") return;

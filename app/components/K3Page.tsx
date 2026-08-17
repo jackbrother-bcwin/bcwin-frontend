@@ -265,8 +265,8 @@ export default function K3Page({ onBack, onNavigate }: Props) {
       if (left <= 0) {
         // First zero for this endTime → burst fetch next period + result
         zeroRefreshOnce.current.run(end, burstRefresh);
-      } else if (left <= 3) {
-        // Tight poll near boundary so next ACTIVE lands immediately
+      } else if (left <= 3 && !gameWs.isOpen()) {
+        // Tight HTTP poll only when WS is down — same catch-up, no extra load if live
         void loadPeriodRef.current();
         if (left <= 1) void loadResultsRef.current(1);
       }

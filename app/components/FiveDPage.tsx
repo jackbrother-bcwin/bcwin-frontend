@@ -290,7 +290,7 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
       setCountdownIfChanged(setCountdown, left);
       if (left <= 0) {
         zeroRefreshOnce.current.run(end, burstRefresh);
-      } else if (left <= 3) {
+      } else if (left <= 3 && !gameWs.isOpen()) {
         void loadPeriodRef.current();
         if (left <= 1) void loadResultsRef.current(1);
       }

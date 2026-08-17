@@ -324,10 +324,9 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
         // Once per endTime: full burst so next period + history appear without manual refresh
         zeroRefreshOnce.current.run(endTimeRef.current, burstRefresh);
       }
-      // TRX: poll period near draw (:54) so blockHash/result land in banner + history
-      if (isTrx && left <= 12 && left >= 0) {
+      // TRX: HTTP backup near draw only if live socket is down (WS already pushes)
+      if (isTrx && !gameWs.isOpen() && left <= 12 && left >= 0) {
         void loadPeriodRef.current();
-        // After draw window, pull results list (API now returns drawn, not only RESOLVED)
         if (left <= 6) {
           void loadResultsRef.current(1);
         }
