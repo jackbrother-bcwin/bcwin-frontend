@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useState, Suspense } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import * as admin from "../../../../lib/admin-api";
 import { useToast } from "../../../../components/ui/Toast";
@@ -86,7 +87,7 @@ function WithdrawalsInner() {
     <div>
       <PageTitle
         title="Withdrawals"
-        subtitle="Bulk approve / reject withdrawal queue"
+        subtitle="See who applied, then approve / reject"
         action={<RefreshBtn onClick={load} loading={loading} />}
       />
 
@@ -158,6 +159,7 @@ function WithdrawalsInner() {
                     />
                   </th>
                   <th>Order ID</th>
+                  <th>User</th>
                   <th>Amount</th>
                   <th>Method</th>
                   <th>Status</th>
@@ -169,6 +171,15 @@ function WithdrawalsInner() {
                   const orderId = String(r.orderId ?? "");
                   const st = String(r.status ?? "");
                   const can = ["GENERATED", "PROCESSING"].includes(st);
+                  const u = (r.user ?? {}) as Record<string, unknown>;
+                  const uid = String(u.id ?? r.userId ?? "");
+                  const username = String(u.username ?? "—");
+                  const serial = u.serialNumber != null ? String(u.serialNumber) : "—";
+                  const mobile = String(u.mobileNumber ?? "").trim() || "—";
+                  const email = String(u.email ?? "").trim();
+                  const legal = String(
+                    (r.bank as { fullName?: string } | null)?.fullName ?? ""
+                  ).trim();
                   return (
                     <tr key={String(r.id)}>
                       <td>
@@ -183,16 +194,40 @@ function WithdrawalsInner() {
                         />
                       </td>
                       <td className="font-mono text-[11px]">{orderId}</td>
+                      <td className="min-w-[12rem]">
+                        <p className="text-[12px] font-bold text-slate-800">{username}</p>
+                        {legal && legal !== username ? (
+                          <p className="text-[10px] text-slate-500">{legal}</p>
+                        ) : null}
+                        <p className="text-[11px] text-slate-600 tabular-nums">
+                          #{serial}
+                          <span className="text-slate-300"> · </span>
+                          {mobile}
+                        </p>
+                        {email ? (
+                          <p className="text-[11px] text-slate-500 break-all">{email}</p>
+                        ) : null}
+                      </td>
                       <td className="font-semibold">₹{Number(r.amount ?? 0).toLocaleString("en-IN")}</td>
                       <td>{String(r.method ?? "—")}</td>
                       <td><Badge status={st} /></td>
                       <td>
-                        {can && (
-                          <div className="flex gap-1">
-                            <button type="button" disabled={busy} onClick={() => bulk("approve", [orderId])} className="admin-btn-success text-[11px]">Approve</button>
-                            <button type="button" disabled={busy} onClick={() => bulk("reject", [orderId])} className="admin-btn-danger text-[11px]">Reject</button>
-                          </div>
-                        )}
+                        <div className="flex flex-wrap items-center gap-1">
+                          {uid ? (
+                            <Link
+                              href={`/admin/users/${uid}`}
+                              className="admin-btn-ghost text-[11px] no-underline"
+                            >
+                              Hub
+                            </Link>
+                          ) : null}
+                          {can && (
+                            <>
+                              <button type="button" disabled={busy} onClick={() => bulk("approve", [orderId])} className="admin-btn-success text-[11px]">Approve</button>
+                              <button type="button" disabled={busy} onClick={() => bulk("reject", [orderId])} className="admin-btn-danger text-[11px]">Reject</button>
+                            </>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   );
