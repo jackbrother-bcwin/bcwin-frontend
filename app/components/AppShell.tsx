@@ -28,6 +28,12 @@ import {
   trapSpaHistory,
 } from "../lib/spa-history";
 import { consumeSpaOverlayPop } from "../lib/spa-overlay";
+import {
+  NESTED_SPA_SCREENS,
+  activityViewFromScreen,
+  agencyViewFromScreen,
+  posterIdFromScreen,
+} from "../lib/spa-nested";
 
 // ─── Heavy screens: code-split (Next 16 lazy-loading best practice) ──────────
 
@@ -150,6 +156,7 @@ const KNOWN_SCREENS = new Set([
   "guide",
   "language",
   "change-password",
+  ...NESTED_SPA_SCREENS,
 ]);
 
 const MAX_STACK = 32;
@@ -536,8 +543,22 @@ export default function AppShell() {
             />
           )}
 
-          {activeTab === "activity" && <ActivityPage onNavigate={pushScreen} />}
-          {activeTab === "promotion" && <PromotionPage onNavigate={pushScreen} />}
+          {(activityViewFromScreen(activeTab) ||
+            posterIdFromScreen(activeTab)) && (
+            <ActivityPage
+              view={activityViewFromScreen(activeTab) ?? "hub"}
+              posterId={posterIdFromScreen(activeTab)}
+              onBack={goBack}
+              onNavigate={pushScreen}
+            />
+          )}
+          {agencyViewFromScreen(activeTab) && (
+            <PromotionPage
+              view={agencyViewFromScreen(activeTab)!}
+              onBack={goBack}
+              onNavigate={pushScreen}
+            />
+          )}
           {activeTab === "profile" && (
             <ProfilePage onLogout={handleLogout} onNavigate={pushScreen} />
           )}

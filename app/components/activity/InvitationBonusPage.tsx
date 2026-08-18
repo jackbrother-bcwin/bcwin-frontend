@@ -31,7 +31,19 @@ export default function InvitationBonusPage({
   const { toast } = useToast();
   const { refreshUser } = useAuth();
   const [sub, setSub] = useState<"main" | "rules" | "record">(initialSub);
-  useSpaBackClose(sub !== "main", () => setSub("main"), "invitation-sub");
+  useSpaBackClose(
+    !onNavigate && sub !== "main",
+    () => setSub("main"),
+    "invitation-sub"
+  );
+  const goRules = () =>
+    onNavigate?.("activity-invitation-rules") ?? setSub("rules");
+  const goRecord = () =>
+    onNavigate?.("activity-invitation-record") ?? setSub("record");
+  const closeSub = () => {
+    if (onNavigate) onBack();
+    else setSub("main");
+  };
   const [loading, setLoading] = useState(true);
   const [tiers, setTiers] = useState<ActivityTierProgress[]>([]);
   const [claiming, setClaiming] = useState<string | null>(null);
@@ -147,7 +159,7 @@ export default function InvitationBonusPage({
 
     return (
       <div className="flex-1 flex flex-col min-h-screen pb-24" style={{ background: "#110D14" }}>
-        <PageHeader title="Invitation reward rules" onBack={() => setSub("main")} />
+        <PageHeader title="Invitation reward rules" onBack={closeSub} />
         <div className="px-3 pb-8">
           <p className="text-[13px] text-white/80 font-semibold mb-1">
             Invite friends and recharge to get additional platform rewards!
@@ -224,7 +236,7 @@ export default function InvitationBonusPage({
   if (sub === "record") {
     return (
       <div className="flex-1 flex flex-col min-h-screen bg-[#110D14] text-[#FDE4BC]">
-        <PageHeader title="Invitation record" onBack={() => setSub("main")} />
+        <PageHeader title="Invitation record" onBack={closeSub} />
         <div className="flex-1 px-3.5 pt-3 pb-8">
           {inviteesLoading ? (
             <div className="py-20 text-center text-[#837064] text-xs">
@@ -327,7 +339,7 @@ export default function InvitationBonusPage({
       <div className="mx-3 mt-3 grid grid-cols-2 gap-3">
         <button
           type="button"
-          onClick={() => setSub("rules")}
+          onClick={goRules}
           className="rounded-[14px] py-4 flex flex-col items-center gap-2 active:scale-[0.98]"
           style={{ background: "#241E22", border: "1px solid rgba(255,255,255,0.06)" }}
         >
@@ -343,7 +355,7 @@ export default function InvitationBonusPage({
         </button>
         <button
           type="button"
-          onClick={() => setSub("record")}
+          onClick={goRecord}
           className="rounded-[14px] py-4 flex flex-col items-center gap-2 active:scale-[0.98]"
           style={{ background: "#241E22", border: "1px solid rgba(255,255,255,0.06)" }}
         >

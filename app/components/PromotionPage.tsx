@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import type { AgencyView } from "./promotion/types";
 import AgencyHub from "./promotion/AgencyHub";
 import InvitePage from "./promotion/InvitePage";
@@ -11,13 +11,14 @@ import CommissionDetailPage from "./promotion/CommissionDetailPage";
 import SalaryDashboardPage from "./promotion/SalaryDashboardPage";
 import InvitationRulesPage from "./promotion/InvitationRulesPage";
 import RebateRatioPage from "./promotion/RebateRatioPage";
-import { useSpaBackClose } from "../hooks/useSpaBackClose";
+import { AGENCY_VIEW_SCREEN } from "../lib/spa-nested";
 
 interface Props {
+  view: AgencyView;
+  onBack: () => void;
   onNavigate?: (screen: string) => void;
 }
 
-/** Reset document + any nested agency scroll panes so views open at the top. */
 function resetAgencyScroll() {
   if (typeof window === "undefined") return;
   window.scrollTo(0, 0);
@@ -29,20 +30,10 @@ function resetAgencyScroll() {
 }
 
 /**
- * Agency / Promotion — screenshot hub + internal pages (local view stack).
- * Nested views register SPA back layers so system-back returns to hub.
+ * Agency / Promotion — hub + child pages.
+ * Child views are hash screens (`#/promotion/agency-commission`).
  */
-export default function PromotionPage({ onNavigate }: Props) {
-  const [view, setView] = useState<AgencyView>("hub");
-
-  const backToHub = useCallback(() => {
-    resetAgencyScroll();
-    setView("hub");
-  }, []);
-
-  // System-back closes nested agency page before leaving Promotion tab
-  useSpaBackClose(view !== "hub", backToHub, "agency-nested");
-
+export default function PromotionPage({ view, onBack, onNavigate }: Props) {
   useEffect(() => {
     resetAgencyScroll();
     const t = requestAnimationFrame(() => resetAgencyScroll());
@@ -51,44 +42,48 @@ export default function PromotionPage({ onNavigate }: Props) {
 
   const open = (next: AgencyView) => {
     resetAgencyScroll();
-    setView(next);
+    if (next === "hub") {
+      onBack();
+      return;
+    }
+    onNavigate?.(AGENCY_VIEW_SCREEN[next]);
   };
 
   if (view === "invite") {
-    return <InvitePage key="invite" onBack={backToHub} />;
+    return <InvitePage key="invite" onBack={onBack} />;
   }
   if (view === "subordinates") {
-    return <SubordinateDataPage key="subordinates" onBack={backToHub} />;
+    return <SubordinateDataPage key="subordinates" onBack={onBack} />;
   }
   if (view === "newSubordinates") {
-    return <NewSubordinatesPage key="newSubordinates" onBack={backToHub} />;
+    return <NewSubordinatesPage key="newSubordinates" onBack={onBack} />;
   }
   if (view === "commission") {
-    return <AgentCommissionPage key="commission" onBack={backToHub} />;
+    return <AgentCommissionPage key="commission" onBack={onBack} />;
   }
   if (view === "commissionDetail") {
     return (
       <CommissionDetailPage
         key="commissionDetail"
-        onBack={backToHub}
+        onBack={onBack}
         onOpenRebateRules={() => open("rebate")}
       />
     );
   }
   if (view === "salary") {
-    return <SalaryDashboardPage key="salary" onBack={backToHub} />;
+    return <SalaryDashboardPage key="salary" onBack={onBack} />;
   }
   if (view === "rules") {
     return (
       <InvitationRulesPage
         key="rules"
-        onBack={backToHub}
+        onBack={onBack}
         onOpenRebate={() => open("rebate")}
       />
     );
   }
   if (view === "rebate") {
-    return <RebateRatioPage key="rebate" onBack={backToHub} />;
+    return <RebateRatioPage key="rebate" onBack={onBack} />;
   }
 
   return <AgencyHub key="hub" onOpen={open} onNavigate={onNavigate} />;

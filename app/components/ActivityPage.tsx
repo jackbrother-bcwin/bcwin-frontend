@@ -24,7 +24,6 @@ import { formatINR } from "../lib/format";
 import { requireBankForCollect } from "../lib/require-bank";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "./ui/Toast";
-import { useSpaBackClose } from "../hooks/useSpaBackClose";
 import LoadingSpinner from "./ui/LoadingSpinner";
 import {
   ACTIVITY_BANNERS,
@@ -33,17 +32,22 @@ import {
   type ActivityBannerAction,
   type ActivityView,
 } from "./activity/catalog";
-import type { ActivityPosterId } from "../lib/banner-cdn";
 import BonusDetailsPage from "./activity/BonusDetailsPage";
 import AttendancePage from "./activity/AttendancePage";
 import InvitationBonusPage from "./activity/InvitationBonusPage";
 import SalaryChartPage from "./activity/SalaryChartPage";
 import ActivityPosterPage from "./activity/ActivityPosterPage";
-import SpinPage from "./SpinPage";
-import LuckySpinPage from "./LuckySpinPage";
 import SelfRebatePage from "./activity/SelfRebatePage";
+import {
+  activityNavigateTarget,
+  posterScreen,
+} from "../lib/spa-nested";
+import type { ActivityPosterId } from "../lib/banner-cdn";
 
 interface Props {
+  view?: ActivityView;
+  posterId?: ActivityPosterId | null;
+  onBack?: () => void;
   onNavigate?: (screen: string) => void;
 }
 
@@ -91,18 +95,14 @@ const QUICK_ACTIONS: {
   },
 ];
 
-export default function ActivityPage({ onNavigate }: Props) {
+export default function ActivityPage({
+  view = "hub",
+  posterId = null,
+  onBack,
+  onNavigate,
+}: Props) {
   const { refreshUser } = useAuth();
   const { toast } = useToast();
-  const [view, setView] = useState<ActivityView>("hub");
-  /** Full-page promo poster (CDN detail image) */
-  const [poster, setPoster] = useState<{
-    id: ActivityPosterId;
-    title: string;
-  } | null>(null);
-  const backToHub = useCallback(() => setView("hub"), []);
-  useSpaBackClose(!!poster, () => setPoster(null), "activity-poster");
-  useSpaBackClose(view !== "hub" && !poster, backToHub, "activity-nested");
   const [loading, setLoading] = useState(true);
   const [claimable, setClaimable] = useState<ActivityBonus[]>([]);
   const [history, setHistory] = useState<ActivityBonus[]>([]);
@@ -133,7 +133,7 @@ export default function ActivityPage({ onNavigate }: Props) {
   useEffect(() => {
     if (typeof window === "undefined") return;
     window.scrollTo(0, 0);
-  }, [view, poster]);
+  }, [view, posterId]);
 
   const todayBonus = useMemo(
     () => claimable.reduce((s, b) => s + (b.amount || 0), 0),
@@ -151,15 +151,11 @@ export default function ActivityPage({ onNavigate }: Props) {
   const runAction = (action?: ActivityBannerAction) => {
     if (!action || action.type === "none") return;
     if (action.type === "view") {
-      setPoster(null);
-      setView(action.view);
+      onNavigate?.(activityNavigateTarget(action.view));
       return;
     }
     if (action.type === "poster") {
-      setPoster({
-        id: action.poster,
-        title: ACTIVITY_POSTER_TITLES[action.poster] ?? "Event details",
-      });
+      onNavigate?.(posterScreen(action.poster));
       return;
     }
     if (action.type === "screen") {
@@ -167,54 +163,38 @@ export default function ActivityPage({ onNavigate }: Props) {
     }
   };
 
-  if (poster) {
+  const back = onBack ?? (() => undefined);
+
+  if (posterId) {
     return (
       <ActivityPosterPage
-        title={poster.title}
-        image={activityPosterUrl(poster.id)}
-        onBack={() => setPoster(null)}
+        title={ACTIVITY_POSTER_TITLES[posterId] ?? "Event details"}
+        image={activityPosterUrl(posterId)}
+        onBack={back}
       />
     );
   }
 
   if (view === "bonus-details") {
-    return <BonusDetailsPage onBack={() => setView("hub")} />;
+    return <BonusDetailsPage onBack={back} />;
   }
   if (view === "salary-chart") {
-    return <SalaryChartPage onBack={() => setView("hub")} />;
+    return <SalaryChartPage onBack={back} />;
   }
   if (view === "attendance") {
-    return (
-      <AttendancePage
-        onBack={() => setView("hub")}
-        onNavigate={onNavigate}
-      />
-    );
-  }
-  if (view === "spin" || view === "wheel") {
-    return (
-      <SpinPage
-        onBack={() => setView("hub")}
-        onNavigate={onNavigate}
-        variant="invite"
-      />
-    );
-  }
-  if (view === "lucky-spin") {
-    return (
-      <LuckySpinPage
-        onBack={() => setView("hub")}
-        onNavigate={onNavigate}
-      />
-    );
+    return <AttendancePage onBack={back} onNavigate={onNavigate} />;
   }
   if (view === "rebate") {
-    return <SelfRebatePage onBack={() => setView("hub")} />;
+    return <SelfRebatePage onBack={back} />;
   }
-  if (view === "invitation" || view === "invitation-rules" || view === "invitation-record") {
+  if (
+    view === "invitation" ||
+    view === "invitation-rules" ||
+    view === "invitation-record"
+  ) {
     return (
       <InvitationBonusPage
-        onBack={() => setView("hub")}
+        onBack={back}
         onNavigate={onNavigate}
         initialSub={
           view === "invitation-rules"
@@ -281,7 +261,7 @@ export default function ActivityPage({ onNavigate }: Props) {
           <div className="flex justify-center my-3">
             <button
               type="button"
-              onClick={() => setView("bonus-details")}
+              onClick={() => onNavigate?.(activityNavigateTarget("bonus-details"))}
               className="h-9 px-8 rounded-full text-[13px] font-bold text-[#FED358] active:scale-95"
               style={{
                 border: "1.5px solid rgba(254,211,88,0.65)",
@@ -343,7 +323,7 @@ export default function ActivityPage({ onNavigate }: Props) {
 
             <button
               type="button"
-              onClick={() => setView("attendance")}
+              onClick={() => onNavigate?.(activityNavigateTarget("attendance"))}
               className="rounded-[14px] p-3 text-left active:scale-[0.98] min-h-[132px] flex flex-col"
               style={{
                 background: "linear-gradient(160deg,#2a2228 0%,#1a1519 100%)",
@@ -376,7 +356,7 @@ export default function ActivityPage({ onNavigate }: Props) {
                 </p>
                 <button
                   type="button"
-                  onClick={() => setView("bonus-details")}
+                  onClick={() => onNavigate?.(activityNavigateTarget("bonus-details"))}
                   className="text-[10px] text-white/50 flex items-center gap-0.5"
                 >
                   All <IoChevronForward size={12} />
