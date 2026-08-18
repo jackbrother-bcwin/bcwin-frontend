@@ -14,11 +14,12 @@ export type PeriodLike = {
   durationSeconds?: number;
 };
 
-/** True if period is ACTIVE and endTime is still in the future. */
+/** True if period is ACTIVE, has started, and endTime is still in the future. */
 export function isLivePeriod(p: PeriodLike | null | undefined): boolean {
   if (!p?.endTime) return false;
   if (String(p.status ?? "").toUpperCase() === "ENDED") return false;
   if (String(p.status ?? "").toUpperCase() === "RESOLVED") return false;
+  if (p.startTime && secondsUntil(p.startTime) > 0) return false;
   return secondsUntil(p.endTime) > 0;
 }
 

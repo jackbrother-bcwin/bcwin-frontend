@@ -35,6 +35,7 @@ import {
 import { themeFromBet } from "./game/BetSlip";
 import BetHistoryCard from "./game/BetHistoryCard";
 import { createOncePerKey, setCountdownIfChanged } from "../lib/game-refresh";
+import { pickLivePeriod } from "../lib/period-live";
 import { useLotteryBetDepositGate } from "../hooks/useLotteryBetDepositGate";
 import {
   useSettledResultPopup,
@@ -147,9 +148,8 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
       });
       if (signal?.aborted) return;
       const current =
+        pickLivePeriod(res.currentPeriod, res.periods) ??
         res.currentPeriod ??
-        res.periods?.find((p) => p.status === "ACTIVE") ??
-        res.periods?.[0] ??
         null;
       setPeriod(current);
       const nextEnd = current?.endTime ?? null;
@@ -323,6 +323,11 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
       if (left <= 0) {
         // Once per endTime: full burst so next period + history appear without manual refresh
         zeroRefreshOnce.current.run(endTimeRef.current, burstRefresh);
+      } else if (left <= 1 && !isTrx) {
+        // 00-handoff backup: next clock + results even if WS is late
+        void loadPeriodRef.current();
+        void loadResultsRef.current(1);
+        void loadMyBetsRef.current(1);
       }
       // TRX: HTTP backup near draw only if live socket is down (WS already pushes)
       if (isTrx && !gameWs.isOpen() && left <= 12 && left >= 0) {
@@ -340,6 +345,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
     const u1 = gameWs.subscribe(wsPeriodTopic, (data) => {
       const d = data as WingoPeriod;
       if (d?.durationSeconds && d.durationSeconds !== duration) return;
+      if (d?.startTime && secondsUntil(d.startTime) > 0) return;
       if (d?.status === "ACTIVE" || d?.periodNumber) {
         setPeriod((prev) => ({ ...(prev ?? ({} as WingoPeriod)), ...d }));
         if (d.endTime) {
