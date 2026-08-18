@@ -40,7 +40,7 @@ export default function AgencyHub({ onOpen, onNavigate }: Props) {
       y.setDate(y.getDate() - 1);
       const ymdYest = `${y.getFullYear()}-${String(y.getMonth() + 1).padStart(2, "0")}-${String(y.getDate()).padStart(2, "0")}`;
 
-      // ADR-0011: hub earnings from team rebate (settled lifetime + yesterday accrual)
+      // ADR-0011: hub earnings = settled team rebate only (same as TX)
       const [ov, rebateYest] = await Promise.all([
         api.getTeamOverview().catch(() => null),
         api.getRebateDaily({ date: ymdYest }).catch(() => null),

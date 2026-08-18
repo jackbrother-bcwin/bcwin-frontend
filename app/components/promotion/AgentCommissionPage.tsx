@@ -67,7 +67,6 @@ export default function AgentCommissionPage({ onBack }: Props) {
   const [lifetime, setLifetime] = useState(0);
   /** Today IST: settled vs accrued (not in wallet / TX) */
   const [todayCredited, setTodayCredited] = useState(0);
-  const [todayPending, setTodayPending] = useState(0);
 
   const [levelPreset, setLevelPreset] = useState<DatePreset>("today");
   const [levelCustom, setLevelCustom] = useState(ymdLocal());
@@ -112,10 +111,9 @@ export default function AgentCommissionPage({ onBack }: Props) {
   const loadOverview = useCallback(async (signal?: AbortSignal) => {
     setLoading(true);
     try {
-      // ADR-0011: agency “commission” = team rebate (accrual + 01:30 IST settle)
+      // ADR-0011: agency commission = settled team rebate only (same as TX)
       const [rebateHist, ratesRes, overview, vipRes] = await Promise.all([
-        // Include unsettled so Today/list show incoming rebate (not wallet/TX)
-        api.getRebateHistory({ page: 1, limit: 500, settled: "all" }),
+        api.getRebateHistory({ page: 1, limit: 500, settled: true }),
         api.getRebateRates().catch(() => null),
         api.getTeamOverview().catch(() => null),
         api.getVipStatus().catch(() => null),
@@ -126,19 +124,14 @@ export default function AgentCommissionPage({ onBack }: Props) {
       const byDay = new Map<string, number>();
       const todayYmd = ymdLocal();
       let credited = 0;
-      let pending = 0;
       for (const r of rebateHist.data ?? []) {
         const d = String(r.createdAt ?? "").slice(0, 10);
         if (!d) continue;
         const amt = Number(r.amount ?? 0);
         byDay.set(d, roundMoney((byDay.get(d) ?? 0) + amt, 3));
-        if (d === todayYmd) {
-          if (r.settled) credited += amt;
-          else pending += amt;
-        }
+        if (d === todayYmd) credited += amt;
       }
       setTodayCredited(roundMoney(credited, 3));
-      setTodayPending(roundMoney(pending, 3));
       const dailyRows: DailyCommissionRow[] = [...byDay.entries()]
         .sort((a, b) => (a[0] < b[0] ? 1 : -1))
         .map(([date, totalCommission]) => ({
@@ -208,7 +201,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
         const res = await api.getRebateHistory({
           startDate: range.startDate,
           endDate: range.endDate,
-          settled: "all",
+          settled: true,
           page: 1,
           limit: 500,
         });
@@ -257,11 +250,10 @@ export default function AgentCommissionPage({ onBack }: Props) {
         listPreset === "custom"
           ? rangeForPreset("custom", { start: listCustom, end: listCustom })
           : rangeForPreset(listPreset);
-      // Accrued + settled (pending today visible; wallet/TX still settled-only)
       const res = await api.getRebateHistory({
         startDate: range.startDate,
         endDate: range.endDate,
-        settled: "all",
+        settled: true,
         page: 1,
         limit: 100,
       });
@@ -525,7 +517,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
         const res = await api.getRebateHistory({
           startDate: range.startDate,
           endDate: range.endDate,
-          settled: "all",
+          settled: true,
           fromUserId: g.fromUserId,
           layer: g.layer > 0 ? g.layer : undefined,
           page,
@@ -620,7 +612,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
               <div className="relative z-10">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-[10px] font-black tracking-widest uppercase px-2.5 py-0.5 rounded-full bg-black/20 text-amber-200 border border-white/10 backdrop-blur-sm">
-                    Today (Live)
+                    Today
                   </span>
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
                 </div>
@@ -630,13 +622,9 @@ export default function AgentCommissionPage({ onBack }: Props) {
                 <p className="text-xs font-medium text-amber-100/90 flex items-center gap-1.5 mt-2 flex-wrap">
                   <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400" />
                   {formatINR(todayCredited)} credited
-                  <span className="opacity-50">·</span>
-                  <span className="opacity-80">
-                    {formatINR(todayPending)} pending
-                  </span>
                 </p>
                 <p className="text-[10px] text-amber-100/70 mt-1">
-                  Pending settles ~01:30 IST — not in wallet or TX yet
+                  Settled team rebate only — same as Transaction history
                 </p>
               </div>
             </div>
