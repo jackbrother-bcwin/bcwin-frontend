@@ -108,7 +108,6 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [pending, setPending] = useState<PendingBet | null>(null);
-  const [betting, setBetting] = useState(false);
   const { ensureCanBet, depositModal } = useLotteryBetDepositGate(
     "5D",
     onNavigate,
@@ -442,25 +441,24 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
       toast("Insufficient balance", "error");
       return;
     }
-    setBetting(true);
+    const slip = pending;
+    const periodId = period.id;
+    setPending(null);
     try {
       const res = await api.place5dBet({
-        periodId: period.id,
-        betCategory: pending.betCategory,
-        betType: pending.betType,
-        position: pending.position,
-        betChoice: pending.betChoice,
+        periodId,
+        betCategory: slip.betCategory,
+        betType: slip.betType,
+        position: slip.position,
+        betChoice: slip.betChoice,
         betAmount,
       });
       trackPendingBet(res.bet?.id);
-      toast(`Bet placed: ${pending.label}`, "success");
-      setPending(null);
+      toast(`Bet placed: ${slip.label}`, "success");
       await refreshUser();
       void loadMyBets();
     } catch (e: unknown) {
       toast(e instanceof Error ? e.message : "Bet failed", "error");
-    } finally {
-      setBetting(false);
     }
   };
 
@@ -796,7 +794,6 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
             : null
         }
         periodNumber={period?.periodNumber}
-        betting={betting}
         balance={user?.balance}
         onCancel={() => setPending(null)}
         onConfirm={() => confirm()}

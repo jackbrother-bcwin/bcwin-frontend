@@ -157,6 +157,18 @@
     }
   }
 
+  @keyframes bet-sheet-down {
+    from {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+
+    to {
+      opacity: 0.98;
+      transform: translate3d(0, 100%, 0);
+    }
+  }
+
   @keyframes bet-sheet-fade {
     from {
       opacity: 0;
@@ -164,6 +176,16 @@
 
     to {
       opacity: 1;
+    }
+  }
+
+  @keyframes bet-sheet-fade-out {
+    from {
+      opacity: 1;
+    }
+
+    to {
+      opacity: 0;
     }
   }
 
@@ -2823,11 +2845,20 @@ select {
   animation: bet-sheet-fade 0.2s ease-out both;
 }
 
+.bet-sheet-overlay.is-leaving {
+  /* Exit is driven by inline transform/opacity so enter keyframes cannot pin Y. */
+  animation: none;
+}
+
 .bet-sheet-panel {
   animation: bet-sheet-up 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
   will-change: transform;
   /* safe area home bar */
   padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.bet-sheet-panel.is-leaving {
+  animation: none;
 }
 
 .bet-sheet-panel input {

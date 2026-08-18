@@ -70,7 +70,6 @@ export default function K3Page({ onBack, onNavigate }: Props) {
   const [mult, setMult] = useState(1);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [betting, setBetting] = useState(false);
   const [pending, setPending] = useState<{
     type: string;
     choice: string;
@@ -374,23 +373,22 @@ export default function K3Page({ onBack, onNavigate }: Props) {
       toast("Insufficient balance", "error");
       return;
     }
-    setBetting(true);
+    const slip = pending;
+    const periodId = period.id;
+    setPending(null);
     try {
       const res = await api.placeK3Bet({
-        periodId: period.id,
-        betType: pending.type,
-        betChoice: pending.choice,
+        periodId,
+        betType: slip.type,
+        betChoice: slip.choice,
         betAmount,
       });
       trackPendingBet(res.bet?.id);
-      toast(`Bet placed: ${pending.label}`, "success");
-      setPending(null);
+      toast(`Bet placed: ${slip.label}`, "success");
       await refreshUser();
       void loadMyBets();
     } catch (e: unknown) {
       toast(e instanceof Error ? e.message : "Bet failed", "error");
-    } finally {
-      setBetting(false);
     }
   };
 
@@ -733,7 +731,6 @@ export default function K3Page({ onBack, onNavigate }: Props) {
                   : "violet"
         }
         periodNumber={period?.periodNumber}
-        betting={betting}
         balance={user?.balance}
         onCancel={() => setPending(null)}
         onConfirm={() => confirm()}

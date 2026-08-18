@@ -686,7 +686,7 @@ export function BetConfirmSheet({
   label,
   amount: _amount,
   periodNumber,
-  betting,
+  betting = false,
   onCancel,
   onConfirm,
   onConfirmTotal,
@@ -701,7 +701,7 @@ export function BetConfirmSheet({
   label: string;
   amount?: string;
   periodNumber?: string | null;
-  betting: boolean;
+  betting?: boolean;
   onCancel: () => void;
   onConfirm: () => void;
   onConfirmTotal?: (payload: BetSlipConfirmPayload) => void;

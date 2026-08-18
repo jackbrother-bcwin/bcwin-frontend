@@ -109,7 +109,6 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
   const [totalPages, setTotalPages] = useState(1);
   const [myBetsPage, setMyBetsPage] = useState(1);
   const [myBetsTotalPages, setMyBetsTotalPages] = useState(1);
-  const [betting, setBetting] = useState(false);
   const [betSheet, setBetSheet] = useState<{
     betType: "COLOR" | "NUMBER" | "SIZE";
     betChoice: string;
@@ -532,25 +531,24 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
       toast("Invalid amount", "error");
       return;
     }
-    setBetting(true);
+    const sheet = betSheet;
+    const periodId = period.id;
+    setBetSheet(null);
     try {
       const place = isTrx ? api.placeTrxWingoBet : api.placeWingoBet;
       const res = await place({
-        periodId: period.id,
-        betType: betSheet.betType,
-        betChoice: betSheet.betChoice,
+        periodId,
+        betType: sheet.betType,
+        betChoice: sheet.betChoice,
         betAmount,
       });
       const betId = (res as { bet?: { id?: string } })?.bet?.id;
       trackPendingBet(betId);
-      toast(`Bet placed: ${betSheet.label} · ${formatINR(betAmount)}`, "success");
-      setBetSheet(null);
+      toast(`Bet placed: ${sheet.label} · ${formatINR(betAmount)}`, "success");
       await refreshUser();
       loadMyBets();
     } catch (e: unknown) {
       toast(e instanceof Error ? e.message : "Bet failed", "error");
-    } finally {
-      setBetting(false);
     }
   };
 
@@ -1100,7 +1098,6 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
             : "red"
         }
         periodNumber={period?.periodNumber}
-        betting={betting}
         balance={user?.balance}
         initialMultiplier={selectedMultiplier}
         onCancel={() => setBetSheet(null)}

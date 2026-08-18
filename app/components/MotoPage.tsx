@@ -75,7 +75,7 @@ export default function MotoPage({
   const [racing, setRacing] = useState(false);
   const [lastPodium, setLastPodium] = useState<PodiumResult | null>(null);
   const [pending, setPending] = useState<PendingBet | null>(null);
-  const [betting, setBetting] = useState(false);
+
   const { ensureCanBet, depositModal } = useLotteryBetDepositGate(
     "Moto Race",
     onNavigate,
@@ -410,24 +410,23 @@ export default function MotoPage({
       setPending(null);
       return;
     }
-    setBetting(true);
+    const slip = pending;
+    const periodId = period.id;
+    setPending(null);
     try {
       const res = await api.placeMotoBet({
-        periodId: period.id,
-        betType: pending.betType,
-        betChoice: pending.betChoice.toLowerCase(),
-        targetPosition: pending.targetPosition,
+        periodId,
+        betType: slip.betType,
+        betChoice: slip.betChoice.toLowerCase(),
+        targetPosition: slip.targetPosition,
         betAmount,
       });
       trackPendingBet(res.bet?.id);
       toast("Bet placed!", "success");
-      setPending(null);
       await refreshUser();
       await load();
     } catch (e: unknown) {
       toast(e instanceof Error ? e.message : "Bet failed", "error");
-    } finally {
-      setBetting(false);
     }
   };
 
@@ -717,7 +716,6 @@ export default function MotoPage({
         gameTitle="Moto Race"
         theme="orange"
         periodNumber={period?.periodNumber}
-        betting={betting}
         balance={user?.balance}
         onCancel={() => setPending(null)}
         onConfirm={() => confirm()}

@@ -90,7 +90,7 @@ export default function DragonAssistant({ showFloatingButton = true }: DragonAss
   const [history, setHistory] = useState<GameHistoryItem[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [pending, setPending] = useState<PendingBet | null>(null);
-  const [betting, setBetting] = useState(false);
+
   /** Tick every second so countdowns re-render */
   const [nowTick, setNowTick] = useState(0);
 
@@ -291,33 +291,34 @@ export default function DragonAssistant({ showFloatingButton = true }: DragonAss
       toast("Invalid amount", "error");
       return;
     }
-    setBetting(true);
+    const job = pending;
+    setPending(null);
     try {
-      const p = pending.payload;
+      const p = job.payload;
       if (p.game === "wingo") {
         await api.placeWingoBet({
-          periodId: pending.periodId,
+          periodId: job.periodId,
           betType: p.betType,
           betChoice: p.betChoice,
           betAmount: amount,
         });
       } else if (p.game === "trxwingo") {
         await api.placeTrxWingoBet({
-          periodId: pending.periodId,
+          periodId: job.periodId,
           betType: p.betType,
           betChoice: p.betChoice,
           betAmount: amount,
         });
       } else if (p.game === "k3") {
         await api.placeK3Bet({
-          periodId: pending.periodId,
+          periodId: job.periodId,
           betType: p.betType,
           betChoice: p.betChoice,
           betAmount: amount,
         });
       } else if (p.game === "5d") {
         await api.place5dBet({
-          periodId: pending.periodId,
+          periodId: job.periodId,
           betCategory: p.betCategory,
           betType: p.betType,
           betChoice: p.betChoice,
@@ -325,16 +326,13 @@ export default function DragonAssistant({ showFloatingButton = true }: DragonAss
         });
       }
       toast(
-        `Bet placed: ${pending.choiceLabel} · ${formatINR(amount)}`,
+        `Bet placed: ${job.choiceLabel} · ${formatINR(amount)}`,
         "success"
       );
-      setPending(null);
       await refreshUser();
       if (tab === "history") loadHistory();
     } catch (e: unknown) {
       toast(e instanceof Error ? e.message : "Bet failed", "error");
-    } finally {
-      setBetting(false);
     }
   };
 
@@ -698,7 +696,6 @@ export default function DragonAssistant({ showFloatingButton = true }: DragonAss
         gameTitle={pending?.gameTitle ?? "Dragon"}
         choiceLabel={pending?.choiceLabel ?? ""}
         theme={pending?.theme ?? "orange"}
-        betting={betting}
         balance={user?.balance}
         periodNumber={pending?.periodNumber}
         onCancel={() => setPending(null)}
