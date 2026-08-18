@@ -47,6 +47,63 @@ export function openSafeUrlDetailed(
   return "opened";
 }
 
+/**
+ * Open a blank tab **inside the click**. After an await, window.open is a
+ * popup and Chrome / Safari / Android often block it — first Deposit tap
+ * fails, “Open again” works. Hold this handle and call navigateOpenedTab.
+ */
+export function openBlankTab(): Window | null {
+  if (typeof window === "undefined") return null;
+  const win = window.open("about:blank", "_blank");
+  if (!win) return null;
+  try {
+    win.document.title = "Opening payment…";
+  } catch {
+    /* cross-origin or empty doc */
+  }
+  return win;
+}
+
+export function navigateOpenedTab(
+  win: Window | null,
+  url: string | null | undefined
+): OpenSafeUrlResult {
+  if (!isSafeHttpUrl(url)) {
+    try {
+      win?.close();
+    } catch {
+      /* ignore */
+    }
+    return "invalid";
+  }
+  if (!win || win.closed) return "blocked";
+  try {
+    win.location.replace(url);
+  } catch {
+    try {
+      win.close();
+    } catch {
+      /* ignore */
+    }
+    return "blocked";
+  }
+  try {
+    win.opener = null;
+  } catch {
+    /* ignore */
+  }
+  return "opened";
+}
+
+export function closeOpenedTab(win: Window | null): void {
+  if (!win || win.closed) return;
+  try {
+    win.close();
+  } catch {
+    /* ignore */
+  }
+}
+
 /** Cap + strip control chars from API error messages shown in UI */
 export function sanitizeErrorMessage(input: unknown, fallback = "Something went wrong"): string {
   let msg = "";

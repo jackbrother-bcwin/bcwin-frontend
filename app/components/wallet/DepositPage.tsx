@@ -28,6 +28,9 @@ import {
   formatUSD,
 } from "../../lib/format";
 import {
+  closeOpenedTab,
+  navigateOpenedTab,
+  openBlankTab,
   openSafeUrlDetailed,
   sanitizeAmount,
   sanitizeErrorMessage,
@@ -215,6 +218,10 @@ export default function DepositPage({ onBack, onNavigate }: Props) {
       return;
     }
 
+    // Must open in this tap. After await initiateDeposit, window.open is a
+    // popup and the first gateway tab is blocked — “Open again” then works.
+    const payTab = user?.isDemo ? null : openBlankTab();
+
     setLoading(true);
     try {
       const res = await api.initiateDeposit({
@@ -230,35 +237,36 @@ export default function DepositPage({ onBack, onNavigate }: Props) {
         setAmount(0);
         setAmountInput("");
       } else if (res.payUrl) {
-        // Keep URL whenever valid so user can "Open again" after closing payment page
-        const openResult = openSafeUrlDetailed(res.payUrl);
+        const openResult = navigateOpenedTab(payTab, res.payUrl);
         if (openResult !== "invalid") {
           setLastPayUrl(res.payUrl);
         }
 
         if (openResult === "opened") {
-          toast(
-            payMethod.apiMethod === "OXAPAY"
-              ? "Opening payment page…"
-              : "Opening payment page…",
-            "success"
-          );
+          toast("Opening payment page…", "success");
         } else if (openResult === "blocked") {
-          // Popup/WebView blocked window.open — common on Android; not a security issue
-          setError(
-            "Payment page did not open. Tap “Open again” below to continue."
-          );
-          toast("Tap Open again to complete payment", "info");
+          const retry = openSafeUrlDetailed(res.payUrl);
+          if (retry === "opened") {
+            toast("Opening payment page…", "success");
+          } else {
+            setError(
+              "Payment page did not open. Tap “Open again” below to continue."
+            );
+            toast("Tap Open again to complete payment", "info");
+          }
         } else {
           setError("Payment unsuccessful. Please try again.");
           toast("Payment unsuccessful. Please try again.", "error");
         }
       } else if (payMethod.apiMethod === "UPI") {
+        closeOpenedTab(payTab);
         toast("UPI order created. Complete transfer as instructed.", "success");
       } else {
+        closeOpenedTab(payTab);
         toast("Deposit order created.", "success");
       }
     } catch (e: unknown) {
+      closeOpenedTab(payTab);
       const msg = sanitizeErrorMessage(e, "Deposit failed");
       setError(msg);
       toast(msg, "error");
