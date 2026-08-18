@@ -16,8 +16,11 @@ import {
   type DatePreset,
   formatRatePct,
   rangeForPreset,
+  shiftYmd,
+  ymdIst,
   ymdLocal,
 } from "./dateRange";
+import { rebateIstDay } from "../../lib/ist-day";
 
 interface Props {
   onBack: () => void;
@@ -54,6 +57,18 @@ function inRange(ymd: string, start?: string, end?: string): boolean {
   if (start && ymd < start) return false;
   if (end && ymd > end) return false;
   return true;
+}
+
+/** Today (and ranges that include today) show live unsettled. Past days stay settled-only. */
+function rebateSettledParam(
+  preset: DatePreset,
+  customYmd?: string
+): true | "all" {
+  if (preset === "yesterday" || preset === "day_before") return true;
+  if (preset === "custom") {
+    return customYmd && customYmd === ymdIst() ? "all" : true;
+  }
+  return "all";
 }
 
 export default function AgentCommissionPage({ onBack }: Props) {
@@ -111,25 +126,25 @@ export default function AgentCommissionPage({ onBack }: Props) {
   const loadOverview = useCallback(async (signal?: AbortSignal) => {
     setLoading(true);
     try {
-      // ADR-0011: agency commission = settled team rebate only (same as TX)
+      // Include today's unsettled (this is the only live commission screen).
+      // Yesterday+ still match TX because those rows are settled.
       const [rebateHist, ratesRes, overview, vipRes] = await Promise.all([
-        api.getRebateHistory({ page: 1, limit: 500, settled: true }),
+        api.getAllRebates({ settled: "all" }),
         api.getRebateRates().catch(() => null),
         api.getTeamOverview().catch(() => null),
         api.getVipStatus().catch(() => null),
       ]);
       if (signal?.aborted) return;
 
-      // Build daily totals from rebate rows (createdAt IST day)
       const byDay = new Map<string, number>();
-      const todayYmd = ymdLocal();
+      const todayYmd = ymdIst();
       let credited = 0;
-      for (const r of rebateHist.data ?? []) {
-        const d = String(r.createdAt ?? "").slice(0, 10);
+      for (const r of rebateHist) {
+        const d = rebateIstDay(r.createdAt);
         if (!d) continue;
         const amt = Number(r.amount ?? 0);
         byDay.set(d, roundMoney((byDay.get(d) ?? 0) + amt, 3));
-        if (d === todayYmd) credited += amt;
+        if (d === todayYmd && r.settled !== false) credited += amt;
       }
       setTodayCredited(roundMoney(credited, 3));
       const dailyRows: DailyCommissionRow[] = [...byDay.entries()]
@@ -201,7 +216,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
         const res = await api.getRebateHistory({
           startDate: range.startDate,
           endDate: range.endDate,
-          settled: true,
+          settled: rebateSettledParam(levelPreset, levelCustom),
           page: 1,
           limit: 500,
         });
@@ -253,7 +268,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
       const res = await api.getRebateHistory({
         startDate: range.startDate,
         endDate: range.endDate,
-        settled: true,
+        settled: rebateSettledParam(listPreset, listCustom),
         page: 1,
         limit: 100,
       });
@@ -332,7 +347,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
     };
   }, [bottomTab]);
 
-  const today = ymdLocal();
+  const today = ymdIst();
   const yesterday = rangeForPreset("yesterday").startDate!;
   const week = rangeForPreset("this_week");
   const month = rangeForPreset("this_month");
@@ -361,9 +376,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
     const map = new Map(daily.map((r) => [r.date, r.totalCommission]));
     const pts: { date: string; v: number }[] = [];
     for (let i = 29; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      const ymd = ymdLocal(d);
+      const ymd = shiftYmd(ymdIst(), -i);
       pts.push({ date: ymd, v: Number(map.get(ymd) ?? 0) });
     }
     return pts;
@@ -517,7 +530,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
         const res = await api.getRebateHistory({
           startDate: range.startDate,
           endDate: range.endDate,
-          settled: true,
+          settled: rebateSettledParam(listPreset, listCustom),
           fromUserId: g.fromUserId,
           layer: g.layer > 0 ? g.layer : undefined,
           page,
@@ -575,14 +588,14 @@ export default function AgentCommissionPage({ onBack }: Props) {
     if (groupMode === "list") return null;
     const buckets = new Map<string, number>();
     for (const r of rows) {
-      const raw = r.createdAt ? r.createdAt.slice(0, 10) : "unknown";
+      const raw = rebateIstDay(r.createdAt) || "unknown";
       let key = raw;
       if (groupMode === "weekly" && raw.length === 10) {
-        const d = new Date(raw + "T12:00:00");
+        const d = new Date(`${raw}T12:00:00+05:30`);
         const day = d.getDay();
         const monOff = day === 0 ? -6 : 1 - day;
         d.setDate(d.getDate() + monOff);
-        key = `W ${ymdLocal(d)}`;
+        key = `W ${ymdIst(d)}`;
       } else if (groupMode === "monthly" && raw.length === 10) {
         key = raw.slice(0, 7);
       }
@@ -624,7 +637,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
                   {formatINR(todayCredited)} credited
                 </p>
                 <p className="text-[10px] text-amber-100/70 mt-1">
-                  Settled team rebate only — same as Transaction history
+                  Live today (not in wallet yet). Yesterday matches Transaction history.
                 </p>
               </div>
             </div>

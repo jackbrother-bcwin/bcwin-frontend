@@ -50,9 +50,9 @@ export default function InvitationRulesPage({ onBack, onOpenRebate }: Props) {
           n="04"
           body={
             <>
-              Unsettled team rebate is credited to the wallet every day at{" "}
-              <b>1:30 AM</b> (IST). After settlement you can view it in the agency commission
-              record and transaction history.
+              Team rebate for a day is every downline bet from{" "}
+              <b>00:00 to 24:00 IST</b>. That day&apos;s total is what you see on Agency
+              and in Transaction history as Agent commission.
             </>
           }
         />

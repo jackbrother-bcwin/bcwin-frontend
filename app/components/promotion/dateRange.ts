@@ -1,5 +1,9 @@
 /** IST-friendly calendar helpers for agency dashboards */
 
+import { latestSettledYmd, shiftYmd, ymdIst } from "../../lib/ist-day";
+
+export { latestSettledYmd, shiftYmd, ymdIst };
+
 export function ymdLocal(d = new Date()): string {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
@@ -7,24 +11,12 @@ export function ymdLocal(d = new Date()): string {
   return `${y}-${m}-${day}`;
 }
 
-/** Calendar day in Asia/Kolkata (YYYY-MM-DD). Agency settled stats use IST. */
-export function ymdIst(d = new Date()): string {
-  return new Intl.DateTimeFormat("en-CA", {
+function istWeekdaySun0(d = new Date()): number {
+  const wd = new Intl.DateTimeFormat("en-US", {
     timeZone: "Asia/Kolkata",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
+    weekday: "short",
   }).format(d);
-}
-
-/** Latest IST day with settled team stats: yesterday. */
-export function latestSettledYmd(d = new Date()): string {
-  return shiftYmd(ymdIst(d), -1);
-}
-
-export function shiftYmd(ymd: string, days: number): string {
-  const start = new Date(`${ymd}T00:00:00+05:30`);
-  return ymdIst(new Date(start.getTime() + days * 24 * 60 * 60 * 1000));
+  return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(wd);
 }
 
 export type DatePreset =
@@ -42,7 +34,7 @@ export function rangeForPreset(
   preset: DatePreset,
   custom?: { start: string; end: string }
 ): { startDate?: string; endDate?: string; label: string } {
-  const today = ymdLocal();
+  const today = ymdIst();
   switch (preset) {
     case "today":
       return { startDate: today, endDate: today, label: "Today" };
@@ -55,15 +47,13 @@ export function rangeForPreset(
       return { startDate: y, endDate: y, label: "Day before" };
     }
     case "this_week": {
-      const d = new Date();
-      const day = d.getDay(); // 0 Sun
+      const day = istWeekdaySun0();
       const monOffset = day === 0 ? -6 : 1 - day;
       const start = shiftYmd(today, monOffset);
       return { startDate: start, endDate: today, label: "This week" };
     }
     case "last_week": {
-      const d = new Date();
-      const day = d.getDay();
+      const day = istWeekdaySun0();
       const monOffset = day === 0 ? -6 : 1 - day;
       const thisMon = shiftYmd(today, monOffset);
       const lastMon = shiftYmd(thisMon, -7);
@@ -71,16 +61,16 @@ export function rangeForPreset(
       return { startDate: lastMon, endDate: lastSun, label: "Last week" };
     }
     case "this_month": {
-      const d = new Date();
-      const start = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-01`;
+      const start = `${today.slice(0, 7)}-01`;
       return { startDate: start, endDate: today, label: "This month" };
     }
     case "last_month": {
-      const d = new Date();
-      const firstThis = new Date(d.getFullYear(), d.getMonth(), 1);
-      const lastPrev = new Date(firstThis.getTime() - 86_400_000);
-      const start = `${lastPrev.getFullYear()}-${String(lastPrev.getMonth() + 1).padStart(2, "0")}-01`;
-      const end = ymdLocal(lastPrev);
+      const [ys, ms] = today.split("-").map(Number);
+      const pm = ms === 1 ? 12 : (ms ?? 1) - 1;
+      const py = ms === 1 ? (ys ?? 0) - 1 : (ys ?? 0);
+      const start = `${py}-${String(pm).padStart(2, "0")}-01`;
+      const endDay = new Date(py, pm, 0).getDate();
+      const end = `${py}-${String(pm).padStart(2, "0")}-${String(endDay).padStart(2, "0")}`;
       return { startDate: start, endDate: end, label: "Last month" };
     }
     case "custom":

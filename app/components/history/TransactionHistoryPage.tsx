@@ -27,6 +27,13 @@ import {
   capHistoryPage,
   capHistoryPages,
 } from "../../lib/history-pages";
+import {
+  istDayEndIso,
+  istDayEndLabel,
+  latestSettledYmd,
+  rebateIstDay,
+  ymdIst,
+} from "../../lib/ist-day";
 
 /** Client-side page size (ledger is already merged in memory) */
 const PAGE_SIZE = 20;
@@ -49,26 +56,19 @@ function formatTxTime(iso: string) {
 }
 
 function dateKey(iso: string) {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "";
-  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
-}
-
-function todayKey() {
-  return dateKey(new Date().toISOString());
+  return rebateIstDay(iso);
 }
 
 function yesterdayKey() {
-  const d = new Date();
-  d.setDate(d.getDate() - 1);
-  return dateKey(d.toISOString());
+  return latestSettledYmd();
 }
 
-/** Previous calendar month as { start, end } YYYY-MM-DD inclusive */
+/** Previous IST calendar month as { start, end } YYYY-MM-DD inclusive */
 function lastMonthRange() {
-  const now = new Date();
-  const y = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
-  const m = now.getMonth() === 0 ? 12 : now.getMonth(); // 1–12 of prev month
+  const today = ymdIst();
+  const [ys, ms] = today.split("-").map(Number);
+  const m = ms === 1 ? 12 : (ms ?? 1) - 1;
+  const y = ms === 1 ? (ys ?? 0) - 1 : (ys ?? 0);
   const start = `${y}-${pad2(m)}-01`;
   const lastDay = new Date(y, m, 0).getDate();
   const end = `${y}-${pad2(m)}-${pad2(lastDay)}`;
@@ -131,8 +131,8 @@ async function loadLedger(): Promise<{ items: TxItem[]; failed: LedgerSource[] }
     api.getGameHistory({ page: 1, limit: 200 }),
     // ADR-0011: legacy commission list not used for new ledger; rebate only
     Promise.resolve({ data: [] as api.CommissionBreakdownItem[] }),
-    // ADR-0016: only settled rebates (after 01:30 IST); default API also settled=true
-    api.getRebateHistory({ page: 1, limit: 500, settled: true }),
+    // Settled team rebate only; grouped below by IST 00:00–24:00 (same as Agency)
+    api.getAllSettledRebates().then((data) => ({ data })),
     api.getSelfRebateHistory({ limit: 500 }),
     // Backend activity history max 200; stay at 100 for headroom
     api.getActivityHistory({ page: 1, limit: ACTIVITY_HISTORY_LIMIT }),
@@ -297,23 +297,18 @@ async function loadLedger(): Promise<{ items: TxItem[]; failed: LedgerSource[] }
   }
 
   if (rebates.status === "fulfilled") {
-    // One ledger line per IST calendar day (sum of settled team rebates)
+    // One ledger line per IST calendar day (00:00–24:00), same total as Agency
     const byDay = new Map<
       string,
-      { amount: number; count: number; lastAt: string }
+      { amount: number; count: number }
     >();
     for (const r of rebates.value.data ?? []) {
       if (r.settled === false) continue;
-      const day = String(r.createdAt ?? "").slice(0, 10);
+      const day = rebateIstDay(r.createdAt);
       if (!day) continue;
-      const prev = byDay.get(day) ?? {
-        amount: 0,
-        count: 0,
-        lastAt: r.createdAt,
-      };
+      const prev = byDay.get(day) ?? { amount: 0, count: 0 };
       prev.amount += Number(r.amount ?? 0);
       prev.count += 1;
-      if (r.createdAt > prev.lastAt) prev.lastAt = r.createdAt;
       byDay.set(day, prev);
     }
     for (const [day, v] of byDay) {
@@ -323,8 +318,8 @@ async function loadLedger(): Promise<{ items: TxItem[]; failed: LedgerSource[] }
         title: labelForTxType("AGENT_COMMISSION"),
         amount: Number(v.amount),
         credit: true,
-        // Show at settle-ish time for that day (display only)
-        createdAt: `${day}T20:00:00.000Z`,
+        createdAt: istDayEndIso(day),
+        timeDisplay: istDayEndLabel(day),
         detail:
           v.count > 1
             ? `${v.count} team bets settled`
@@ -726,7 +721,7 @@ export default function TransactionHistoryPage({ onBack }: Props) {
                 <Row label="Detail" value={it.detail || it.title} muted />
                 <Row
                   label="Time"
-                  value={formatTxTime(it.createdAt)}
+                  value={it.timeDisplay ?? formatTxTime(it.createdAt)}
                   muted
                 />
                 <Row

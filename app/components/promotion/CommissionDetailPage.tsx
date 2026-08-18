@@ -4,7 +4,7 @@
  * Commission Details — Agency → "Commission detail"
  *
  * ADR-0011: rebate-only. Primary data = team rebate for one IST calendar day
- * (accrued on place-bet; wallet settle 01:30 IST next day).
+ * (accrued on place-bet; day closes 24:00 IST — same total as TX).
  * Default / max date = yesterday — settled day only (docs/adr/0004).
  */
 
@@ -117,7 +117,7 @@ function getEffectiveSummary(
 
   return {
     date,
-    settlementTime: `${date} 02:49:01`,
+    settlementTime: `${date} 24:00:00`,
     settled: true,
     hasData: totalCommission > 0 || totalBet > 0 || rows.length > 0,
     bettorCount: bettors,
@@ -285,7 +285,7 @@ export default function CommissionDetailPage({
                   : "Settlement successful"}
               </h3>
               <p className="text-xs text-[#837064] font-mono">
-                {rebateSummary?.settlementTime || `${date} 02:48:37`}
+                {rebateSummary?.settlementTime || `${date} 24:00:00`}
               </p>
               <p className="text-[11px] text-[#837064] leading-relaxed">
                 {rebateSummary && !rebateSummary.settled

@@ -134,6 +134,8 @@ export type TxItem = {
   /** true = credit (green), false = debit (red) */
   credit: boolean;
   createdAt: string;
+  /** When set, shown as Time instead of parsing createdAt (e.g. IST 24:00:00). */
+  timeDisplay?: string;
   /** Optional extra detail text */
   detail?: string;
 };

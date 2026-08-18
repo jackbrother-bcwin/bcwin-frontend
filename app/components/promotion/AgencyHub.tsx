@@ -8,6 +8,7 @@ import { useToast } from "../ui/Toast";
 import AgencyHeader from "./shared/AgencyHeader";
 import MenuRow from "./shared/MenuRow";
 import type { AgencyView } from "./types";
+import { latestSettledYmd } from "./dateRange";
 
 interface Props {
   onOpen: (view: AgencyView) => void;
@@ -36,11 +37,9 @@ export default function AgencyHub({ onOpen, onNavigate }: Props) {
 
   const load = useCallback(async () => {
     try {
-      const y = new Date();
-      y.setDate(y.getDate() - 1);
-      const ymdYest = `${y.getFullYear()}-${String(y.getMonth() + 1).padStart(2, "0")}-${String(y.getDate()).padStart(2, "0")}`;
+      const ymdYest = latestSettledYmd();
 
-      // ADR-0011: hub earnings = settled team rebate only (same as TX)
+      // Same IST 00:00–24:00 window as TX Agent commission
       const [ov, rebateYest] = await Promise.all([
         api.getTeamOverview().catch(() => null),
         api.getRebateDaily({ date: ymdYest }).catch(() => null),

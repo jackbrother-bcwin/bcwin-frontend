@@ -825,7 +825,7 @@ export interface CommissionBreakdownItem {
   /** Game code when row is mapped from team rebate */
   betType?: string;
   createdAt?: string;
-  /** false = accrued, not yet in wallet (01:30 IST) */
+  /** false = accrued, not yet settled */
   settled?: boolean;
 }
 
@@ -859,6 +859,34 @@ export interface RebateRecord {
   } | null;
   settled: boolean;
   createdAt: string;
+}
+
+const REBATE_HISTORY_PAGE = 200;
+const REBATE_HISTORY_MAX_PAGES = 40;
+
+/** Paginated team-rebate rows. `settled: "all"` includes today's live (unsettled). */
+export async function getAllRebates(opts?: {
+  settled?: string | boolean;
+}): Promise<RebateRecord[]> {
+  const out: RebateRecord[] = [];
+  let page = 1;
+  let totalPages = 1;
+  do {
+    const res = await getRebateHistory({
+      page,
+      limit: REBATE_HISTORY_PAGE,
+      settled: opts?.settled ?? true,
+    });
+    out.push(...(res.data ?? []));
+    totalPages = Math.max(1, Number(res.totalPages ?? 1));
+    page += 1;
+  } while (page <= totalPages && page <= REBATE_HISTORY_MAX_PAGES);
+  return out;
+}
+
+/** Settled only — same source as Agency hero / TX. */
+export async function getAllSettledRebates(): Promise<RebateRecord[]> {
+  return getAllRebates({ settled: true });
 }
 
 export async function getRebateHistory(params?: {
