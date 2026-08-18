@@ -15,6 +15,7 @@ import type { ActivityTierProgress } from "../../lib/api";
 import { formatINR } from "../../lib/format";
 import { requireBankForCollect } from "../../lib/require-bank";
 import { INVITATION_RULES_TABLE } from "./catalog";
+import { useSpaBackClose } from "../../hooks/useSpaBackClose";
 
 interface Props {
   onBack: () => void;
@@ -30,6 +31,7 @@ export default function InvitationBonusPage({
   const { toast } = useToast();
   const { refreshUser } = useAuth();
   const [sub, setSub] = useState<"main" | "rules" | "record">(initialSub);
+  useSpaBackClose(sub !== "main", () => setSub("main"), "invitation-sub");
   const [loading, setLoading] = useState(true);
   const [tiers, setTiers] = useState<ActivityTierProgress[]>([]);
   const [claiming, setClaiming] = useState<string | null>(null);

@@ -100,7 +100,9 @@ export default function ActivityPage({ onNavigate }: Props) {
     id: ActivityPosterId;
     title: string;
   } | null>(null);
+  const backToHub = useCallback(() => setView("hub"), []);
   useSpaBackClose(!!poster, () => setPoster(null), "activity-poster");
+  useSpaBackClose(view !== "hub" && !poster, backToHub, "activity-nested");
   const [loading, setLoading] = useState(true);
   const [claimable, setClaimable] = useState<ActivityBonus[]>([]);
   const [history, setHistory] = useState<ActivityBonus[]>([]);

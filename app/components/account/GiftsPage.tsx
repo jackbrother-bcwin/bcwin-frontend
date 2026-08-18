@@ -10,6 +10,7 @@ import type { GiftHistoryItem } from "../../lib/api";
 import { requireBankForCollect } from "../../lib/require-bank";
 import EmptyState from "../promotion/shared/EmptyState";
 import { formatINR } from "../../lib/format";
+import { useSpaBackClose } from "../../hooks/useSpaBackClose";
 
 interface Props {
   onBack: () => void;
@@ -116,6 +117,7 @@ export default function GiftsPage({ onBack, onNavigate }: Props) {
   const [history, setHistory] = useState<GiftHistoryItem[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [showWin, setShowWin] = useState(false);
+  useSpaBackClose(showWin, () => setShowWin(false), "gift-win");
   const [winAmount, setWinAmount] = useState<number | null>(null);
 
   const fetchHistory = async () => {

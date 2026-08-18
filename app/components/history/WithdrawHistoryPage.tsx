@@ -27,6 +27,7 @@ import { DateOdometer, ymdFromParts } from "../ui/DatePickerSheet";
 import LogoutConfirmModal from "../ui/LogoutConfirmModal";
 import { TETHER_ICON } from "../wallet/deposit/types";
 import { Pagination } from "../game/shared";
+import { useSpaBackClose } from "../../hooks/useSpaBackClose";
 import {
   HISTORY_MAX_PAGES,
   capHistoryPage,
@@ -646,6 +647,7 @@ function Sheet({
   onConfirm: () => void;
   title: string | null;
 }) {
+  useSpaBackClose(true, onClose, `wd-sheet-${title ?? "filter"}`);
   return (
     <div
       className="fixed inset-0 z-[140] flex items-end justify-center"

@@ -20,6 +20,7 @@ import { useToast } from "./ui/Toast";
 import * as api from "../lib/api";
 import type { SpinDepositRule, SpinHistoryItem } from "../lib/api";
 import { formatINR } from "../lib/format";
+import { useSpaBackClose } from "../hooks/useSpaBackClose";
 
 interface Props {
   onBack: () => void;
@@ -120,6 +121,7 @@ export default function LuckySpinPage({ onBack, onNavigate }: Props) {
   const [highlight, setHighlight] = useState<number | null>(null);
   const [winAmount, setWinAmount] = useState<number | null>(null);
   const [showWin, setShowWin] = useState(false);
+  useSpaBackClose(showWin, () => setShowWin(false), "lucky-spin-win");
   const [history, setHistory] = useState<SpinHistoryItem[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
 

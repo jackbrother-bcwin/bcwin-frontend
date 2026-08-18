@@ -42,6 +42,7 @@ import {
   capHistoryPages,
 } from "../lib/history-pages";
 import { useLotteryBetDepositGate } from "../hooks/useLotteryBetDepositGate";
+import { useSpaBackClose } from "../hooks/useSpaBackClose";
 import {
   useSettledResultPopup,
   samePeriodId,
@@ -121,6 +122,8 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
   );
   const [showHowTo, setShowHowTo] = useState(false);
   const [showRules, setShowRules] = useState(false);
+  useSpaBackClose(showHowTo, () => setShowHowTo(false), "wingo-howto");
+  useSpaBackClose(showRules, () => setShowRules(false), "wingo-rules");
   const [loading, setLoading] = useState(true);
   /** Random picker highlight key e.g. "NUMBER:7" · "COLOR:RED" · "SIZE:BIG" */
   const [randomHighlight, setRandomHighlight] = useState<string | null>(null);

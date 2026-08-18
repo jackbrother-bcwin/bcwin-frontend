@@ -23,6 +23,7 @@ import PuzzleCaptcha, {
   type PuzzleCaptchaResult,
 } from "./ui/PuzzleCaptcha";
 import CountryCodeSelect from "./ui/CountryCodeSelect";
+import { useSpaBackClose } from "../hooks/useSpaBackClose";
 import {
   getCountryOption,
   type CountryCode,
@@ -202,12 +203,11 @@ export default function LoginPage({
   };
 
   const closeCaptcha = () => {
-    if (isLoading) return;
-    // No session exists yet — safe to just dismiss
     setShowCaptcha(false);
     setCaptchaToken(null);
     pendingCredsRef.current = null;
   };
+  useSpaBackClose(showCaptcha, closeCaptcha, "login-captcha");
 
   return (
     <div className="ts-page w-full max-w-full pb-8">

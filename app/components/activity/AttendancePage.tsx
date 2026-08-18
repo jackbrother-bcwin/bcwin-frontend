@@ -15,6 +15,7 @@ import { useAuth } from "../../context/AuthContext";
 import * as api from "../../lib/api";
 import { formatINR } from "../../lib/format";
 import { requireBankForCollect } from "../../lib/require-bank";
+import { useSpaBackClose } from "../../hooks/useSpaBackClose";
 
 const DEFAULT_ATTENDANCE_TIERS = [
   { day: 1, accumulatedDeposit: 100, reward: 2 },
@@ -59,6 +60,8 @@ export default function AttendancePage({ onBack, onNavigate }: Props) {
   const [claiming, setClaiming] = useState(false);
   const [showRules, setShowRules] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  useSpaBackClose(showRules, () => setShowRules(false), "attendance-rules");
+  useSpaBackClose(showHistory, () => setShowHistory(false), "attendance-history");
   const [history, setHistory] = useState<
     { id: string; amount: number; createdAt?: string; status: string }[]
   >([]);

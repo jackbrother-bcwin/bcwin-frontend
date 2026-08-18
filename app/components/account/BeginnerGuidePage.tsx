@@ -10,6 +10,7 @@ import { asset } from "../../lib/cdn";
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import PageHeader from "../ui/PageHeader";
+import { useSpaBackClose } from "../../hooks/useSpaBackClose";
 
 interface Props {
   onBack: () => void;
@@ -223,6 +224,7 @@ const NAV_ITEMS = SECTIONS.map((s) => ({
 export default function BeginnerGuidePage({ onBack, onNavigate }: Props) {
   const [activeSection, setActiveSection] = useState(SECTIONS[0]!.id);
   const [expandedImg, setExpandedImg] = useState<string | null>(null);
+  useSpaBackClose(!!expandedImg, () => setExpandedImg(null), "guide-lightbox");
   const scrollRef = useRef<HTMLDivElement>(null);
   const sectionRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const navRef = useRef<HTMLDivElement>(null);

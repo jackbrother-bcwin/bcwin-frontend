@@ -159,6 +159,12 @@ function sanitizeStack(stack: string[]): string[] {
   return clean.length ? capStack(clean, MAX_STACK) : ["home"];
 }
 
+/** Drop login/register/forgot. Used while the session is signed in. */
+function stackWithoutAuth(stack: string[]): string[] {
+  const cleaned = stack.filter((s) => !AUTH_SCREENS.has(s));
+  return cleaned.length ? sanitizeStack(cleaned) : ["home"];
+}
+
 /**
  * Client app shell: SPA navigation + browser History API.
  * - Bottom tabs → replace stack + replaceState
@@ -179,6 +185,8 @@ export default function AppShell() {
   const bootstrappedRef = useRef(false);
   const navStackRef = useRef(navStack);
   navStackRef.current = navStack;
+  const isLoggedInRef = useRef(isLoggedIn);
+  isLoggedInRef.current = isLoggedIn;
 
   const activeTab = navStack[navStack.length - 1] ?? "home";
 
@@ -305,7 +313,18 @@ export default function AppShell() {
       applyingPopRef.current = true;
       try {
         if (isSpaHistoryState(e.state)) {
-          const stack = sanitizeStack(e.state.stack);
+          let stack = sanitizeStack(e.state.stack);
+          // Signed-in: never land on login / register / forgot
+          if (
+            isLoggedInRef.current &&
+            stack.some((s) => AUTH_SCREENS.has(s))
+          ) {
+            stack = stackWithoutAuth(stack);
+            setNavStack(stack);
+            replaceSpaHistory(stack);
+            if (stack.length <= 1) trapSpaHistory(stack);
+            return;
+          }
           setNavStack(stack);
           // If we're back to a single root screen, re-arm trap pad
           // so another back still stays in-app
@@ -317,7 +336,17 @@ export default function AppShell() {
 
         const fromHash = parseHash(window.location.hash);
         if (fromHash) {
-          const stack = sanitizeStack(fromHash);
+          let stack = sanitizeStack(fromHash);
+          if (
+            isLoggedInRef.current &&
+            stack.some((s) => AUTH_SCREENS.has(s))
+          ) {
+            stack = stackWithoutAuth(stack);
+            setNavStack(stack);
+            replaceSpaHistory(stack);
+            trapSpaHistory(stack);
+            return;
+          }
           setNavStack(stack);
           trapSpaHistory(stack);
           return;
@@ -370,6 +399,7 @@ export default function AppShell() {
   const pushScreen = useCallback(
     (tab: string) => {
       if (!KNOWN_SCREENS.has(tab)) return;
+      if (isLoggedIn && AUTH_SCREENS.has(tab)) return;
 
       if (!isLoggedIn && !PUBLIC.has(tab)) {
         setRedirectTab(tab);
@@ -457,6 +487,7 @@ export default function AppShell() {
     if (target && base[base.length - 1] !== target) {
       next = [...base, target];
     }
+    // Replace current login entry. Older auth entries are skipped on popstate.
     commitStack(next, "replace");
   }, [redirectTab, commitStack]);
 

@@ -26,6 +26,7 @@ import { useAuth } from "../../context/AuthContext";
 import * as api from "../../lib/api";
 import type { BankSavePayload } from "../../lib/api";
 import { INDIAN_BANKS } from "./indianBanks";
+import { useSpaBackClose } from "../../hooks/useSpaBackClose";
 
 export type BankPageMode = "bank" | "upi" | "usdt";
 
@@ -71,6 +72,7 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
   const [pickBank, setPickBank] = useState(false);
   const [bankQuery, setBankQuery] = useState("");
   const [netSheet, setNetSheet] = useState(false);
+  useSpaBackClose(netSheet, () => setNetSheet(false), "bank-network-sheet");
 
   const mobile = user?.mobileNumber ?? "";
   const email = (user?.email ?? "").trim().toLowerCase();

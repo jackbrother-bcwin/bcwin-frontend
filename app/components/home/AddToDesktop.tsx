@@ -2,6 +2,7 @@
 
 import { asset } from "../../lib/cdn";
 import React, { useCallback, useEffect, useState } from "react";
+import { useSpaBackClose } from "../../hooks/useSpaBackClose";
 import Image from "next/image";
 
 const STORAGE_HIDE_UNTIL = "bcwin_a2d_hide_until";
@@ -62,6 +63,7 @@ export default function AddToDesktop() {
   const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(null);
   const [busy, setBusy] = useState(false);
   const [iosTip, setIosTip] = useState(false);
+  useSpaBackClose(iosTip, () => setIosTip(false), "add-to-desktop-tip");
   const [hint, setHint] = useState<string | null>(null);
 
   const shouldShow = useCallback(() => {
