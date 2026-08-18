@@ -13,6 +13,11 @@ import {
   formatDepositInrHint,
 } from "../../lib/format";
 import { Pagination } from "../game/shared";
+import {
+  HISTORY_MAX_PAGES,
+  capHistoryPage,
+  capHistoryPages,
+} from "../../lib/history-pages";
 
 interface Props {
   onBack: () => void;
@@ -29,10 +34,11 @@ export default function DepositHistoryPage({ onBack }: Props) {
     setLoading(true);
     setError(null);
     try {
-      const res = await api.getDeposits({ page: p, limit: 20 });
+      const page = capHistoryPage(p);
+      const res = await api.getDeposits({ page, limit: 20 });
       setItems(res.deposits ?? []);
-      setTotalPages(res.totalPages ?? 1);
-      setPage(res.currentPage ?? p);
+      setTotalPages(capHistoryPages(res.totalPages));
+      setPage(capHistoryPage(res.currentPage ?? page));
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Failed to load");
     } finally {
@@ -84,6 +90,7 @@ export default function DepositHistoryPage({ onBack }: Props) {
           <Pagination
             page={page}
             totalPages={totalPages}
+            maxPages={HISTORY_MAX_PAGES}
             onChange={(p) => {
               void load(p);
               if (typeof window !== "undefined") {

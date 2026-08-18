@@ -22,6 +22,11 @@ import {
 import { useSpaBackClose } from "../../hooks/useSpaBackClose";
 import { DateOdometer, ymdFromParts } from "../ui/DatePickerSheet";
 import { Pagination } from "../game/shared";
+import {
+  HISTORY_MAX_PAGES,
+  capHistoryPage,
+  capHistoryPages,
+} from "../../lib/history-pages";
 
 /** Client-side page size (ledger is already merged in memory) */
 const PAGE_SIZE = 20;
@@ -584,8 +589,10 @@ export default function TransactionHistoryPage({ onBack }: Props) {
     setPage(1);
   }, [filterId, datePreset, customDate]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const pageSafe = Math.min(page, totalPages);
+  const totalPages = capHistoryPages(
+    Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  );
+  const pageSafe = capHistoryPage(page, totalPages);
   const pageItems = useMemo(() => {
     const start = (pageSafe - 1) * PAGE_SIZE;
     return filtered.slice(start, start + PAGE_SIZE);
@@ -761,8 +768,9 @@ export default function TransactionHistoryPage({ onBack }: Props) {
               <Pagination
                 page={pageSafe}
                 totalPages={totalPages}
+                maxPages={HISTORY_MAX_PAGES}
                 onChange={(p) => {
-                  setPage(p);
+                  setPage(capHistoryPage(p, totalPages));
                   if (typeof window !== "undefined") {
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }

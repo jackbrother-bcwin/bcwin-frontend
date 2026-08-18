@@ -27,6 +27,11 @@ import { DateOdometer, ymdFromParts } from "../ui/DatePickerSheet";
 import LogoutConfirmModal from "../ui/LogoutConfirmModal";
 import { TETHER_ICON } from "../wallet/deposit/types";
 import { Pagination } from "../game/shared";
+import {
+  HISTORY_MAX_PAGES,
+  capHistoryPage,
+  capHistoryPages,
+} from "../../lib/history-pages";
 
 const PAGE_SIZE = 20;
 
@@ -219,16 +224,17 @@ export default function WithdrawHistoryPage({ onBack }: Props) {
     async (p: number) => {
       setLoading(true);
       try {
+        const page = capHistoryPage(p);
         const apiStatus = STATUS_OPTS.find((s) => s.id === statusF)?.api;
         const res = await api.getWithdrawals({
-          page: p,
+          page,
           limit: PAGE_SIZE,
           status: apiStatus,
           ...dateRange,
         });
         setItems(res.withdrawals ?? []);
-        setTotalPages(Math.max(1, Number(res.totalPages ?? 1)));
-        setPage(Number(res.currentPage ?? p));
+        setTotalPages(capHistoryPages(res.totalPages));
+        setPage(capHistoryPage(res.currentPage ?? page));
       } catch (e: unknown) {
         toast(e instanceof Error ? e.message : "Failed to load", "error");
         setItems([]);
@@ -382,6 +388,7 @@ export default function WithdrawHistoryPage({ onBack }: Props) {
           <Pagination
             page={page}
             totalPages={totalPages}
+            maxPages={HISTORY_MAX_PAGES}
             onChange={(p) => {
               void load(p);
               if (typeof window !== "undefined") {

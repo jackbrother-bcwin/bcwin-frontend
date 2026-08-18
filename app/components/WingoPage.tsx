@@ -36,6 +36,11 @@ import { themeFromBet } from "./game/BetSlip";
 import BetHistoryCard from "./game/BetHistoryCard";
 import { createOncePerKey, setCountdownIfChanged } from "../lib/game-refresh";
 import { pickLivePeriod } from "../lib/period-live";
+import {
+  HISTORY_MAX_PAGES,
+  capHistoryPage,
+  capHistoryPages,
+} from "../lib/history-pages";
 import { useLotteryBetDepositGate } from "../hooks/useLotteryBetDepositGate";
 import {
   useSettledResultPopup,
@@ -99,7 +104,6 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
   const [countdown, setCountdown] = useState(0);
   const [period, setPeriod] = useState<WingoPeriod | null>(null);
   const [results, setResults] = useState<WingoResult[]>([]);
-  const [chartResults, setChartResults] = useState<WingoResult[]>([]);
   const [myBets, setMyBets] = useState<WingoBet[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -170,35 +174,22 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
   const loadResults = useCallback(
     async (p = 1, signal?: AbortSignal) => {
       try {
+        const page = capHistoryPage(p);
         const res = await api.getGameResults<WingoResult>(gameApi, {
           duration,
-          page: p,
+          page,
           limit: 10,
         });
         if (signal?.aborted) return;
         setResults(res.results ?? []);
-        setTotalPages(res.totalPages ?? 1);
-        setPage(res.currentPage ?? p);
+        setTotalPages(capHistoryPages(res.totalPages));
+        setPage(capHistoryPage(res.currentPage ?? page));
       } catch {
         /* ignore */
       }
     },
     [gameApi, duration]
   );
-
-  const loadChartData = useCallback(async (signal?: AbortSignal) => {
-    try {
-      const res = await api.getGameResults<WingoResult>(gameApi, {
-        duration,
-        page: 1,
-        limit: 100,
-      });
-      if (signal?.aborted) return;
-      setChartResults(res.results ?? []);
-    } catch {
-      if (!signal?.aborted) setChartResults([]);
-    }
-  }, [gameApi, duration]);
 
   const maybeShowResultPopup = useCallback(
     (bets: WingoBet[], latestResults: WingoResult[]) => {
@@ -236,16 +227,17 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
 
   const loadMyBets = useCallback(async (p = 1, signal?: AbortSignal) => {
     try {
+      const page = capHistoryPage(p);
       const res = await api.getGameBets<WingoBet>(gameApi, {
         duration,
-        page: p,
+        page,
         limit: 10,
       });
       if (signal?.aborted) return;
       const list = res.bets ?? [];
       setMyBets(list);
-      setMyBetsPage(res.currentPage ?? p);
-      setMyBetsTotalPages(res.totalPages ?? 1);
+      setMyBetsPage(capHistoryPage(res.currentPage ?? page));
+      setMyBetsTotalPages(capHistoryPages(res.totalPages));
       // Only check for result popup on page 1 (latest bets)
       if (p === 1) {
         setResults((prev) => {
@@ -262,23 +254,16 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
   const loadPeriodRef = useRef(loadPeriod);
   const loadResultsRef = useRef(loadResults);
   const loadMyBetsRef = useRef(loadMyBets);
-  const loadChartDataRef = useRef(loadChartData);
   const refreshUserRef = useRef(refreshUser);
-  const historyTabRef = useRef(historyTab);
   loadPeriodRef.current = loadPeriod;
   loadResultsRef.current = loadResults;
   loadMyBetsRef.current = loadMyBets;
-  loadChartDataRef.current = loadChartData;
   refreshUserRef.current = refreshUser;
-  historyTabRef.current = historyTab;
 
   const refreshAfterSettle = useCallback(() => {
     loadPeriodRef.current();
     loadResultsRef.current(1);
     loadMyBetsRef.current(1);
-    if (historyTabRef.current === "chart") {
-      loadChartDataRef.current();
-    }
     refreshUserRef.current();
   }, []);
 
@@ -305,14 +290,6 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
     loadMyBets(1, ac.signal);
     return () => ac.abort();
   }, [loadPeriod, loadResults, loadMyBets]);
-
-  // Chart is heavy (limit 100) — only when Chart tab is open
-  useEffect(() => {
-    if (historyTab !== "chart") return;
-    const ac = new AbortController();
-    loadChartData(ac.signal);
-    return () => ac.abort();
-  }, [historyTab, loadChartData]);
 
   // Isolated 1s tick: countdown + boundary refresh; TRX polls draw window tightly
   useEffect(() => {
@@ -356,9 +333,6 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
         // New period → reload history so previous result is visible
         void loadResultsRef.current(1);
         void loadMyBetsRef.current(1);
-        if (historyTabRef.current === "chart") {
-          void loadChartDataRef.current();
-        }
       }
     });
     const u2 = gameWs.subscribe(wsResultTopic, (data) => {
@@ -592,9 +566,8 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
     () => results.slice(0, 5).map((r) => r.resultNumber),
     [results]
   );
-  const chartStats = useMemo(() => computeWingoChartStats(chartResults, 100), [chartResults]);
-  /** More rows = clearer red thread path across outcomes */
-  const trendRows = chartResults.slice(0, 20);
+  const chartStats = useMemo(() => computeWingoChartStats(results, 100), [results]);
+  const trendRows = results;
 
   return (
     <div className="flex flex-col min-h-screen pb-8" style={{ background: "#110D14" }}>
@@ -968,7 +941,12 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
                 )}
               </>
             )}
-            <Pagination page={page} totalPages={totalPages} onChange={loadResults} />
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              onChange={loadResults}
+              maxPages={HISTORY_MAX_PAGES}
+            />
           </>
         )}
 
@@ -986,7 +964,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
             <div className="mb-3 space-y-1.5 text-[11px]">
               <div className="flex justify-between text-white/50 px-1">
                 <span>Statistic</span>
-                <span>(last {chartStats.count || 100} Periods)</span>
+                <span>(last {chartStats.count || results.length} Periods)</span>
               </div>
 
               <StatRow
@@ -1012,6 +990,12 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
               Trend · red thread links each period&apos;s result
             </p>
             <WingoTrendChart rows={trendRows} />
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              onChange={loadResults}
+              maxPages={HISTORY_MAX_PAGES}
+            />
           </div>
         )}
 
@@ -1091,6 +1075,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
               totalPages={myBetsTotalPages}
               onChange={(p) => loadMyBets(p)}
               alwaysShow={myBets.length > 0}
+              maxPages={HISTORY_MAX_PAGES}
             />
           </>
         )}

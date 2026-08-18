@@ -738,31 +738,41 @@ export function Pagination({
   totalPages,
   onChange,
   alwaysShow,
+  maxPages,
 }: {
   page: number;
   totalPages: number;
   onChange: (p: number) => void;
   alwaysShow?: boolean;
+  /** When set, Next stops at this page even if the API has more. */
+  maxPages?: number;
 }) {
-  if (!alwaysShow && totalPages <= 1) return null;
+  const last = Math.max(
+    1,
+    maxPages != null
+      ? Math.min(totalPages || 1, maxPages)
+      : totalPages || 1
+  );
+  const safe = Math.min(Math.max(1, page), last);
+  if (!alwaysShow && last <= 1) return null;
   return (
     <div className="flex items-center justify-center gap-4 py-3">
       <button
         type="button"
-        disabled={page <= 1}
-        onClick={() => onChange(page - 1)}
+        disabled={safe <= 1}
+        onClick={() => onChange(safe - 1)}
         className="w-9 h-9 rounded-lg text-white/50 disabled:opacity-30 font-bold text-lg"
         style={{ background: "rgba(255,255,255,0.06)" }}
       >
         ‹
       </button>
       <span className="text-white text-[12px] font-bold tabular-nums">
-        {page}/{totalPages}
+        {safe}/{last}
       </span>
       <button
         type="button"
-        disabled={page >= totalPages}
-        onClick={() => onChange(page + 1)}
+        disabled={safe >= last}
+        onClick={() => onChange(safe + 1)}
         className="w-9 h-9 rounded-lg text-[#110D14] disabled:opacity-30 font-bold text-lg"
         style={{ background: "linear-gradient(180deg, #FED358 0%, #FFB472 100%)" }}
       >

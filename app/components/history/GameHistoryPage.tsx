@@ -7,6 +7,7 @@ import EmptyState from "../ui/EmptyState";
 import * as api from "../../lib/api";
 import type { GameHistoryItem } from "../../lib/api";
 import BetHistoryCard from "../game/BetHistoryCard";
+import { capHistoryPage, capHistoryPages } from "../../lib/history-pages";
 
 interface Props {
   onBack: () => void;
@@ -33,14 +34,15 @@ export default function GameHistoryPage({ onBack }: Props) {
   const load = useCallback(async (p: number, major?: string) => {
     setLoading(true);
     try {
+      const page = capHistoryPage(p);
       const res = await api.getGameHistory({
-        page: p,
+        page,
         limit: 20,
         majorGameType: major || undefined,
       });
       setItems(res.data ?? []);
-      setTotalPages(res.totalPages ?? 1);
-      setPage(res.currentPage ?? p);
+      setTotalPages(capHistoryPages(res.totalPages));
+      setPage(capHistoryPage(res.currentPage ?? page));
     } catch {
       setItems([]);
     } finally {

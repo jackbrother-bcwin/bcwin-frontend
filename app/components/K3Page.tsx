@@ -33,6 +33,11 @@ import { createOncePerKey, setCountdownIfChanged } from "../lib/game-refresh";
 import { initCountdownAudioMute } from "../lib/countdown-audio";
 import { pickLivePeriod } from "../lib/period-live";
 import { useLotteryBetDepositGate } from "../hooks/useLotteryBetDepositGate";
+import {
+  HISTORY_MAX_PAGES,
+  capHistoryPage,
+  capHistoryPages,
+} from "../lib/history-pages";
 
 type GameTab = "30s" | "1min" | "3min" | "5min";
 type HistoryTab = "game" | "my";
@@ -163,15 +168,16 @@ export default function K3Page({ onBack, onNavigate }: Props) {
   const loadResults = useCallback(
     async (p = 1) => {
       try {
+        const page = capHistoryPage(p);
         const rRes = await api.getGameResults<K3Result>("k3", {
           duration,
-          page: p,
+          page,
           limit: 10,
         });
         const list = rRes.results ?? [];
         setResults(list);
-        setTotalPages(rRes.totalPages ?? 1);
-        setPage(rRes.currentPage ?? p);
+        setTotalPages(capHistoryPages(rRes.totalPages));
+        setPage(capHistoryPage(rRes.currentPage ?? page));
         if (p === 1) tryResultPopup(myBetsRef.current, list);
       } catch {
         /* ignore */
@@ -657,6 +663,7 @@ export default function K3Page({ onBack, onNavigate }: Props) {
               page={page}
               totalPages={totalPages}
               onChange={(p) => void loadResults(p)}
+              maxPages={HISTORY_MAX_PAGES}
             />
           </>
         ) : myBets.length === 0 ? (
