@@ -23,10 +23,8 @@ export function latestSettledYmd(d = new Date()): string {
 }
 
 export function shiftYmd(ymd: string, days: number): string {
-  const [y, m, d] = ymd.split("-").map(Number);
-  const dt = new Date(y!, (m ?? 1) - 1, d ?? 1);
-  dt.setDate(dt.getDate() + days);
-  return ymdLocal(dt);
+  const start = new Date(`${ymd}T00:00:00+05:30`);
+  return ymdIst(new Date(start.getTime() + days * 24 * 60 * 60 * 1000));
 }
 
 export type DatePreset =

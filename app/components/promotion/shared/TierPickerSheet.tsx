@@ -6,6 +6,7 @@ import { useSpaBackClose } from "../../../hooks/useSpaBackClose";
 import { useBodyScrollLock } from "../../../hooks/useBodyScrollLock";
 
 const TIERS = [
+  { id: "all", label: "All tiers" },
   { id: "1", label: "Tier 1" },
   { id: "2", label: "Tier 2" },
   { id: "3", label: "Tier 3" },
@@ -23,14 +24,14 @@ interface Props {
 
 export default function TierPickerSheet({ open, value, onConfirm, onCancel }: Props) {
   const [mounted, setMounted] = useState(false);
-  const [sel, setSel] = useState(value || "1");
+  const [sel, setSel] = useState(value || "all");
 
   useSpaBackClose(open, onCancel, "tier-picker-sheet");
   useBodyScrollLock(open);
 
   useEffect(() => setMounted(true), []);
   useEffect(() => {
-    if (open) setSel(value || "1");
+    if (open) setSel(value || "all");
   }, [open, value]);
 
   if (!open || !mounted) return null;
@@ -52,7 +53,7 @@ export default function TierPickerSheet({ open, value, onConfirm, onCancel }: Pr
           <button
             type="button"
             className="agency-sheet-confirm"
-            onClick={() => onConfirm(sel || "1")}
+            onClick={() => onConfirm(sel || "all")}
           >
             Confirm
           </button>

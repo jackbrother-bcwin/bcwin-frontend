@@ -55,8 +55,8 @@ function CopyUidButton({ uid }: { uid: string }) {
 export default function SubordinateDataPage({ onBack }: Props) {
   const maxDate = useMemo(() => latestSettledYmd(), []);
   const [search, setSearch] = useState("");
-  /** Settled stats only — no All-layers view */
-  const [tier, setTier] = useState("1");
+  /** "all" or "1"–"6". Stats stay one settled IST day. */
+  const [tier, setTier] = useState("all");
   /** Single IST day, default yesterday (latest settled). Never today / all-time. */
   const [date, setDate] = useState<string>(maxDate);
   const [tierOpen, setTierOpen] = useState(false);
@@ -68,11 +68,13 @@ export default function SubordinateDataPage({ onBack }: Props) {
   const load = useCallback(async () => {
     setLoading(true);
     try {
+      // Always a settled IST day (default/max = yesterday). API returns
+      // only people with bets/deposits/settled rebate on that day.
       const day = date && date <= maxDate ? date : maxDate;
       const res = await api.getTeamMembers({
         page: 1,
         limit: 100,
-        layer: tier || "1",
+        layer: !tier || tier === "all" ? undefined : tier,
         username: search.trim() || undefined,
         date: day,
       });
@@ -90,7 +92,8 @@ export default function SubordinateDataPage({ onBack }: Props) {
     void load();
   }, [load]);
 
-  const tierLabel = `Tier ${tier || "1"}`;
+  const tierLabel =
+    !tier || tier === "all" ? "All tiers" : `Tier ${tier}`;
   const dateLabel = date && date <= maxDate ? date : maxDate;
 
   return (
