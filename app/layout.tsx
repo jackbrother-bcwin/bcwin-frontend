@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Providers from "./components/Providers";
+import { asset } from "./lib/cdn";
+
 
 export const metadata: Metadata = {
   title: {
@@ -18,12 +20,12 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "32x32" },
-      { url: "/assets/png/favicon-32.png", sizes: "32x32", type: "image/png" },
-      { url: "/assets/png/favicon-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/assets/png/favicon-bc.png", sizes: "512x512", type: "image/png" },
+      { url: asset("/assets/png/favicon-32.png"), sizes: "32x32", type: "image/png" },
+      { url: asset("/assets/png/favicon-192.png"), sizes: "192x192", type: "image/png" },
+      { url: asset("/assets/png/favicon-bc.png"), sizes: "512x512", type: "image/png" },
     ],
-    apple: [{ url: "/assets/png/favicon-192.png", sizes: "192x192", type: "image/png" }],
-    shortcut: ["/assets/png/favicon-32.png"],
+    apple: [{ url: asset("/assets/png/favicon-192.png"), sizes: "192x192", type: "image/png" }],
+    shortcut: [asset("/assets/png/favicon-32.png")],
   },
 };
 

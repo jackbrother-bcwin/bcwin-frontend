@@ -1,5 +1,6 @@
 "use client";
 
+import { asset } from "../../lib/cdn";
 /**
  * Beginner's Guide — interactive tutorial page with annotated screenshots
  * covering all major app features: registration, login, gaming, deposits,
@@ -35,7 +36,7 @@ const SECTIONS: GuideSection[] = [
     number: 1,
     title: "How to Register",
     subtitle: "Create your BCWIN account in seconds",
-    image: "/assets/guide/guide_register.png",
+    image: asset("/assets/guide/guide_register.png"),
     steps: [
       "Open the app and tap **Register** on the home screen",
       "Enter your **phone number** with country code (+91)",
@@ -56,7 +57,7 @@ const SECTIONS: GuideSection[] = [
     number: 2,
     title: "How to Log In",
     subtitle: "Access your account quickly",
-    image: "/assets/guide/guide_login.png",
+    image: asset("/assets/guide/guide_login.png"),
     steps: [
       "Tap **\"Login\"** on the home screen or registration page",
       "Enter your registered **phone number**",
@@ -75,7 +76,7 @@ const SECTIONS: GuideSection[] = [
     number: 3,
     title: "Navigating the Home Page",
     subtitle: "Explore all features from the main screen",
-    image: "/assets/guide/guide_home.png",
+    image: asset("/assets/guide/guide_home.png"),
     steps: [
       "The **banner area** at top shows current promotions and announcements",
       "Use the **game category tabs** (Lottery, Slots, Sports, Casino, etc.) to filter games",
@@ -93,7 +94,7 @@ const SECTIONS: GuideSection[] = [
     number: 4,
     title: "How to Play Games",
     subtitle: "Win Go, K3, 5D, and more lottery games",
-    image: "/assets/guide/guide_games.png",
+    image: asset("/assets/guide/guide_games.png"),
     steps: [
       "Select a game from the **Home page** (e.g., Win Go, K3, 5D)",
       "Wait for the **countdown timer** — you can only bet while the timer is running",
@@ -115,7 +116,7 @@ const SECTIONS: GuideSection[] = [
     number: 5,
     title: "How to Deposit / Recharge",
     subtitle: "Add funds to your wallet easily",
-    image: "/assets/guide/guide_deposit.png",
+    image: asset("/assets/guide/guide_deposit.png"),
     steps: [
       "Go to the **Wallet** page from the bottom navigation or Account page",
       "Tap the **\"Deposit\"** button",
@@ -136,7 +137,7 @@ const SECTIONS: GuideSection[] = [
     number: 6,
     title: "Understanding Your Wallet",
     subtitle: "Manage your Main Wallet and 3rd Party Wallet",
-    image: "/assets/guide/guide_wallet.png",
+    image: asset("/assets/guide/guide_wallet.png"),
     steps: [
       "Your **Total Balance** is shown at the top of the Wallet page",
       "The **Main Wallet** holds your withdrawable funds",
@@ -155,7 +156,7 @@ const SECTIONS: GuideSection[] = [
     number: 7,
     title: "How to Withdraw",
     subtitle: "Cash out your winnings to your bank account",
-    image: "/assets/guide/guide_withdraw.png",
+    image: asset("/assets/guide/guide_withdraw.png"),
     steps: [
       "First, **add a bank account** from the Withdraw page if you haven't already",
       "Select your **linked bank account** for the withdrawal",
@@ -176,7 +177,7 @@ const SECTIONS: GuideSection[] = [
     number: 8,
     title: "Promotion & Referral Program",
     subtitle: "Invite friends and earn commission",
-    image: "/assets/guide/guide_promotion.png",
+    image: asset("/assets/guide/guide_promotion.png"),
     steps: [
       "Go to the **Promotion** tab from the bottom navigation bar",
       "Tap **\"Copy Invitation Link\"** to get your unique referral link",
@@ -196,7 +197,7 @@ const SECTIONS: GuideSection[] = [
     number: 9,
     title: "Managing Your Account",
     subtitle: "Settings, security, and more",
-    image: "/assets/guide/guide_account.png",
+    image: asset("/assets/guide/guide_account.png"),
     steps: [
       "Tap **Account** in the bottom navigation to view your profile",
       "Access quick actions: **Wallet, Deposit, Withdraw, VIP**",

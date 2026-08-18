@@ -1,5 +1,6 @@
 "use client";
 
+import { asset } from "../lib/cdn";
 /**
  * Activity hub — production UI matching design screenshots.
  * Sub-views: bonus details, invitation, attendance.
@@ -231,7 +232,7 @@ export default function ActivityPage({ onNavigate }: Props) {
         <div className="app-page-header-inner justify-center">
           <div className="relative w-[120px] h-[35px]">
             <Image
-              src="/assets/png/bcwin.png"
+              src={asset("/assets/png/bcwin.png")}
               alt="BCWin"
               fill
               sizes="120px"

@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { asset } from "../../../lib/cdn";
+
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -20,9 +22,9 @@ const NATURE_QUERIES = [
 
 /** Local scenic fallbacks if remote APIs are unavailable */
 const LOCAL_FALLBACKS = [
-  "/assets/captcha/sunset_1.jpg",
-  "/assets/captcha/sunset_2.jpg",
-  "/assets/captcha/sunset_3.jpg",
+  asset("/assets/captcha/sunset_1.jpg"),
+  asset("/assets/captcha/sunset_2.jpg"),
+  asset("/assets/captcha/sunset_3.jpg"),
 ] as const;
 
 function pick<T>(arr: readonly T[]): T {

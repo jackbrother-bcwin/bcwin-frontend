@@ -7,8 +7,9 @@
 import React from "react";
 import Image from "next/image";
 import PageHeader from "../ui/PageHeader";
+import { asset } from "../../lib/cdn";
 
-const SALARY_CHART = "/assets/activity/salary-chart.jpg";
+const SALARY_CHART = asset("/assets/activity/salary-chart.jpg");
 
 interface Props {
   onBack: () => void;

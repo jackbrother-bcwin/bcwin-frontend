@@ -1,5 +1,6 @@
 "use client";
 
+import { asset } from "../lib/cdn";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import * as api from "../lib/api";
@@ -135,7 +136,7 @@ export default function ForgotPasswordPage({ onBack, onLoginClick }: Props) {
             </svg>
           </button>
           <div style={{ position: "relative", width: "120px", height: "36px" }}>
-            <Image src="/assets/png/bcwin.png" alt="BCWin" fill sizes="120px" className="object-contain" />
+            <Image src={asset("/assets/png/bcwin.png")} alt="BCWin" fill sizes="120px" className="object-contain" />
           </div>
           <div className="w-8" />
         </div>

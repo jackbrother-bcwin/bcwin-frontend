@@ -1,5 +1,6 @@
 "use client";
 
+import { asset } from "../../lib/cdn";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
@@ -419,7 +420,7 @@ export default function DragonAssistant({ showFloatingButton = true }: DragonAss
             {/* plain img: next/image blocks local SVG when dangerouslyAllowSVG is false */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/assets/svg/dragon.svg"
+              src={asset("/assets/svg/dragon.svg")}
               alt=""
               width={48}
               height={48}
@@ -462,7 +463,7 @@ export default function DragonAssistant({ showFloatingButton = true }: DragonAss
                 }}
               >
                 <Image
-                  src="/assets/png/changlong_bg-22ec113c.png"
+                  src={asset("/assets/png/changlong_bg-22ec113c.png")}
                   alt=""
                   fill
                   className="object-cover object-center opacity-95"

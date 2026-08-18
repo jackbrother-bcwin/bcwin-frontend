@@ -1,5 +1,6 @@
 "use client";
 
+import { asset } from "../lib/cdn";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useAuthActions } from "../context/AuthContext";
@@ -291,7 +292,7 @@ export default function RegisterPage({ onBack, onLoginClick, onSuccess }: Regist
 
         <div className="relative h-8 w-[96px] min-w-0 shrink sm:w-[120px]">
           <Image
-            src="/assets/png/bcwin.png"
+            src={asset("/assets/png/bcwin.png")}
             alt="BCWin"
             fill
             sizes="120px"

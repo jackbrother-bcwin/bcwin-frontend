@@ -1,5 +1,6 @@
 "use client";
 
+import { asset } from "../lib/cdn";
 import React, { useState } from "react";
 import Image from "next/image";
 
@@ -75,7 +76,7 @@ export default function VerifyBcwinClubPage() {
         <header className="bg-[#151c28] border-b border-[#242e42] pt-5 pb-4 px-4 flex flex-col items-center justify-center relative shadow-md">
           <div className="relative h-10 w-[168px] sm:h-12 sm:w-[200px]">
             <Image
-              src="/assets/png/bcwin.png"
+              src={asset("/assets/png/bcwin.png")}
               alt="BCWin"
               fill
               sizes="200px"

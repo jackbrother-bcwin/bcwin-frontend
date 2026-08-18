@@ -1,5 +1,6 @@
 "use client";
 
+import { asset } from "../../lib/cdn";
 import React, { useEffect, useState } from "react";
 import PageHeader from "../ui/PageHeader";
 import { useToast } from "../ui/Toast";
@@ -254,7 +255,7 @@ export default function GiftsPage({ onBack, onNavigate }: Props) {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/assets/invitewheel/animate.gif"
+            src={asset("/assets/invitewheel/animate.gif")}
             alt=""
             className="iw__modal-fx"
             draggable={false}

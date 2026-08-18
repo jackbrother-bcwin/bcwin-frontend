@@ -1,5 +1,6 @@
 "use client";
 
+import { asset } from "../lib/cdn";
 import React, { useState, useEffect, useRef } from "react";
 import { FaTelegramPlane } from "react-icons/fa";
 import { IoChevronBack, IoHeadset } from "react-icons/io5";
@@ -132,7 +133,7 @@ export default function HomeFloatingColumn({ onNavigate }: HomeFloatingColumnPro
         >
           <div className="relative w-10 h-10 flex items-center justify-center">
             <img
-              src="/assets/luckyspin/floating-wheel.png"
+              src={asset("/assets/luckyspin/floating-wheel.png")}
               alt="Lucky Spin Wheel"
               className="w-full h-full object-contain filter drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)] group-hover:rotate-45 transition-transform duration-500"
             />
@@ -151,7 +152,7 @@ export default function HomeFloatingColumn({ onNavigate }: HomeFloatingColumnPro
         >
           <div className="relative w-10 h-10 flex items-center justify-center">
             <img
-              src="/assets/invitewheel/floating-wheel.png"
+              src={asset("/assets/invitewheel/floating-wheel.png")}
               alt="Invite Wheel"
               className="w-full h-full object-contain filter drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)] group-hover:rotate-45 transition-transform duration-500"
             />
@@ -184,7 +185,7 @@ export default function HomeFloatingColumn({ onNavigate }: HomeFloatingColumnPro
           >
             <div className="relative w-10 h-10 flex items-center justify-center">
               <img
-                src="/assets/svg/dragon.svg"
+                src={asset("/assets/svg/dragon.svg")}
                 alt="Dragon Assistant"
                 className="w-full h-full object-contain pointer-events-none group-hover:scale-110 transition-transform duration-300"
               />

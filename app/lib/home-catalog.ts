@@ -1,3 +1,4 @@
+import { asset } from "./cdn";
 /**
  * Home catalog — single source of truth for lobby sections & games.
  * Add/remove games or sections by editing this file only.
@@ -99,7 +100,7 @@ export const GAMES: GameDef[] = [
   {
     id: "wingo",
     name: "Win Go",
-    image: "/assets/png/games/wingo-vertical.png",
+    image: asset("/assets/png/games/wingo-vertical.png"),
     categories: ["popular"],
     action: { type: "spa", screen: "wingo" },
     layout: "poster",
@@ -111,7 +112,7 @@ export const GAMES: GameDef[] = [
   {
     id: "lottery-wingo",
     name: "Win Go",
-    image: "/assets/png/games/wingo.png",
+    image: asset("/assets/png/games/wingo.png"),
     categories: ["lottery"],
     action: { type: "spa", screen: "wingo" },
     layout: "lottery",
@@ -120,7 +121,7 @@ export const GAMES: GameDef[] = [
   {
     id: "lottery-k3",
     name: "K3",
-    image: "/assets/png/games/k3.png",
+    image: asset("/assets/png/games/k3.png"),
     categories: ["lottery"],
     action: { type: "spa", screen: "k3" },
     layout: "lottery",
@@ -129,7 +130,7 @@ export const GAMES: GameDef[] = [
   {
     id: "lottery-5d",
     name: "5D",
-    image: "/assets/png/games/5d.png",
+    image: asset("/assets/png/games/5d.png"),
     categories: ["lottery"],
     action: { type: "spa", screen: "5d" },
     layout: "lottery",
@@ -138,7 +139,7 @@ export const GAMES: GameDef[] = [
   {
     id: "lottery-trx",
     name: "Trx Wingo",
-    image: "/assets/png/games/trxwingo.png",
+    image: asset("/assets/png/games/trxwingo.png"),
     categories: ["lottery"],
     action: { type: "spa", screen: "trxwingo" },
     layout: "lottery",
@@ -147,7 +148,7 @@ export const GAMES: GameDef[] = [
   {
     id: "lottery-moto",
     name: "Moto Racing",
-    image: "/assets/png/games/motoracing.png",
+    image: asset("/assets/png/games/motoracing.png"),
     categories: ["lottery"],
     action: { type: "spa", screen: "moto" },
     layout: "lottery",
@@ -287,34 +288,34 @@ export const HOME_SECTIONS: HomeSectionDef[] = [
 
 /* ── Demo / static content for non-API sections (BCWin lottery only) ── */
 export const WINNING_INFO = [
-  { id: "w1", name: "Mem***HMY", amount: "₹388.00", image: "/assets/png/games/wingo-vertical.png", avatar: "/assets/png/avatar.png" },
-  { id: "w2", name: "Mem***WMU", amount: "₹752.00", image: "/assets/png/games/trxwingo.png", avatar: "/assets/png/avatar2.png" },
-  { id: "w3", name: "Mem***VVM", amount: "₹338.00", image: "/assets/png/games/k3.png", avatar: "/assets/png/avatar-fb4c2506.webp" },
-  { id: "w4", name: "Mem***SBO", amount: "₹6,570.00", image: "/assets/png/games/5d.png", avatar: "/assets/png/avatar.png" },
-  { id: "w5", name: "Mem***MDI", amount: "₹3,491.95", image: "/assets/png/games/motoracing.png", avatar: "/assets/png/avatar2.png" },
-  { id: "w6", name: "Mem***OIN", amount: "₹1,240.00", image: "/assets/png/games/wingo.png", avatar: "/assets/png/avatar.png" },
+  { id: "w1", name: "Mem***HMY", amount: "₹388.00", image: asset("/assets/png/games/wingo-vertical.png"), avatar: asset("/assets/png/avatar.png") },
+  { id: "w2", name: "Mem***WMU", amount: "₹752.00", image: asset("/assets/png/games/trxwingo.png"), avatar: asset("/assets/png/avatar2.png") },
+  { id: "w3", name: "Mem***VVM", amount: "₹338.00", image: asset("/assets/png/games/k3.png"), avatar: asset("/assets/png/avatar-fb4c2506.webp") },
+  { id: "w4", name: "Mem***SBO", amount: "₹6,570.00", image: asset("/assets/png/games/5d.png"), avatar: asset("/assets/png/avatar.png") },
+  { id: "w5", name: "Mem***MDI", amount: "₹3,491.95", image: asset("/assets/png/games/motoracing.png"), avatar: asset("/assets/png/avatar2.png") },
+  { id: "w6", name: "Mem***OIN", amount: "₹1,240.00", image: asset("/assets/png/games/wingo.png"), avatar: asset("/assets/png/avatar.png") },
 ];
 
 export const JACKPOT_ITEMS = [
-  { id: "j1", name: "Win Go", amount: "₹1,200.00", mult: "9.8X", image: "/assets/png/games/wingo-vertical.png" },
-  { id: "j2", name: "TRX WinGo", amount: "₹3,450.00", mult: "12.5X", image: "/assets/png/games/trxwingo.png" },
-  { id: "j3", name: "K3 Lottery", amount: "₹2,100.00", mult: "8.2X", image: "/assets/png/games/k3.png" },
+  { id: "j1", name: "Win Go", amount: "₹1,200.00", mult: "9.8X", image: asset("/assets/png/games/wingo-vertical.png") },
+  { id: "j2", name: "TRX WinGo", amount: "₹3,450.00", mult: "12.5X", image: asset("/assets/png/games/trxwingo.png") },
+  { id: "j3", name: "K3 Lottery", amount: "₹2,100.00", mult: "8.2X", image: asset("/assets/png/games/k3.png") },
 ];
 
 export const EARNINGS_TOP = [
-  { rank: 1, name: "ROL***DZZ", amount: "₹530,031,040.00", avatar: "/assets/png/avatar2.png" },
-  { rank: 2, name: "Ki***MJ", amount: "₹463,767,299.24", avatar: "/assets/png/avatar.png" },
-  { rank: 3, name: "Mem***usv", amount: "₹382,033,013.88", avatar: "/assets/png/avatar-fb4c2506.webp" },
+  { rank: 1, name: "ROL***DZZ", amount: "₹530,031,040.00", avatar: asset("/assets/png/avatar2.png") },
+  { rank: 2, name: "Ki***MJ", amount: "₹463,767,299.24", avatar: asset("/assets/png/avatar.png") },
+  { rank: 3, name: "Mem***usv", amount: "₹382,033,013.88", avatar: asset("/assets/png/avatar-fb4c2506.webp") },
 ];
 
 export const EARNINGS_LIST = [
-  { rank: 4, name: "Mem***WTK", amount: "₹196,000,000.00", avatar: "/assets/png/avatar.png" },
-  { rank: 5, name: "KRI***HNA", amount: "₹141,566,968.69", avatar: "/assets/png/avatar2.png" },
-  { rank: 6, name: "Mem***NIO", amount: "₹95,060,000.00", avatar: "/assets/png/avatar.png" },
-  { rank: 7, name: "Mem***L6B", amount: "₹53,489,615.20", avatar: "/assets/png/avatar-fb4c2506.webp" },
-  { rank: 8, name: "Lod***aaa", amount: "₹40,086,096.40", avatar: "/assets/png/avatar2.png" },
-  { rank: 9, name: "Mem***8U8", amount: "₹37,583,588.00", avatar: "/assets/png/avatar.png" },
-  { rank: 10, name: "AYU***10X", amount: "₹36,367,800.00", avatar: "/assets/png/avatar2.png" },
+  { rank: 4, name: "Mem***WTK", amount: "₹196,000,000.00", avatar: asset("/assets/png/avatar.png") },
+  { rank: 5, name: "KRI***HNA", amount: "₹141,566,968.69", avatar: asset("/assets/png/avatar2.png") },
+  { rank: 6, name: "Mem***NIO", amount: "₹95,060,000.00", avatar: asset("/assets/png/avatar.png") },
+  { rank: 7, name: "Mem***L6B", amount: "₹53,489,615.20", avatar: asset("/assets/png/avatar-fb4c2506.webp") },
+  { rank: 8, name: "Lod***aaa", amount: "₹40,086,096.40", avatar: asset("/assets/png/avatar2.png") },
+  { rank: 9, name: "Mem***8U8", amount: "₹37,583,588.00", avatar: asset("/assets/png/avatar.png") },
+  { rank: 10, name: "AYU***10X", amount: "₹36,367,800.00", avatar: asset("/assets/png/avatar2.png") },
 ];
 
 /** Showcase-only winner feed under earnings podium (not real leaderboard data). */
@@ -327,9 +328,9 @@ const SHOWCASE_SUFFIXES = [
   "92", "05", "88", "31", "67", "AAA", "VIP", "PRO", "X9", "Q1",
 ];
 const SHOWCASE_AVATARS = [
-  "/assets/png/avatar.png",
-  "/assets/png/avatar2.png",
-  "/assets/png/avatar-fb4c2506.webp",
+  asset("/assets/png/avatar.png"),
+  asset("/assets/png/avatar2.png"),
+  asset("/assets/png/avatar-fb4c2506.webp"),
 ];
 
 function formatShowcaseAmount(n: number): string {

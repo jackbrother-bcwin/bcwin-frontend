@@ -1,5 +1,6 @@
 "use client";
 
+import { asset } from "../../lib/cdn";
 /**
  * K3 dice stage — production lifecycle:
  * - Roll window bound to countdown (last 5s)
@@ -13,12 +14,12 @@ import Image from "next/image";
 import type { Dice3DEngine, DiceTriple } from "./dice3d/Dice3DEngine";
 
 export const DICE_FACE: Record<number, string> = {
-  1: "/assets/png/dice_1-3eb8e22b.png",
-  2: "/assets/png/dice_2-38383685.png",
-  3: "/assets/png/dice_3-c91e0c1c.png",
-  4: "/assets/png/dice_4-3537b074.png",
-  5: "/assets/png/dice_5-a11110ab.png",
-  6: "/assets/png/dice_6-3734f323.png",
+  1: asset("/assets/png/dice_1-3eb8e22b.png"),
+  2: asset("/assets/png/dice_2-38383685.png"),
+  3: asset("/assets/png/dice_3-c91e0c1c.png"),
+  4: asset("/assets/png/dice_4-3537b074.png"),
+  5: asset("/assets/png/dice_5-a11110ab.png"),
+  6: asset("/assets/png/dice_6-3734f323.png"),
 };
 
 type Props = {

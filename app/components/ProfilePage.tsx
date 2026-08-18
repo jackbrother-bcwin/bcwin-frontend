@@ -1,5 +1,6 @@
 "use client";
 
+import { asset } from "../lib/cdn";
 import React from "react";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
@@ -105,7 +106,7 @@ export default function ProfilePage({ onLogout, onNavigate }: ProfilePageProps) 
         {/* Avatar */}
         <div className="relative w-16 h-16 rounded-full overflow-hidden border-2 border-brand-gold/30">
           <Image
-            src="/assets/png/avatar.png"
+            src={asset("/assets/png/avatar.png")}
             alt="User Avatar"
             fill
             sizes="64px"

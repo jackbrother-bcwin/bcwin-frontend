@@ -1,5 +1,6 @@
 "use client";
 
+import { asset } from "../lib/cdn";
 /**
  * Lucky Spin — wired to /user/activity/lucky-spin (rupee prizes only).
  * iPhone slice is visual only; BE never awards physical prizes.
@@ -26,10 +27,10 @@ interface Props {
 }
 
 const ASSET = {
-  banner: "/assets/luckyspin/banner.png",
-  wheel: "/assets/luckyspin/wheel.png",
-  go: "/assets/luckyspin/go.png",
-  iphone: "/assets/png/iphone14-a3ffcac4.png",
+  banner: asset("/assets/luckyspin/banner.png"),
+  wheel: asset("/assets/luckyspin/wheel.png"),
+  go: asset("/assets/luckyspin/go.png"),
+  iphone: asset("/assets/png/iphone14-a3ffcac4.png"),
 } as const;
 
 /**
@@ -525,7 +526,7 @@ export default function LuckySpinPage({ onBack, onNavigate }: Props) {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/assets/invitewheel/animate.gif"
+            src={asset("/assets/invitewheel/animate.gif")}
             alt=""
             className="iw__modal-fx"
             draggable={false}

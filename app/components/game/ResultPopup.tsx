@@ -1,5 +1,6 @@
 "use client";
 
+import { asset } from "../../lib/cdn";
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { formatINR } from "../../lib/format";
@@ -275,8 +276,8 @@ export default function ResultPopup({
     (chips && chips.length > 0 ? "Results" : "Lottery results");
 
   const frameSrc = isWin
-    ? "/assets/png/popups/winningpopup.png"
-    : "/assets/png/popups/losspopup.png";
+    ? asset("/assets/png/popups/winningpopup.png")
+    : asset("/assets/png/popups/losspopup.png");
 
   const titleColor = isWin ? "#FFF8E8" : "#F4F7FC";
   const resultsLabel = isWin ? "rgba(255,248,232,0.95)" : "rgba(244,247,252,0.95)";

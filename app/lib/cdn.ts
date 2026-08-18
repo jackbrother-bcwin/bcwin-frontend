@@ -2,7 +2,8 @@
  * ImageKit / CDN URL helper for BCWin.
  *
  * Delivery only — no SDK. Browser loads directly from ImageKit CDN.
- * When `NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT` is unset, local `/public` paths are used.
+ * Defaults to `https://ik.imagekit.io/BCwin` and mirrors `/assets/…` there.
+ * Set `NEXT_PUBLIC_IMAGEKIT_MIRROR=0` to force local `/public` paths.
  *
  * Usage:
  *   import { asset, cdnUrl, tr } from "./cdn";
@@ -18,15 +19,30 @@
  *   //    local public path → ImageKit path (relative to urlEndpoint)
  */
 
+/** Default ImageKit URL endpoint for BCWin (overridable via env). */
+export const IMAGEKIT_URL_ENDPOINT = "https://ik.imagekit.io/BCwin";
+
 /** ImageKit URL endpoint, e.g. https://ik.imagekit.io/your_id */
 export function getImageKitEndpoint(): string | null {
-  const ep = process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT?.trim();
+  const ep =
+    process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT?.trim() ||
+    IMAGEKIT_URL_ENDPOINT;
   if (!ep) return null;
   return ep.replace(/\/$/, "");
 }
 
 export function isCdnEnabled(): boolean {
   return !!getImageKitEndpoint();
+}
+
+/** Strip ImageKit host so path maps (game-id lookups) still match. */
+export function localAssetPath(src: string): string {
+  if (!src) return src;
+  const ep = getImageKitEndpoint();
+  let path = src;
+  if (ep && src.startsWith(ep)) path = src.slice(ep.length) || "/";
+  const q = path.indexOf("?");
+  return q >= 0 ? path.slice(0, q) : path;
 }
 
 /** Common ImageKit transform params (URL `tr=` query form) */
@@ -139,8 +155,9 @@ export function asset(
     return cdnUrl(mapped, transform);
   }
 
-  const mirrorEnv = process.env.NEXT_PUBLIC_IMAGEKIT_MIRROR === "1";
-  const mirror = opts?.mirrorLocal ?? mirrorEnv;
+  const mirrorEnv = process.env.NEXT_PUBLIC_IMAGEKIT_MIRROR;
+  const mirror =
+    opts?.mirrorLocal ?? (mirrorEnv == null ? true : mirrorEnv === "1");
 
   if (!getImageKitEndpoint() || !mirror) {
     return key;

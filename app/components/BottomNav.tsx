@@ -1,5 +1,6 @@
 "use client";
 
+import { asset } from "../lib/cdn";
 import React from "react";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
@@ -19,26 +20,26 @@ const TABS = [
   {
     id: "home",
     labelKey: "nav.home",
-    icon: "/assets/png/home_nor-589e7073.png",
-    iconActive: "/assets/png/home_sel-b5bc73a5.webp",
+    icon: asset("/assets/png/home_nor-589e7073.png"),
+    iconActive: asset("/assets/png/home_sel-b5bc73a5.webp"),
   },
   {
     id: "activity",
     labelKey: "nav.activity",
-    icon: "/assets/png/activity_nor-92e1ebc6.webp",
-    iconActive: "/assets/png/activity_sel-58a0970f.webp",
+    icon: asset("/assets/png/activity_nor-92e1ebc6.webp"),
+    iconActive: asset("/assets/png/activity_sel-58a0970f.webp"),
   },
   {
     id: "promotion",
     labelKey: "nav.promotion",
-    icon: "/assets/png/promotion_nor-c74223bc.png",
-    iconActive: "/assets/png/promotion_sel-d3f0df2c.webp",
+    icon: asset("/assets/png/promotion_nor-c74223bc.png"),
+    iconActive: asset("/assets/png/promotion_sel-d3f0df2c.webp"),
   },
   {
     id: "profile",
     labelKey: "nav.account",
-    icon: "/assets/png/mine_nor-50322d77.webp",
-    iconActive: "/assets/png/mine_sel-bc95a7c2.webp",
+    icon: asset("/assets/png/mine_nor-50322d77.webp"),
+    iconActive: asset("/assets/png/mine_sel-bc95a7c2.webp"),
   },
 ] as const;
 

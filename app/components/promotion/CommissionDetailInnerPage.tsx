@@ -1,5 +1,6 @@
 "use client";
 
+import { asset } from "../../lib/cdn";
 /**
  * Commission Details → inner distribution
  * Pixel-matched to:
@@ -53,7 +54,7 @@ function LayerBadge({ layer }: { layer: number }) {
     <span className="cdi-lvl">
       <img
         className="cdi-lvl-crown"
-        src="/assets/png/crown1-3912fd85.png"
+        src={asset("/assets/png/crown1-3912fd85.png")}
         alt=""
         width={28}
         height={28}

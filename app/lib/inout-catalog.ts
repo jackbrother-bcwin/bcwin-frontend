@@ -5,6 +5,8 @@
 
 import type { InoutGame, InoutGameCategory } from "./api";
 import type { CategoryId, GameDef } from "./home-catalog";
+import { asset } from "./cdn";
+
 
 /**
  * Exact mapping of Inout game slug (gameMode) -> home tab categories (CategoryId[])
@@ -129,7 +131,7 @@ export function inoutToGameDef(game: InoutGame): GameDef {
   return {
     id: `inout-${game.gameMode || game.id}`,
     name: game.title || game.gameMode,
-    image: game.icon || "/assets/png/game_mini_bg-c04fcbbd.png",
+    image: game.icon || asset("/assets/png/game_mini_bg-c04fcbbd.png"),
     categories: homeCats,
     action: { type: "inout", gameMode: game.gameMode },
     layout,

@@ -1,5 +1,6 @@
 "use client";
 
+import { asset } from "../lib/cdn";
 import React from "react";
 import Image from "next/image";
 import { IoDownloadOutline } from "react-icons/io5";
@@ -32,7 +33,7 @@ export default function TopNav({
     <header className="home-topnav flex h-[52px] min-h-[52px] items-center gap-1.5 px-2.5 sm:gap-2 sm:px-3">
       <div className="relative h-[28px] w-[min(112px,34vw)] min-w-[88px] shrink-0 sm:h-[30px]">
         <Image
-          src="/assets/png/bcwin.png"
+          src={asset("/assets/png/bcwin.png")}
           alt="BCWin"
           fill
           sizes="112px"

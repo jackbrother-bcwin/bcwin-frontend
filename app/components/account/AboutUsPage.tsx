@@ -1,5 +1,6 @@
 "use client";
 
+import { asset } from "../../lib/cdn";
 /**
  * About us — static legal hub matching product screenshots.
  * Banner: /assets/png/aboutBg-2e4b25ca.png
@@ -17,7 +18,7 @@ interface Props {
 
 type SubView = "main" | "confidentiality" | "risk";
 
-const BANNER = "/assets/png/aboutBg-2e4b25ca.png";
+const BANNER = asset("/assets/png/aboutBg-2e4b25ca.png");
 
 type DocBlock =
   | { t: "h"; text: string }

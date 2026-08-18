@@ -1,5 +1,6 @@
 "use client";
 
+import { asset } from "../lib/cdn";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
@@ -226,7 +227,7 @@ export default function LoginPage({
         </button>
         <div className="relative h-8 w-[96px] min-w-0 shrink sm:w-[120px]">
           <Image
-            src="/assets/png/bcwin.png"
+            src={asset("/assets/png/bcwin.png")}
             alt="BCWin"
             fill
             sizes="120px"

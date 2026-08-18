@@ -1,5 +1,6 @@
 "use client";
 
+import { asset } from "../lib/cdn";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   IoChevronBack,
@@ -35,14 +36,14 @@ const PRIZES: ReadonlyArray<{ amount: number; label: string; icon: "coin" | "mon
 ];
 
 const ASSET = {
-  bg: "/assets/invitewheel/bg.webp",
-  turntable: "/assets/invitewheel/turntable.webp",
-  pointer: "/assets/invitewheel/pointer.webp",
-  startBtn: "/assets/invitewheel/start_btn.webp",
-  light: "/assets/invitewheel/light.webp",
-  money2: "/assets/invitewheel/money2.webp",
-  startGif: "/assets/invitewheel/start.gif",
-  animateGif: "/assets/invitewheel/animate.gif",
+  bg: asset("/assets/invitewheel/bg.webp"),
+  turntable: asset("/assets/invitewheel/turntable.webp"),
+  pointer: asset("/assets/invitewheel/pointer.webp"),
+  startBtn: asset("/assets/invitewheel/start_btn.webp"),
+  light: asset("/assets/invitewheel/light.webp"),
+  money2: asset("/assets/invitewheel/money2.webp"),
+  startGif: asset("/assets/invitewheel/start.gif"),
+  animateGif: asset("/assets/invitewheel/animate.gif"),
 } as const;
 
 const SPIN_MS = 5200;

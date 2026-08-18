@@ -1,5 +1,6 @@
 "use client";
 
+import { asset } from "../../lib/cdn";
 import React, { useEffect, useState, Suspense } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -86,7 +87,7 @@ function LoginForm() {
           <div className="flex items-center gap-3">
             <div className="relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-white shadow-md">
               <Image
-                src="/assets/png/bcwin.png"
+                src={asset("/assets/png/bcwin.png")}
                 alt="BCWin"
                 width={44}
                 height={44}
@@ -120,7 +121,7 @@ function LoginForm() {
             <div className="mb-4 flex justify-center lg:justify-start">
               <div className="relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-white shadow border border-slate-100">
                 <Image
-                  src="/assets/png/bcwin.png"
+                  src={asset("/assets/png/bcwin.png")}
                   alt="BCWin"
                   width={44}
                   height={44}

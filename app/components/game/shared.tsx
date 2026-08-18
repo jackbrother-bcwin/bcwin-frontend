@@ -1,5 +1,6 @@
 "use client";
 
+import { asset } from "../../lib/cdn";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { IoVolumeHigh, IoVolumeMute } from "react-icons/io5";
@@ -19,16 +20,16 @@ export { default as ResultPopup } from "./ResultPopup";
 
 /* ── Ball assets (ts777 / WinGo style) ── */
 export const BALL_SRC: Record<number, string> = {
-  0: "/assets/png/ball_0-053d2b99.webp",
-  1: "/assets/png/ball_1-6bd610b3.webp",
-  2: "/assets/png/ball_2-b101eb0b.webp",
-  3: "/assets/png/ball_3-4f525185.webp",
-  4: "/assets/png/ball_4-93baf748.webp",
-  5: "/assets/png/ball_5-726eaa52.webp",
-  6: "/assets/png/ball_6-56155f8b.webp",
-  7: "/assets/png/ball_7-a1b324d5.webp",
-  8: "/assets/png/ball_8-ea96e5f4.webp",
-  9: "/assets/png/ball_9-9160f2ef.webp",
+  0: asset("/assets/png/ball_0-053d2b99.webp"),
+  1: asset("/assets/png/ball_1-6bd610b3.webp"),
+  2: asset("/assets/png/ball_2-b101eb0b.webp"),
+  3: asset("/assets/png/ball_3-4f525185.webp"),
+  4: asset("/assets/png/ball_4-93baf748.webp"),
+  5: asset("/assets/png/ball_5-726eaa52.webp"),
+  6: asset("/assets/png/ball_6-56155f8b.webp"),
+  7: asset("/assets/png/ball_7-a1b324d5.webp"),
+  8: asset("/assets/png/ball_8-ea96e5f4.webp"),
+  9: asset("/assets/png/ball_9-9160f2ef.webp"),
 };
 
 /**
@@ -352,7 +353,7 @@ export function GameHeader({
           <div className="flex items-center gap-2 min-w-0">
             <div className="relative w-[110px] h-[32px] shrink-0">
               <Image
-                src="/assets/png/bcwin.png"
+                src={asset("/assets/png/bcwin.png")}
                 alt="BCWin"
                 fill
                 sizes="110px"

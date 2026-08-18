@@ -1,5 +1,6 @@
 "use client";
 
+import { asset } from "../../lib/cdn";
 /**
  * Settings Center — account profile + security (BCWIN-style).
  * Frontend-only; no backend changes.
@@ -76,7 +77,7 @@ export default function SettingsPage({ onBack, onNavigate }: Props) {
         >
           <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden border-2 border-white/10 shrink-0">
             <Image
-              src="/assets/png/avatar.png"
+              src={asset("/assets/png/avatar.png")}
               alt="Avatar"
               fill
               sizes="64px"

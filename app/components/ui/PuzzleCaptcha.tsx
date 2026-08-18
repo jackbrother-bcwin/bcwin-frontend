@@ -1,5 +1,6 @@
 "use client";
 
+import { asset } from "../../lib/cdn";
 /**
  * Slide-to-match puzzle captcha (Bcwin-style).
  * Loads a fresh nature photo from /api/captcha/nature on each regenerate.
@@ -28,9 +29,9 @@ const HANDLE_W = 44;
 const TOKEN_TTL_MS = 5 * 60 * 1000;
 
 const LOCAL_FALLBACKS = [
-  "/assets/captcha/sunset_1.jpg",
-  "/assets/captcha/sunset_2.jpg",
-  "/assets/captcha/sunset_3.jpg",
+  asset("/assets/captcha/sunset_1.jpg"),
+  asset("/assets/captcha/sunset_2.jpg"),
+  asset("/assets/captcha/sunset_3.jpg"),
 ] as const;
 
 const FALLBACK_GRADIENT =

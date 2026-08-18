@@ -1,5 +1,7 @@
 import type { DepositMethod } from "../../../lib/api";
 import { formatINR } from "../../../lib/format";
+import { asset } from "../../../lib/cdn";
+
 
 export type PayUiId =
   | "upi-x-qr"
@@ -39,20 +41,20 @@ export type ChannelDef = {
 };
 
 /** Official-style Tether (USDT) mark — never use Tron diamond for USDT */
-export const TETHER_ICON = "/assets/png/usdt-40311708.png";
+export const TETHER_ICON = asset("/assets/png/usdt-40311708.png");
 
 export const PAY_METHODS: PayMethodDef[] = [
   {
     id: "upi-x-qr",
     label: "UPI x QR",
-    icon: "/assets/png/upi-3f9883de.png",
+    icon: asset("/assets/png/upi-3f9883de.png"),
     apiMethod: "CXPAY",
     channels: ["phonepe_qr", "paytm_qr", "gpay_qr"],
   },
   {
     id: "now-upi",
     label: "7· Now UPI",
-    icon: "/assets/png/upi_recharge-a5d50b78.png",
+    icon: asset("/assets/png/upi_recharge-a5d50b78.png"),
     apiMethod: "CXPAY",
     channels: ["phonepe_qr", "upi_qr"],
   },

@@ -1,5 +1,6 @@
 "use client";
 
+import { asset } from "../../lib/cdn";
 import React, { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -217,7 +218,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
       <div className="flex items-center gap-2.5 border-b border-white/10 px-4 py-4 sm:px-5 sm:py-5">
         <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white shadow-sm">
           <Image
-            src="/assets/png/bcwin.png"
+            src={asset("/assets/png/bcwin.png")}
             alt="BCWin"
             width={36}
             height={36}

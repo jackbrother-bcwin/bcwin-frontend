@@ -1,5 +1,6 @@
 "use client";
 
+import { asset } from "../../lib/cdn";
 import React, { useMemo, useState } from "react";
 import Image from "next/image";
 import type { GameDef, HomeSectionDef } from "../../lib/home-catalog";
@@ -237,7 +238,7 @@ export function PromoRowSection({ onSpin, onVip }: { onSpin?: () => void; onVip?
         </div>
         <div className="relative w-12 h-12 shrink-0">
           <Image
-            src="/assets/png/invite_wheel-bb332472.webp"
+            src={asset("/assets/png/invite_wheel-bb332472.webp")}
             alt=""
             fill
             sizes="48px"
@@ -253,7 +254,7 @@ export function PromoRowSection({ onSpin, onVip }: { onSpin?: () => void; onVip?
         </div>
         <div className="relative w-11 h-11 shrink-0">
           <Image
-            src="/assets/png/crown1-6889b8e0.png"
+            src={asset("/assets/png/crown1-6889b8e0.png")}
             alt=""
             fill
             sizes="44px"
@@ -329,7 +330,7 @@ export function EarningsSection({ section }: { section: HomeSectionDef }) {
               </div>
               {isFirst && (
                 <Image
-                  src="/assets/png/crown1-6889b8e0.png"
+                  src={asset("/assets/png/crown1-6889b8e0.png")}
                   alt=""
                   width={22}
                   height={22}

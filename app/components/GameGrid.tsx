@@ -1,5 +1,6 @@
 "use client";
 
+import { asset, localAssetPath } from "../lib/cdn";
 import React, { useState } from "react";
 import Image from "next/image";
 import { CATEGORIES, CategoryId } from "./GameCategoryTabs";
@@ -23,30 +24,30 @@ interface GameItem {
 
 /** First-party lottery + Inout-search tiles. */
 const GAMES: GameItem[] = [
-  { id: "wingo",     image: "/assets/png/games/wingo.png",      name: "Win Go",     category: "lottery", game: "wingo" },
-  { id: "k3",        image: "/assets/png/games/k3.png",         name: "K3",         category: "lottery", game: "k3" },
-  { id: "5d",        image: "/assets/png/games/5d.png",         name: "5D Lottery", category: "lottery", game: "5d" },
-  { id: "trxwingo",  image: "/assets/png/games/trxwingo.png",   name: "TRX WinGo",  category: "lottery", game: "trxwingo" },
-  { id: "moto",      image: "/assets/png/games/motoracing.png", name: "Moto Racing",category: "lottery", game: "moto" },
+  { id: "wingo",     image: asset("/assets/png/games/wingo.png"),      name: "Win Go",     category: "lottery", game: "wingo" },
+  { id: "k3",        image: asset("/assets/png/games/k3.png"),         name: "K3",         category: "lottery", game: "k3" },
+  { id: "5d",        image: asset("/assets/png/games/5d.png"),         name: "5D Lottery", category: "lottery", game: "5d" },
+  { id: "trxwingo",  image: asset("/assets/png/games/trxwingo.png"),   name: "TRX WinGo",  category: "lottery", game: "trxwingo" },
+  { id: "moto",      image: asset("/assets/png/games/motoracing.png"), name: "Moto Racing",category: "lottery", game: "moto" },
   // Inout third-party (search catalog)
-  { id: "aviator",   image: "/assets/img/aviator.png",          name: "Aviator",    category: "slots",   inoutSearch: "Aviator" },
-  { id: "mini-av",   image: "/assets/img/aviator.png",          name: "Aviator",    category: "mini",    inoutSearch: "Aviator" },
+  { id: "aviator",   image: asset("/assets/img/aviator.png"),          name: "Aviator",    category: "slots",   inoutSearch: "Aviator" },
+  { id: "mini-av",   image: asset("/assets/img/aviator.png"),          name: "Aviator",    category: "mini",    inoutSearch: "Aviator" },
 ];
 
 const RECOMMENDED: GameItem[] = [
-  { id: "r-wingo",   image: "/assets/png/games/wingo-vertical.png", name: "Win Go",    category: "popular", game: "wingo" },
-  { id: "r-trx",     image: "/assets/png/games/trxwingo.png",       name: "TRX WinGo", category: "popular", game: "trxwingo" },
-  { id: "r-k3",      image: "/assets/png/games/k3.png",             name: "K3",        category: "popular", game: "k3" },
-  { id: "r-5d",      image: "/assets/png/games/5d.png",             name: "5D",        category: "popular", game: "5d" },
-  { id: "r-moto",    image: "/assets/png/games/motoracing.png",     name: "Moto",      category: "popular", game: "moto" },
-  { id: "r-aviator", image: "/assets/img/aviator.png",              name: "Aviator",   category: "popular", inoutSearch: "Aviator" },
+  { id: "r-wingo",   image: asset("/assets/png/games/wingo-vertical.png"), name: "Win Go",    category: "popular", game: "wingo" },
+  { id: "r-trx",     image: asset("/assets/png/games/trxwingo.png"),       name: "TRX WinGo", category: "popular", game: "trxwingo" },
+  { id: "r-k3",      image: asset("/assets/png/games/k3.png"),             name: "K3",        category: "popular", game: "k3" },
+  { id: "r-5d",      image: asset("/assets/png/games/5d.png"),             name: "5D",        category: "popular", game: "5d" },
+  { id: "r-moto",    image: asset("/assets/png/games/motoracing.png"),     name: "Moto",      category: "popular", game: "moto" },
+  { id: "r-aviator", image: asset("/assets/img/aviator.png"),              name: "Aviator",   category: "popular", inoutSearch: "Aviator" },
 ];
 
 const WINNERS = [
-  { name: "Mem***OIN", amount: "₹3,900.00", game: "Win Go", avatar: "/assets/png/avatar.png"  },
-  { name: "Mem***OOY", amount: "₹2,049.80", game: "Win Go", avatar: "/assets/png/avatar2.png" },
-  { name: "Mem***ELX", amount: "₹392.00",   game: "Win Go", avatar: "/assets/png/avatar.png"  },
-  { name: "Mem***RDO", amount: "₹784.00",   game: "Win Go", avatar: "/assets/png/avatar2.png" },
+  { name: "Mem***OIN", amount: "₹3,900.00", game: "Win Go", avatar: asset("/assets/png/avatar.png")  },
+  { name: "Mem***OOY", amount: "₹2,049.80", game: "Win Go", avatar: asset("/assets/png/avatar2.png") },
+  { name: "Mem***ELX", amount: "₹392.00",   game: "Win Go", avatar: asset("/assets/png/avatar.png")  },
+  { name: "Mem***RDO", amount: "₹784.00",   game: "Win Go", avatar: asset("/assets/png/avatar2.png") },
 ];
 
 const IMAGE_GAME_MAP: Record<string, string> = {
@@ -270,7 +271,7 @@ function WinningInfo() {
             {/* Game image */}
             <div className="relative w-full h-[72px]">
               <Image
-                src="/assets/png/Lottery_WinGo-d07ef527.png"
+                src={asset("/assets/png/Lottery_WinGo-d07ef527.png")}
                 alt={winner.game}
                 fill
                 sizes="110px"
@@ -298,9 +299,9 @@ function WinningInfo() {
 /* ── Earnings leaderboard (ts777 podium) ── */
 function EarningsChart() {
   const podium = [
-    { rank: 2, amount: "₹0.00",      avatar: "/assets/png/avatar.png",  height: 70 },
-    { rank: 1, amount: "₹98,000.00", avatar: "/assets/png/avatar2.png", height: 100 },
-    { rank: 3, amount: "₹0.00",      avatar: "/assets/png/avatar.png",  height: 56 },
+    { rank: 2, amount: "₹0.00",      avatar: asset("/assets/png/avatar.png"),  height: 70 },
+    { rank: 1, amount: "₹98,000.00", avatar: asset("/assets/png/avatar2.png"), height: 100 },
+    { rank: 3, amount: "₹0.00",      avatar: asset("/assets/png/avatar.png"),  height: 56 },
   ];
 
   return (
@@ -380,7 +381,7 @@ export default function GameGrid({
   const displayGames = filteredGames.length >= 6 ? filteredGames : [...filteredGames, ...RECOMMENDED].slice(0, 6);
 
   const handleOpenItem = async (item: GameItem) => {
-    const game = item.game ?? IMAGE_GAME_MAP[item.image];
+    const game = item.game ?? IMAGE_GAME_MAP[localAssetPath(item.image)];
     if (game) {
       onOpenGame?.(game);
       return;

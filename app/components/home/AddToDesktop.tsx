@@ -1,5 +1,6 @@
 "use client";
 
+import { asset } from "../../lib/cdn";
 import React, { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 
@@ -166,7 +167,7 @@ export default function AddToDesktop() {
           >
             <span className="relative h-5 w-5 shrink-0 overflow-hidden rounded">
               <Image
-                src="/assets/png/bcwin.png"
+                src={asset("/assets/png/bcwin.png")}
                 alt=""
                 fill
                 sizes="20px"

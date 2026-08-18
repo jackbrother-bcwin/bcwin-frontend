@@ -1,5 +1,6 @@
 "use client";
 
+import { asset } from "../../lib/cdn";
 import React from "react";
 import Image from "next/image";
 
@@ -21,7 +22,7 @@ export default function BrandSplash({
       <div className="flex min-h-[40vh] flex-1 flex-col items-center justify-center gap-3 px-4">
         <div className="relative h-10 w-28">
           <Image
-            src="/assets/png/bcwin.png"
+            src={asset("/assets/png/bcwin.png")}
             alt="BCWin"
             fill
             sizes="112px"
@@ -49,7 +50,7 @@ export default function BrandSplash({
       {/* Layer 1 — full-screen background */}
       <div className="absolute inset-0">
         <Image
-          src="/assets/png/splashimagebg.png"
+          src={asset("/assets/png/splashimagebg.png")}
           alt=""
           fill
           sizes="100vw"
@@ -65,7 +66,7 @@ export default function BrandSplash({
           style={{ transform: "scale(0.88)", transformOrigin: "center center" }}
         >
           <Image
-            src="/assets/png/loadingimage.png"
+            src={asset("/assets/png/loadingimage.png")}
             alt=""
             fill
             sizes="(max-width: 480px) 100vw, 430px"
@@ -100,7 +101,7 @@ export default function BrandSplash({
           }}
         >
           <Image
-            src="/assets/png/bcwin.png"
+            src={asset("/assets/png/bcwin.png")}
             alt="BCWin"
             fill
             sizes="168px"

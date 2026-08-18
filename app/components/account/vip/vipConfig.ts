@@ -1,3 +1,4 @@
+import { asset } from "../../../lib/cdn";
 /**
  * VIP presentation (colors, assets, rules text).
  * Level numbers/rewards prefer backend GET /user/vip/requirements;
@@ -182,31 +183,31 @@ export function themeForLevel(level: number): VipTheme {
 }
 
 export const VIP_ASSET = {
-  bg: (n: number) => `/assets/vip/vipbg${Math.min(Math.max(n, 1), 10)}.png`,
-  logo: (n: number) => `/assets/vip/vip${Math.min(Math.max(n, 1), 10)}logo.png`,
-  king: (n: 1 | 2) => `/assets/vip/vipking${n}.png`,
-  gift: "/assets/png/giftIcon-17a26471.png",
-  coin: "/assets/png/money-37bf3bca.png",
-  coins: "/assets/png/coinStack-85b61210.png",
-  diamond: "/assets/png/diamond-2cbec887.png",
-  avatar: "/assets/png/avatar.png",
+  bg: (n: number) => asset(`/assets/vip/vipbg${Math.min(Math.max(n, 1), 10)}.png`),
+  logo: (n: number) => asset(`/assets/vip/vip${Math.min(Math.max(n, 1), 10)}logo.png`),
+  king: (n: 1 | 2) => asset(`/assets/vip/vipking${n}.png`),
+  gift: asset("/assets/png/giftIcon-17a26471.png"),
+  coin: asset("/assets/png/money-37bf3bca.png"),
+  coins: asset("/assets/png/coinStack-85b61210.png"),
+  diamond: asset("/assets/png/diamond-2cbec887.png"),
+  avatar: asset("/assets/png/avatar.png"),
 };
 
 export function vipBadgeSrc(level: number): string {
-  if (level <= 0) return "/assets/png/vip0.png";
+  if (level <= 0) return asset("/assets/png/vip0.png");
   const map: Record<number, string> = {
-    1: "/assets/png/vip1-cde9e3a4.png",
-    2: "/assets/png/vip2-6839e741.png",
-    3: "/assets/png/vip3-30c8484b.png",
-    4: "/assets/png/vip4-9dc1e9f4.png",
-    5: "/assets/png/vip5-28139224.png",
-    6: "/assets/png/vip6-0a2158b6.png",
-    7: "/assets/png/vip7-48005ca9.png",
-    8: "/assets/png/vip8-23c72cf0.png",
-    9: "/assets/png/vip9-a30a9d27.png",
-    10: "/assets/png/vip10-61bb0cf3.png",
+    1: asset("/assets/png/vip1-cde9e3a4.png"),
+    2: asset("/assets/png/vip2-6839e741.png"),
+    3: asset("/assets/png/vip3-30c8484b.png"),
+    4: asset("/assets/png/vip4-9dc1e9f4.png"),
+    5: asset("/assets/png/vip5-28139224.png"),
+    6: asset("/assets/png/vip6-0a2158b6.png"),
+    7: asset("/assets/png/vip7-48005ca9.png"),
+    8: asset("/assets/png/vip8-23c72cf0.png"),
+    9: asset("/assets/png/vip9-a30a9d27.png"),
+    10: asset("/assets/png/vip10-61bb0cf3.png"),
   };
-  return map[Math.min(level, 10)] ?? "/assets/png/vip0.png";
+  return map[Math.min(level, 10)] ?? asset("/assets/png/vip0.png");
 }
 
 export const PAYOUT_DAYS = 10;

@@ -1,3 +1,4 @@
+import { asset } from "../../lib/cdn";
 /**
  * House-exposure analysis for admin prediction UI.
  * Approximates which outcomes would pay out based on open bets.
@@ -173,25 +174,25 @@ export function formatCd(total: number): string {
 }
 
 export const BALL_SRC: Record<number, string> = {
-  0: "/assets/png/ball_0-053d2b99.webp",
-  1: "/assets/png/ball_1-6bd610b3.webp",
-  2: "/assets/png/ball_2-b101eb0b.webp",
-  3: "/assets/png/ball_3-4f525185.webp",
-  4: "/assets/png/ball_4-93baf748.webp",
-  5: "/assets/png/ball_5-726eaa52.webp",
-  6: "/assets/png/ball_6-56155f8b.webp",
-  7: "/assets/png/ball_7-a1b324d5.webp",
-  8: "/assets/png/ball_8-ea96e5f4.webp",
-  9: "/assets/png/ball_9-9160f2ef.webp",
+  0: asset("/assets/png/ball_0-053d2b99.webp"),
+  1: asset("/assets/png/ball_1-6bd610b3.webp"),
+  2: asset("/assets/png/ball_2-b101eb0b.webp"),
+  3: asset("/assets/png/ball_3-4f525185.webp"),
+  4: asset("/assets/png/ball_4-93baf748.webp"),
+  5: asset("/assets/png/ball_5-726eaa52.webp"),
+  6: asset("/assets/png/ball_6-56155f8b.webp"),
+  7: asset("/assets/png/ball_7-a1b324d5.webp"),
+  8: asset("/assets/png/ball_8-ea96e5f4.webp"),
+  9: asset("/assets/png/ball_9-9160f2ef.webp"),
 };
 
 export const DICE_SRC: Record<number, string> = {
-  1: "/assets/png/dice_1-3eb8e22b.png",
-  2: "/assets/png/dice_2-38383685.png",
-  3: "/assets/png/dice_3-c91e0c1c.png",
-  4: "/assets/png/dice_4-3537b074.png",
-  5: "/assets/png/dice_5-a11110ab.png",
-  6: "/assets/png/dice_6-3734f323.png",
+  1: asset("/assets/png/dice_1-3eb8e22b.png"),
+  2: asset("/assets/png/dice_2-38383685.png"),
+  3: asset("/assets/png/dice_3-c91e0c1c.png"),
+  4: asset("/assets/png/dice_4-3537b074.png"),
+  5: asset("/assets/png/dice_5-a11110ab.png"),
+  6: asset("/assets/png/dice_6-3734f323.png"),
 };
 
 export const NUM_COLOR: Record<number, string> = {

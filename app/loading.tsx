@@ -1,3 +1,4 @@
+import { asset } from "./lib/cdn";
 /** Route-level loading — same layered splash as BrandSplash (no client JS). */
 export default function Loading() {
   return (
@@ -11,7 +12,7 @@ export default function Loading() {
       <div className="absolute inset-0">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/assets/png/splashimagebg.png"
+          src={asset("/assets/png/splashimagebg.png")}
           alt=""
           className="h-full w-full object-cover object-center"
         />
@@ -25,7 +26,7 @@ export default function Loading() {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/assets/png/loadingimage.png"
+            src={asset("/assets/png/loadingimage.png")}
             alt=""
             className="h-full w-full object-contain object-center"
           />
@@ -50,7 +51,7 @@ export default function Loading() {
       <div className="relative z-10 flex flex-col items-center pt-[max(16px,env(safe-area-inset-top))] px-4">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/assets/png/bcwin.png"
+          src={asset("/assets/png/bcwin.png")}
           alt="BCWin"
           width={168}
           height={48}
