@@ -126,8 +126,8 @@ async function loadLedger(): Promise<{ items: TxItem[]; failed: LedgerSource[] }
 
   const settled = await Promise.allSettled([
     // Higher caps so ledger closer to DB (same APIs; no new architecture)
-    api.getDeposits({ page: 1, limit: 500 }),
-    api.getWithdrawals({ page: 1, limit: 500 }),
+    api.getDeposits({ page: 1, limit: 500, status: "SUCCESS" }),
+    api.getWithdrawals({ page: 1, limit: 500, status: "SUCCESS" }),
     api.getGameHistory({ page: 1, limit: 200 }),
     // ADR-0011: legacy commission list not used for new ledger; rebate only
     Promise.resolve({ data: [] as api.CommissionBreakdownItem[] }),
@@ -175,9 +175,9 @@ async function loadLedger(): Promise<{ items: TxItem[]; failed: LedgerSource[] }
 
   if (deposits.status === "fulfilled") {
     for (const d of deposits.value.deposits ?? []) {
-      const method = String(d.method ?? "").toUpperCase();
       const st = String(d.status ?? "").toUpperCase();
-      if (st === "FAILED" || st === "CANCELLED") continue;
+      if (st !== "SUCCESS") continue;
+      const method = String(d.method ?? "").toUpperCase();
       let type: TxFilterId = "DEPOSIT";
       if (method.includes("USDT") || method === "OXAPAY") type = "USDT_DEPOSIT";
       if (method === "MANUAL" || method.includes("MANUAL")) type = "MANUAL_DEPOSIT";
@@ -203,31 +203,7 @@ async function loadLedger(): Promise<{ items: TxItem[]; failed: LedgerSource[] }
   if (withdrawals.status === "fulfilled") {
     for (const w of withdrawals.value.withdrawals ?? []) {
       const st = String(w.status ?? "").toUpperCase();
-      if (st === "REJECTED" || st === "FAILED") {
-        push(out, {
-          id: `wd-rej-${w.id}`,
-          type: "WITHDRAWAL_REJECTS",
-          title: labelForTxType("WITHDRAWAL_REJECTS"),
-          amount: Number(w.amount),
-          credit: true, // funds returned
-          createdAt: w.updatedAt || w.createdAt,
-          detail: w.orderId,
-        });
-        continue;
-      }
-      if (st === "CANCELLED" || st === "CANCELED") {
-        push(out, {
-          id: `wd-can-${w.id}`,
-          type: "CANCEL_WITHDRAW",
-          title: labelForTxType("CANCEL_WITHDRAW"),
-          amount: Number(w.amount),
-          credit: true,
-          createdAt: w.updatedAt || w.createdAt,
-          detail: w.orderId,
-        });
-        continue;
-      }
-      // SUCCESS / PENDING / PROCESSING — show as withdraw (debit when success)
+      if (st !== "SUCCESS") continue;
       push(out, {
         id: `wd-${w.id}`,
         type: "WITHDRAW",
@@ -788,7 +764,12 @@ export default function TransactionHistoryPage({ onBack }: Props) {
           title={null}
         >
           <div className="max-h-[48vh] overflow-y-auto no-scrollbar py-2">
-            {TX_FILTERS.filter((f) => f.id !== "BETTING_REBATE").map((f) => {
+            {TX_FILTERS.filter(
+              (f) =>
+                f.id !== "BETTING_REBATE" &&
+                f.id !== "CANCEL_WITHDRAW" &&
+                f.id !== "WITHDRAWAL_REJECTS"
+            ).map((f) => {
               const on = draftType === f.id;
               return (
                 <button
