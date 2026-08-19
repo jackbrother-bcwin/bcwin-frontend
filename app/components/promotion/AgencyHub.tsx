@@ -8,7 +8,7 @@ import { useToast } from "../ui/Toast";
 import AgencyHeader from "./shared/AgencyHeader";
 import MenuRow from "./shared/MenuRow";
 import type { AgencyView } from "./types";
-import { latestSettledYmd } from "./dateRange";
+import { latestSettledYmd, shiftYmd, ymdIst } from "./dateRange";
 
 interface Props {
   onOpen: (view: AgencyView) => void;
@@ -24,8 +24,11 @@ export default function AgencyHub({ onOpen, onNavigate }: Props) {
   const { user } = useAuth();
   const { toast } = useToast();
   const [yesterday, setYesterday] = useState(0);
+  const [weekCommission, setWeekCommission] = useState(0);
   const [direct, setDirect] = useState(0);
   const [team, setTeam] = useState(0);
+  const [lifeDirect, setLifeDirect] = useState(0);
+  const [lifeTeam, setLifeTeam] = useState(0);
   const [teamDeposit, setTeamDeposit] = useState(0);
   const [directDeposit, setDirectDeposit] = useState(0);
   const [directDepCount, setDirectDepCount] = useState(0);
@@ -38,18 +41,27 @@ export default function AgencyHub({ onOpen, onNavigate }: Props) {
   const load = useCallback(async () => {
     try {
       const ymdYest = latestSettledYmd();
+      const today = ymdIst();
+      const weekStart = shiftYmd(today, -6);
 
-      // Same IST 00:00–24:00 window as TX Agent commission
-      const [ov, rebateYest] = await Promise.all([
+      const [ovLife, ovYest, rebateYest, weekSum] = await Promise.all([
         api.getTeamOverview().catch(() => null),
+        api.getTeamOverview({ date: ymdYest }).catch(() => null),
         api.getRebateDaily({ date: ymdYest }).catch(() => null),
+        api
+          .sumRebatesInRange({
+            startDate: weekStart,
+            endDate: today,
+            settled: "all",
+          })
+          .catch(() => 0),
       ]);
-      if (ov?.data) {
-        const d = ov.data;
+
+      if (ovYest?.data) {
+        const d = ovYest.data;
         const l1 = n(d.directTeamSize);
         const all = n(d.totalTeamSize);
         setDirect(l1);
-        // Team column = L2–L6 only (L1 is already in Direct)
         setTeam(Math.max(0, all - l1));
         setDirectDeposit(n(d.directTeamDeposit));
         setTeamDeposit(
@@ -63,10 +75,18 @@ export default function AgencyHub({ onOpen, onNavigate }: Props) {
         setTeamFirstDep(
           Math.max(0, n(d.teamFirstDepositUsers) - n(d.directFirstDepositUsers))
         );
+      }
+
+      if (ovLife?.data) {
+        const d = ovLife.data;
+        const l1 = n(d.directTeamSize);
+        setLifeDirect(l1);
+        setLifeTeam(Math.max(0, n(d.totalTeamSize) - l1));
         setLifetime(n(d.totalCommissionEarned));
       }
 
       setYesterday(n(rebateYest?.data?.totalCommission));
+      setWeekCommission(n(weekSum));
     } catch {
       /* keep zeros */
     }
@@ -238,7 +258,7 @@ export default function AgencyHub({ onOpen, onNavigate }: Props) {
           </div>
           <div className="agency-promo-data-grid">
             <div>
-              <p className="agency-promo-data-val">{formatINR(yesterday)}</p>
+              <p className="agency-promo-data-val">{formatINR(weekCommission)}</p>
               <p className="agency-promo-data-lab">This Week</p>
             </div>
             <div>
@@ -246,11 +266,11 @@ export default function AgencyHub({ onOpen, onNavigate }: Props) {
               <p className="agency-promo-data-lab">Total commission</p>
             </div>
             <div>
-              <p className="agency-promo-data-val">{Math.round(direct)}</p>
+              <p className="agency-promo-data-val">{Math.round(lifeDirect)}</p>
               <p className="agency-promo-data-lab">direct subordinate</p>
             </div>
             <div>
-              <p className="agency-promo-data-val">{Math.round(team)}</p>
+              <p className="agency-promo-data-val">{Math.round(lifeTeam)}</p>
               <p className="agency-promo-data-lab">Team subordinates (L2–L6)</p>
             </div>
           </div>

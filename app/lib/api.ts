@@ -749,11 +749,39 @@ export type TeamOverviewData = {
   teamFirstDepositUsers?: number;
 };
 
-export async function getTeamOverview(): Promise<{
+export async function getTeamOverview(params?: {
+  date?: string;
+}): Promise<{
   success: true;
   data: TeamOverviewData;
 }> {
-  return request("/user/team/overview");
+  return request(`/user/team/overview${buildQuery(params ?? {})}`);
+}
+
+/** Sum team-rebate amounts for an inclusive IST date range (pages history). */
+export async function sumRebatesInRange(opts: {
+  startDate: string;
+  endDate: string;
+  settled?: string | boolean;
+}): Promise<number> {
+  let total = 0;
+  let page = 1;
+  let totalPages = 1;
+  do {
+    const res = await getRebateHistory({
+      page,
+      limit: REBATE_HISTORY_PAGE,
+      startDate: opts.startDate,
+      endDate: opts.endDate,
+      settled: opts.settled ?? "all",
+    });
+    for (const row of res.data ?? []) {
+      total += Number(row.amount) || 0;
+    }
+    totalPages = Math.max(1, Number(res.totalPages ?? 1));
+    page += 1;
+  } while (page <= totalPages && page <= REBATE_HISTORY_MAX_PAGES);
+  return total;
 }
 
 export interface TeamMember {
