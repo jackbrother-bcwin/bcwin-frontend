@@ -325,21 +325,30 @@ export async function manageWithdrawal(body: {
 }
 
 export async function listGameHistory(params?: Record<string, string | number | undefined>) {
-  return adminRequest<{ success: true; data?: unknown; bets?: unknown[] }>(
-    `/admin/transactions/game-history${q(params ?? {})}`
-  );
+  return adminRequest<{
+    success: true;
+    data?: unknown;
+    bets?: unknown[];
+    totalPages?: number;
+  }>(`/admin/transactions/game-history${q(params ?? {})}`);
 }
 
 export async function listCommissionHistory(params?: Record<string, string | number | undefined>) {
-  return adminRequest<{ success: true; data?: unknown }>(
-    `/admin/transactions/commission-history${q(params ?? {})}`
-  );
+  return adminRequest<{
+    success: true;
+    data?: unknown;
+    commissions?: unknown[];
+    totalPages?: number;
+  }>(`/admin/transactions/commission-history${q(params ?? {})}`);
 }
 
 export async function listRebateHistory(params?: Record<string, string | number | undefined>) {
-  return adminRequest<{ success: true; data?: unknown }>(
-    `/admin/transactions/rebate-history${q(params ?? {})}`
-  );
+  return adminRequest<{
+    success: true;
+    data?: unknown;
+    rebates?: unknown[];
+    totalPages?: number;
+  }>(`/admin/transactions/rebate-history${q(params ?? {})}`);
 }
 
 export async function listActivityBonusHistory(params?: Record<string, string | number | undefined>) {
@@ -349,9 +358,12 @@ export async function listActivityBonusHistory(params?: Record<string, string | 
 }
 
 export async function listBalanceUpdates(params?: Record<string, string | number | undefined>) {
-  return adminRequest<{ success: true; data?: unknown }>(
-    `/admin/transactions/balance-update${q(params ?? {})}`
-  );
+  return adminRequest<{
+    success: true;
+    data?: unknown;
+    transactions?: unknown[];
+    totalPages?: number;
+  }>(`/admin/transactions/balance-update${q(params ?? {})}`);
 }
 
 // ─── Bank ────────────────────────────────────────────────────────────────────

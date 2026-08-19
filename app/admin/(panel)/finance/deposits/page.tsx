@@ -15,6 +15,7 @@ import {
 } from "../../../components/ui";
 import BulkBar from "../../../components/BulkBar";
 import { AdminPieChart, AdminBarChart } from "../../../components/Charts";
+import { AdminHubLink, AdminUserCell } from "../../../components/AdminUserCell";
 
 function DepositsInner() {
   const { toast } = useToast();
@@ -178,6 +179,7 @@ function DepositsInner() {
                     />
                   </th>
                   <th>Order ID</th>
+                  <th>User</th>
                   <th>Amount</th>
                   <th>Method</th>
                   <th>Status</th>
@@ -189,6 +191,8 @@ function DepositsInner() {
                 {rows.map((r) => {
                   const orderId = String(r.orderId ?? "");
                   const st = String(r.status ?? "");
+                  const u = (r.user ?? {}) as Record<string, unknown>;
+                  const uid = String(u.id ?? "");
                   return (
                     <tr key={String(r.id)}>
                       <td>
@@ -203,6 +207,12 @@ function DepositsInner() {
                         />
                       </td>
                       <td className="font-mono text-[11px]">{orderId}</td>
+                      <td>
+                        <AdminUserCell
+                          user={u}
+                          bank={u.bank as { fullName?: string } | null}
+                        />
+                      </td>
                       <td className="font-semibold">₹{Number(r.amount ?? 0).toLocaleString("en-IN")}</td>
                       <td>{String(r.method ?? "—")}</td>
                       <td><Badge status={st} /></td>
@@ -210,12 +220,15 @@ function DepositsInner() {
                         {r.createdAt ? new Date(String(r.createdAt)).toLocaleString() : "—"}
                       </td>
                       <td>
-                        {st === "PROCESSING" && (
-                          <div className="flex gap-1">
-                            <button type="button" disabled={busy} onClick={() => bulk("approve", [orderId])} className="admin-btn-success text-[11px]">Approve</button>
-                            <button type="button" disabled={busy} onClick={() => bulk("reject", [orderId])} className="admin-btn-danger text-[11px]">Reject</button>
-                          </div>
-                        )}
+                        <div className="flex flex-wrap items-center gap-1">
+                          <AdminHubLink userId={uid} />
+                          {st === "PROCESSING" && (
+                            <>
+                              <button type="button" disabled={busy} onClick={() => bulk("approve", [orderId])} className="admin-btn-success text-[11px]">Approve</button>
+                              <button type="button" disabled={busy} onClick={() => bulk("reject", [orderId])} className="admin-btn-danger text-[11px]">Reject</button>
+                            </>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   );
