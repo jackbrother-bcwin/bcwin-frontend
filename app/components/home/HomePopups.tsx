@@ -136,6 +136,8 @@ export default function HomePopups({ onNavigate }: Props) {
   }, [isLoading, isLoggedIn, schedulePopupFlow]);
 
   const handleDailyConfirm = () => {
+    // Close first — do not wait for first-deposit API (that felt like a 1s lag).
+    setPhase("none");
     if (!forcePopupsFromUrl()) {
       writeDailyPromoHideUntil(
         Date.now() + DAILY_COOLDOWN_H * 60 * 60 * 1000
