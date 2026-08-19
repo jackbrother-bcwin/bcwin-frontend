@@ -15,15 +15,19 @@ import { dismissSpaOverlay, pushSpaOverlay } from "../lib/spa-overlay";
 export function useSpaBackClose(
   open: boolean,
   onClose: () => void,
-  id?: string
+  id?: string,
+  opts?: { history?: boolean }
 ): void {
   const autoId = useId();
   const layerId = id ?? `spa-${autoId}`;
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
   const wasOpen = useRef(false);
+  const historyRef = useRef(opts?.history !== false);
+  historyRef.current = opts?.history !== false;
 
   useEffect(() => {
+    if (!historyRef.current) return;
     if (open && !wasOpen.current) {
       wasOpen.current = true;
       pushSpaOverlay(layerId, () => {

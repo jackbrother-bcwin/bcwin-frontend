@@ -26,7 +26,7 @@ const PROMO_ITEMS: PromoItem[] = [
     text: (
       <>
         <span className="promo-hl-line">DAILY RECHARGE</span>{" "}
-        <span className="promo-hl-go hover:brightness-125 transition-all">[GO]</span>
+        <span className="promo-hl-go active:brightness-125 transition-all">[GO]</span>
       </>
     ),
     action: (onNavigate) => onNavigate?.("deposit"),
@@ -38,7 +38,7 @@ const PROMO_ITEMS: PromoItem[] = [
       <>
         <span className="promo-hl-line">DAILY GAME UNLOCK GIFT CODE</span>
         <br />
-        <span className="promo-hl-link hover:brightness-125 transition-all">Bonus[GO]</span>
+        <span className="promo-hl-link active:brightness-125 transition-all">Bonus[GO]</span>
       </>
     ),
     action: (onNavigate) => onNavigate?.("wingo"),
@@ -49,7 +49,7 @@ const PROMO_ITEMS: PromoItem[] = [
     text: (
       <>
         Claim Maximum <span className="promo-hl-yellow">3%</span> Bonus On USDT Recharge{" "}
-        <span className="promo-hl-more hover:brightness-125 transition-all">[MORE]</span>
+        <span className="promo-hl-more active:brightness-125 transition-all">[MORE]</span>
       </>
     ),
     action: (onNavigate) => onNavigate?.("deposit"),
@@ -73,7 +73,7 @@ const PROMO_ITEMS: PromoItem[] = [
     text: (
       <>
         Verify True <span className="promo-hl-red">BCWin</span> Site{" "}
-        <span className="promo-hl-go hover:brightness-125 transition-all">[GO]</span>
+        <span className="promo-hl-go active:brightness-125 transition-all">[GO]</span>
       </>
     ),
     action: () => {
@@ -99,7 +99,7 @@ const PROMO_ITEMS: PromoItem[] = [
     text: (
       <>
         Invite friends · earn commission every day{" "}
-        <span className="promo-hl-go hover:brightness-125 transition-all">[GO]</span>
+        <span className="promo-hl-go active:brightness-125 transition-all">[GO]</span>
       </>
     ),
     action: (onNavigate) => onNavigate?.("promotion"),
@@ -110,7 +110,7 @@ const PROMO_ITEMS: PromoItem[] = [
     text: (
       <>
         Spin wheel free daily · deposit unlocks extra spins{" "}
-        <span className="promo-hl-go hover:brightness-125 transition-all">[GO]</span>
+        <span className="promo-hl-go active:brightness-125 transition-all">[GO]</span>
       </>
     ),
     action: (onNavigate) => onNavigate?.("spin"),
@@ -168,7 +168,7 @@ export default function DailyPromoPopup({ open, onConfirm, onNavigate }: Props) 
               className={
                 item.kind === "warn"
                   ? "promo-daily-line promo-daily-line--warn cursor-default"
-                  : "promo-daily-line hover:bg-white/5 active:scale-[0.99] cursor-pointer transition-all"
+                  : "promo-daily-line active:bg-white/5 active:scale-[0.99] cursor-pointer transition-all"
               }
             >
               {item.text}

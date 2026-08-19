@@ -107,6 +107,8 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
   const [historyTab, setHistoryTab] = useState<HistoryTab>("game");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const pageRef = useRef(1);
+  pageRef.current = page;
   const [pending, setPending] = useState<PendingBet | null>(null);
   const { ensureCanBet, depositModal } = useLotteryBetDepositGate(
     "5D",
@@ -259,7 +261,7 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
   const burstRefresh = useCallback(() => {
     const run = () => {
       void loadPeriodRef.current();
-      void loadResultsRef.current(1);
+      void loadResultsRef.current(pageRef.current);
       void loadMyBetsRef.current();
       void refreshUserRef.current();
     };
@@ -297,7 +299,7 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
         zeroRefreshOnce.current.run(end, burstRefresh);
       } else if (left <= 3 && !gameWs.isOpen()) {
         void loadPeriodRef.current();
-        if (left <= 1) void loadResultsRef.current(1);
+        if (left <= 1) void loadResultsRef.current(pageRef.current);
       }
     };
     tick();
@@ -335,7 +337,7 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
         endTime: end,
         status: (d.status as string) ?? "ACTIVE",
       });
-      void loadResultsRef.current(1);
+      void loadResultsRef.current(pageRef.current);
       void loadMyBetsRef.current();
     };
 
@@ -347,7 +349,7 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
       ) {
         return;
       }
-      void loadResultsRef.current(1);
+      void loadResultsRef.current(pageRef.current);
       void loadMyBetsRef.current();
       void refreshUserRef.current();
       void loadPeriodRef.current();

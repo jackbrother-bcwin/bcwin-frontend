@@ -224,7 +224,7 @@ export default function ResultPopup({
   const onCloseRef = useRef(onClose);
   const closedRef = useRef(false);
 
-  useSpaBackClose(open, onClose, "result-popup");
+  useSpaBackClose(open, onClose, "result-popup", { history: false });
   useBodyScrollLock(open);
 
   useEffect(() => {

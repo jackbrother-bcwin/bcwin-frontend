@@ -110,6 +110,10 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
   const [totalPages, setTotalPages] = useState(1);
   const [myBetsPage, setMyBetsPage] = useState(1);
   const [myBetsTotalPages, setMyBetsTotalPages] = useState(1);
+  const pageRef = useRef(1);
+  const myBetsPageRef = useRef(1);
+  pageRef.current = page;
+  myBetsPageRef.current = myBetsPage;
   const [betSheet, setBetSheet] = useState<{
     betType: "COLOR" | "NUMBER" | "SIZE";
     betChoice: string;
@@ -264,8 +268,8 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
 
   const refreshAfterSettle = useCallback(() => {
     loadPeriodRef.current();
-    loadResultsRef.current(1);
-    loadMyBetsRef.current(1);
+    loadResultsRef.current(pageRef.current);
+    loadMyBetsRef.current(myBetsPageRef.current);
     refreshUserRef.current();
   }, []);
 
@@ -305,14 +309,14 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
       } else if (left <= 1 && !isTrx) {
         // 00-handoff backup: next clock + results even if WS is late
         void loadPeriodRef.current();
-        void loadResultsRef.current(1);
-        void loadMyBetsRef.current(1);
+        void loadResultsRef.current(pageRef.current);
+        void loadMyBetsRef.current(myBetsPageRef.current);
       }
       // TRX: HTTP backup near draw only if live socket is down (WS already pushes)
       if (isTrx && !gameWs.isOpen() && left <= 12 && left >= 0) {
         void loadPeriodRef.current();
         if (left <= 6) {
-          void loadResultsRef.current(1);
+          void loadResultsRef.current(pageRef.current);
         }
       }
     }, 1000);
@@ -332,9 +336,9 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
           zeroRefreshOnce.current.clear();
           setCountdownIfChanged(setCountdown, secondsUntil(d.endTime));
         }
-        // New period → reload history so previous result is visible
-        void loadResultsRef.current(1);
-        void loadMyBetsRef.current(1);
+        // Reload the page they are on — do not yank 5/50 back to 1
+        void loadResultsRef.current(pageRef.current);
+        void loadMyBetsRef.current(myBetsPageRef.current);
       }
     });
     const u2 = gameWs.subscribe(wsResultTopic, (data) => {
@@ -367,6 +371,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
           blockHash: d.blockHash ?? null,
         } as WingoResult;
         setResults((prev) => {
+          if (pageRef.current > 1) return prev;
           if (prev.some((r) => r.periodNumber === d.periodNumber)) return prev;
           return [optimistic, ...prev].slice(0, 10);
         });
@@ -386,7 +391,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
       burstRefresh();
     });
     const u3 = gameWs.subscribe("bet-settlement", () => {
-      loadMyBetsRef.current(1);
+      loadMyBetsRef.current(myBetsPageRef.current);
       refreshUserRef.current();
     });
     // TRX needs tighter backup poll (period + results) so UI rolls without WS
@@ -394,7 +399,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
     const poll = setInterval(() => {
       void loadPeriodRef.current();
       if (isTrx) {
-        void loadResultsRef.current(1);
+        void loadResultsRef.current(pageRef.current);
       }
     }, pollMs);
     return () => {
@@ -549,7 +554,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
       trackPendingBet(betId);
       toast(`Bet placed: ${sheet.label} · ${formatINR(betAmount)}`, "success");
       await refreshUser();
-      loadMyBets();
+      loadMyBets(myBetsPageRef.current);
     } catch (e: unknown) {
       toast(e instanceof Error ? e.message : "Bet failed", "error");
     }

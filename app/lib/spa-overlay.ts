@@ -29,7 +29,7 @@ function currentNavStack(): string[] {
   return ["home"];
 }
 
-function pushHistoryWithOverlays(): void {
+function writeHistoryWithOverlays(mode: "push" | "replace"): void {
   if (typeof window === "undefined") return;
   const stack = currentNavStack();
   const next: SpaHistoryState & { overlays: string[] } = {
@@ -38,8 +38,9 @@ function pushHistoryWithOverlays(): void {
     gen: nextGen(),
     overlays: overlays.map((o) => o.id),
   };
-  // Same hash — only state depth changes (modals shouldn't change URL path)
-  window.history.pushState(next, "", stackToHash(stack));
+  const url = stackToHash(stack);
+  if (mode === "push") window.history.pushState(next, "", url);
+  else window.history.replaceState(next, "", url);
 }
 
 /**
@@ -51,7 +52,7 @@ export function pushSpaOverlay(id: string, onClose: () => void): void {
   // Replace same id if re-opened
   overlays = overlays.filter((o) => o.id !== id);
   overlays.push({ id, onClose });
-  pushHistoryWithOverlays();
+  writeHistoryWithOverlays("push");
 }
 
 /**
@@ -72,8 +73,9 @@ export function dismissSpaOverlay(id: string): void {
   overlays = overlays.filter((o) => o.id !== id);
 
   if (isTop) {
-    suppressNextPop = true;
-    window.history.back();
+    // Replace — do not history.back(). back() races with the same tap's
+    // navigate (daily [GO] → deposit) and eats the first click.
+    writeHistoryWithOverlays("replace");
   }
 }
 

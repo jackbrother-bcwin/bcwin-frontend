@@ -138,7 +138,9 @@ export default function SpinPage({
   const [rotation, setRotation] = useState(0);
   const [lastWin, setLastWin] = useState<number | null>(null);
   const [showWin, setShowWin] = useState(false);
-  useSpaBackClose(showWin, () => setShowWin(false), "spin-win");
+  useSpaBackClose(showWin, () => setShowWin(false), "spin-win", {
+    history: false,
+  });
   const [highlight, setHighlight] = useState<number | null>(null);
 
   const [view, setView] = useState<SpinView>("main");

@@ -70,6 +70,8 @@ export default function K3Page({ onBack, onNavigate }: Props) {
   const [mult, setMult] = useState(1);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const pageRef = useRef(1);
+  pageRef.current = page;
   const [pending, setPending] = useState<{
     type: string;
     choice: string;
@@ -228,7 +230,7 @@ export default function K3Page({ onBack, onNavigate }: Props) {
   const burstRefresh = useCallback(() => {
     const run = () => {
       void loadPeriodRef.current();
-      void loadResultsRef.current(1);
+      void loadResultsRef.current(pageRef.current);
       void loadMyBetsRef.current();
       void refreshUserRef.current();
     };
@@ -273,7 +275,7 @@ export default function K3Page({ onBack, onNavigate }: Props) {
       } else if (left <= 3 && !gameWs.isOpen()) {
         // Tight HTTP poll only when WS is down — same catch-up, no extra load if live
         void loadPeriodRef.current();
-        if (left <= 1) void loadResultsRef.current(1);
+        if (left <= 1) void loadResultsRef.current(pageRef.current);
       }
     };
 
@@ -315,7 +317,7 @@ export default function K3Page({ onBack, onNavigate }: Props) {
       } as K3Period;
 
       applyPeriod(merged);
-      void loadResultsRef.current(1);
+      void loadResultsRef.current(pageRef.current);
       void loadMyBetsRef.current();
     };
 
@@ -336,7 +338,7 @@ export default function K3Page({ onBack, onNavigate }: Props) {
       ) {
         return;
       }
-      void loadResultsRef.current(1);
+      void loadResultsRef.current(pageRef.current);
       void loadMyBetsRef.current();
       void refreshUserRef.current();
       // Period may already have rolled forward

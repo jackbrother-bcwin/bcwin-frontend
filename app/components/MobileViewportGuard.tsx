@@ -37,7 +37,7 @@ export default function MobileViewportGuard() {
       const t = e.target as HTMLElement | null;
       if (
         t?.closest?.(
-          "button, a, input, textarea, select, label, [role='button'], [contenteditable='true']"
+          "button, a, input, textarea, select, label, [role='button'], [role='dialog'], [role='listbox'], dialog, .promo-modal-overlay, [contenteditable='true']"
         )
       ) {
         lastTouchEnd = Date.now();

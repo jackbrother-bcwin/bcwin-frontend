@@ -117,7 +117,9 @@ export default function GiftsPage({ onBack, onNavigate }: Props) {
   const [history, setHistory] = useState<GiftHistoryItem[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [showWin, setShowWin] = useState(false);
-  useSpaBackClose(showWin, () => setShowWin(false), "gift-win");
+  useSpaBackClose(showWin, () => setShowWin(false), "gift-win", {
+    history: false,
+  });
   const [winAmount, setWinAmount] = useState<number | null>(null);
 
   const fetchHistory = async () => {

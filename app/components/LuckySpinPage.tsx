@@ -121,7 +121,9 @@ export default function LuckySpinPage({ onBack, onNavigate }: Props) {
   const [highlight, setHighlight] = useState<number | null>(null);
   const [winAmount, setWinAmount] = useState<number | null>(null);
   const [showWin, setShowWin] = useState(false);
-  useSpaBackClose(showWin, () => setShowWin(false), "lucky-spin-win");
+  useSpaBackClose(showWin, () => setShowWin(false), "lucky-spin-win", {
+    history: false,
+  });
   const [history, setHistory] = useState<SpinHistoryItem[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
 
