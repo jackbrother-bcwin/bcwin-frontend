@@ -66,7 +66,7 @@ export default function AdminDashboardPage() {
     <div>
       <PageTitle
         title={`Hi, ${user?.username ?? "Admin"}!`}
-        subtitle={`${today} · real players only (no demo / admin / agent)`}
+        subtitle={`${today} · real USERs · SUCCESS recharge / withdraw`}
         action={<RefreshBtn onClick={load} loading={loading} />}
       />
 
@@ -74,15 +74,15 @@ export default function AdminDashboardPage() {
         <StatCard label="Today User Join" value={num(users.todayCount)} />
         <StatCard
           label="Today's Recharge"
-          value={fmt(deposits.todayAmount ?? deposits.todaySuccessAmount)}
-          hint="See in Detail"
-          onClick={() => router.push("/admin/finance/deposits")}
+          value={fmt(deposits.todayAmount)}
+          hint="SUCCESS only"
+          onClick={() => router.push("/admin/finance/deposits?status=SUCCESS")}
         />
         <StatCard
           label="Today's Withdrawal"
-          value={fmt(withdrawals.todayAmount ?? withdrawals.todaySuccessAmount)}
-          hint="See in Detail"
-          onClick={() => router.push("/admin/finance/withdrawals")}
+          value={fmt(withdrawals.todayAmount)}
+          hint="SUCCESS only"
+          onClick={() => router.push("/admin/finance/withdrawals?status=SUCCESS")}
         />
         <StatCard
           label="User Balance"
@@ -122,18 +122,15 @@ export default function AdminDashboardPage() {
         />
         <StatCard
           label="Today's total bet"
-          value={fmt(bets.todayAmount ?? cards.totalInvested)}
+          value={fmt(bets.todayTotalBet ?? cards.totalInvested)}
         />
         <StatCard
           label="Today's total win"
-          value={fmt(bets.todayWinAmount ?? cards.totalWon)}
+          value={fmt(bets.todayTotalWin ?? cards.totalWon)}
         />
         <StatCard
           label="Today's profit"
-          value={fmt(
-            cards.platformProfit ??
-              num(bets.todayAmount) - num(bets.todayWinAmount)
-          )}
+          value={fmt(bets.todayProfit ?? cards.netPL)}
         />
       </div>
 
