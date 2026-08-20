@@ -38,10 +38,12 @@ export type ChannelDef = {
   max: number;
   /** Optional channel icon (e.g. Tether for USDT networks) */
   icon?: string;
+  /** USDT chain — Type row / channel always show Tether + this badge */
+  chain?: "BEP20" | "TRC20";
 };
 
-/** Official-style Tether (USDT) mark — never use Tron diamond for USDT */
-export const TETHER_ICON = asset("/assets/png/usdt-40311708.png");
+/** Plain Tether — local public file (ImageKit never had this hash; overlay was 40311708) */
+export const TETHER_ICON = "/assets/png/usdt-6c465007.png";
 
 export const PAY_METHODS: PayMethodDef[] = [
   {
@@ -124,7 +126,7 @@ export const CHANNELS: Record<ChannelId, ChannelDef> = {
     balanceLabel: "Min 5 USDT",
     min: 5,
     max: 1_000_000,
-    icon: TETHER_ICON,
+    chain: "TRC20",
   },
   bsc_usdt: {
     id: "bsc_usdt",
@@ -132,7 +134,7 @@ export const CHANNELS: Record<ChannelId, ChannelDef> = {
     balanceLabel: "Min 5 USDT",
     min: 5,
     max: 1_000_000,
-    icon: TETHER_ICON,
+    chain: "BEP20",
   },
 };
 

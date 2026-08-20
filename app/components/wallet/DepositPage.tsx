@@ -47,6 +47,7 @@ import {
   type ChannelId,
   type PayUiId,
 } from "./deposit/types";
+import { TetherMark, UsdtTypeIcons } from "./UsdtTypeIcons";
 
 interface Props {
   onBack: () => void;
@@ -409,14 +410,18 @@ export default function DepositPage({ onBack, onNavigate }: Props) {
                       +{mBonus}%
                     </span>
                   )}
-                  <div className="relative mb-1.5 h-9 w-9">
-                    <Image
-                      src={m.icon}
-                      alt=""
-                      fill
-                      sizes="36px"
-                      className="object-contain"
-                    />
+                  <div className="relative mb-1.5 flex h-9 w-9 items-center justify-center">
+                    {isUsdtMethod(m.apiMethod) ? (
+                      <TetherMark size={36} />
+                    ) : (
+                      <Image
+                        src={m.icon}
+                        alt=""
+                        fill
+                        sizes="36px"
+                        className="object-contain"
+                      />
+                    )}
                   </div>
                   <span
                     className="line-clamp-2 text-center text-[10px] font-bold leading-tight"
@@ -454,17 +459,23 @@ export default function DepositPage({ onBack, onNavigate }: Props) {
                   aria-pressed={active}
                 >
                   <div className="flex min-w-0 items-center gap-2.5">
-                    {ch.icon && (
-                      <div className="relative h-8 w-8 shrink-0">
-                        <Image
-                          src={ch.icon}
-                          alt=""
-                          fill
-                          sizes="32px"
-                          className="object-contain"
-                        />
-                      </div>
-                    )}
+                    {ch.chain ? (
+                      <UsdtTypeIcons chain={ch.chain} size={22} />
+                    ) : ch.icon ? (
+                      isUsdt ? (
+                        <TetherMark size={32} />
+                      ) : (
+                        <div className="relative h-8 w-8 shrink-0">
+                          <Image
+                            src={ch.icon}
+                            alt=""
+                            fill
+                            sizes="32px"
+                            className="object-contain"
+                          />
+                        </div>
+                      )
+                    ) : null}
                     <div className="min-w-0">
                       <p
                         className="truncate text-[13px] font-bold"
@@ -513,15 +524,7 @@ export default function DepositPage({ onBack, onNavigate }: Props) {
                 border: "1px solid rgba(38,161,123,0.35)",
               }}
             >
-              <div className="relative h-7 w-7 shrink-0">
-                <Image
-                  src={payMethod.icon}
-                  alt="Tether USDT"
-                  fill
-                  sizes="28px"
-                  className="object-contain"
-                />
-              </div>
+              <TetherMark size={28} />
               <p className="text-[12px] font-semibold leading-snug text-[#26A17B]">
                 Pay with USDT (Tether) and get a{" "}
                 <span className="font-black">+{bonusPct}% bonus</span>{" "}

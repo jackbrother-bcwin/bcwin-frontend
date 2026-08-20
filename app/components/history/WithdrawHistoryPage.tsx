@@ -13,9 +13,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import Image from "next/image";
 import { IoChevronDown } from "react-icons/io5";
-import { SiBinance } from "react-icons/si";
 import PageHeader from "../ui/PageHeader";
 import LoadingSpinner from "../ui/LoadingSpinner";
 import EmptyState from "../ui/EmptyState";
@@ -25,7 +23,7 @@ import type { Withdrawal } from "../../lib/api";
 import { formatINR } from "../../lib/format";
 import { DateOdometer, ymdFromParts } from "../ui/DatePickerSheet";
 import LogoutConfirmModal from "../ui/LogoutConfirmModal";
-import { TETHER_ICON } from "../wallet/deposit/types";
+import { UsdtTypeIcons } from "../wallet/UsdtTypeIcons";
 import { Pagination } from "../game/shared";
 import { useSpaBackClose } from "../../hooks/useSpaBackClose";
 import {
@@ -133,27 +131,6 @@ function formatWithdrawAmount(w: Withdrawal, withdrawRate?: number) {
   const usdt = resolveUsdtAmount(w, withdrawRate);
   if (usdt != null) return `${inr} (${usdt.toFixed(2)} USDT)`;
   return inr;
-}
-
-function BnbMark({ size = 14 }: { size?: number }) {
-  return (
-    <span
-      className="inline-flex items-center justify-center rounded-full shrink-0 overflow-hidden"
-      style={{
-        width: size,
-        height: size,
-        background: "#F3BA2F",
-      }}
-      title="BNB Smart Chain (BEP20)"
-      aria-label="BNB Smart Chain (BEP20)"
-    >
-      <SiBinance
-        size={Math.max(8, Math.round(size * 0.65))}
-        style={{ color: "#110D14" }}
-        aria-hidden
-      />
-    </span>
-  );
 }
 
 /** FE-only display labels: Bank · USDT(BEP20) · USDT(TRC20) · UPI */
@@ -584,16 +561,7 @@ function TypeRow({
     <div className="flex items-center justify-between py-2.5 border-b border-white/[0.04] gap-3">
       <span className="text-[13px] text-white/45 shrink-0">Type</span>
       <span className="flex min-w-0 items-center justify-end gap-1 text-[13px] text-white/55">
-        {usdt && (
-          <Image
-            src={TETHER_ICON}
-            alt=""
-            width={14}
-            height={14}
-            className="shrink-0 object-contain"
-          />
-        )}
-        {usdt && chain === "BEP20" && <BnbMark size={14} />}
+        {usdt && <UsdtTypeIcons chain={chain} size={16} />}
         <span className="truncate">{methodLabel(method, cryptoChain)}</span>
       </span>
     </div>
