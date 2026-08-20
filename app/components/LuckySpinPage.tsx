@@ -225,22 +225,14 @@ export default function LuckySpinPage({ onBack, onNavigate }: Props) {
     loadStatus,
   ]);
 
-  const rulesWithRunning = rules.reduce<
-    Array<SpinDepositRule & { totalExtra: number }>
-  >((acc, r) => {
-    const prev = acc.length ? acc[acc.length - 1]!.totalExtra : 0;
-    acc.push({ ...r, totalExtra: prev + r.spinChances });
-    return acc;
-  }, []);
-
   const rulesBody = useMemo(
     () => (
       <div className="ls-doc">
         <h3>How to get spins</h3>
         <ul>
-          <li>Recharge during the event to unlock lucky spins.</li>
-          <li>Today&apos;s total recharge is tracked above — tiers stack.</li>
-          <li>Unused spins reset with the event day.</li>
+          <li>Each successful recharge awards the highest matching tier once.</li>
+          <li>Below ₹200 awards 0 spins. Tiers do not stack on one deposit.</li>
+          <li>Unused spins are for today only.</li>
         </ul>
         <h3>Prizes</h3>
         <ul>
@@ -252,14 +244,14 @@ export default function LuckySpinPage({ onBack, onNavigate }: Props) {
             <li key={p.label}>{p.label}</li>
           ))}
         </ul>
-        {rulesWithRunning.length > 0 && (
+        {rules.length > 0 && (
           <>
             <h3>Recharge → spins</h3>
             <ul>
-              {rulesWithRunning.map((r) => (
+              {rules.map((r) => (
                 <li key={r.minDeposit}>
                   Deposit ≥ {formatINR(r.minDeposit, 0)} → +{r.spinChances} spin
-                  {r.spinChances === 1 ? "" : "s"} (total extras {r.totalExtra})
+                  {r.spinChances === 1 ? "" : "s"}
                 </li>
               ))}
             </ul>
@@ -267,7 +259,7 @@ export default function LuckySpinPage({ onBack, onNavigate }: Props) {
         )}
       </div>
     ),
-    [rulesWithRunning]
+    [rules]
   );
 
   if (view === "description") {
@@ -646,7 +638,9 @@ function ActivityDetailsView({
             <div className="flex items-start gap-1.5">
               <span className="text-[#fed358] text-[10px] mt-0.5">◆</span>
               <p>
-                Members must reach the single deposit amount and cumulative deposit amount to be eligible to participate in the Wheel Spin
+                Each successful recharge awards the highest matching tier in the
+                table (Number of spins). Below ₹200 awards 0. One deposit does
+                not receive every lower tier.
               </p>
             </div>
 
@@ -680,9 +674,12 @@ function ActivityDetailsView({
           <div className="rounded-lg bg-[#181318] p-3 border border-white/5 text-[11px] text-[#b79c8b] leading-relaxed">
             <p className="font-bold text-white mb-1">For example:</p>
             <p>
-              If a member makes cumulative deposits reaching{" "}
-              <span className="text-[#f44336] font-bold">₹100,000.00</span> on the same day, they will receive{" "}
-              <span className="text-[#f44336] font-bold">5</span> lucky draw opportunities. The draw is valid for the same day and cannot be rolled over to the next day!
+              A{" "}
+              <span className="text-[#f44336] font-bold">₹7,000</span> recharge
+              awards{" "}
+              <span className="text-[#f44336] font-bold">+1</span> (₹5,000
+              tier). ₹15,000 awards +2. ₹100,000 awards +5. Same day only —
+              unused spins do not roll over.
             </p>
           </div>
         </div>
