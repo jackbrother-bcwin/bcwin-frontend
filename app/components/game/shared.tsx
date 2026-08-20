@@ -854,7 +854,7 @@ export function WingoTrendChart({
 
   if (rows.length === 0) {
     return (
-      <p className="py-8 text-center text-[12px] text-white/30">No chart data</p>
+      <p className="py-8 text-center text-[14px] text-white/30">No chart data</p>
     );
   }
 
@@ -889,10 +889,10 @@ export function WingoTrendChart({
           key={row.id}
           className="relative z-[1] grid w-full min-w-0 items-center gap-x-1 border-b border-white/5 py-1.5"
           style={{
-            gridTemplateColumns: "minmax(56px, 32%) minmax(0, 1fr) 18px",
+            gridTemplateColumns: "minmax(56px, 32%) minmax(0, 1fr) 20px",
           }}
         >
-          <span className="min-w-0 truncate font-mono text-[8px] leading-tight text-white/50 sm:text-[9px]">
+          <span className="min-w-0 truncate font-mono text-[10px] leading-tight text-white/50 sm:text-[11px]">
             {row.periodNumber}
           </span>
           <div className="relative z-[1] grid min-w-0 grid-cols-10 gap-px">
@@ -912,7 +912,7 @@ export function WingoTrendChart({
                         }
                       : undefined
                   }
-                  className="relative z-[2] mx-auto flex aspect-square w-full max-w-[20px] items-center justify-center rounded-full text-[8px] font-bold leading-none sm:text-[9px]"
+                  className="relative z-[2] mx-auto flex aspect-square w-full max-w-[22px] items-center justify-center rounded-full text-[10px] font-bold leading-none sm:text-[11px]"
                   style={{
                     background: bg,
                     color,
@@ -926,7 +926,7 @@ export function WingoTrendChart({
             })}
           </div>
           <span
-            className="relative z-[1] flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full text-[8px] font-black text-white sm:text-[9px]"
+            className="relative z-[1] flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full text-[10px] font-black text-white sm:text-[11px]"
             style={{
               background: sizeStyle(isBig(row.resultNumber)).bg,
             }}

@@ -963,11 +963,11 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
               className="grid grid-cols-2 gap-1 px-2 py-2 rounded-t-[8px] mb-2"
               style={{ background: "linear-gradient(90deg,#C8922A,#E8A84A)" }}
             >
-              <span className="text-[11px] font-bold text-[#110D14]">Period</span>
-              <span className="text-[11px] font-bold text-[#110D14] text-right">Number</span>
+              <span className="text-[13px] font-bold text-[#110D14]">Period</span>
+              <span className="text-[13px] font-bold text-[#110D14] text-right">Number</span>
             </div>
 
-            <div className="mb-3 space-y-1.5 text-[11px]">
+            <div className="mb-3 space-y-1.5 text-[13px]">
               <div className="flex justify-between text-white/50 px-1">
                 <span>Statistic</span>
                 <span>(last {chartStats.count || results.length} Periods)</span>
@@ -978,7 +978,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
                 values={Array.from({ length: 10 }, (_, i) => i)}
                 render={(n) => (
                   <span
-                    className="mx-auto flex aspect-square w-full max-w-[22px] items-center justify-center rounded-full text-[9px] font-bold text-white sm:text-[10px]"
+                    className="mx-auto flex aspect-square w-full max-w-[24px] items-center justify-center rounded-full text-[11px] font-bold text-white sm:text-[12px]"
                     style={{ background: numberBackground(n) }}
                   >
                     {n}
@@ -992,7 +992,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
             </div>
 
             {/* Trend: red thread connecting winning numbers (measured ball centers) */}
-            <p className="mb-1.5 px-1 text-[10px] font-semibold text-white/40">
+            <p className="mb-1.5 px-1 text-[12px] font-semibold text-white/40">
               Trend · red thread links each period&apos;s result
             </p>
             <WingoTrendChart rows={trendRows} />
@@ -1241,7 +1241,7 @@ function StatRow({
 }) {
   return (
     <div className="flex min-w-0 items-center gap-1">
-      <span className="w-[72px] shrink-0 text-[10px] text-white/55 sm:w-[88px]">{label}</span>
+      <span className="w-[86px] shrink-0 text-[12px] text-white/55 sm:w-[104px]">{label}</span>
       <div className="grid min-w-0 flex-1 grid-cols-10 gap-px">
         {values.map((v, i) =>
           render ? (
@@ -1251,7 +1251,7 @@ function StatRow({
           ) : (
             <span
               key={i}
-              className="min-w-0 text-center text-[9px] tabular-nums text-white/70 sm:text-[10px]"
+              className="min-w-0 text-center text-[11px] tabular-nums text-white/70 sm:text-[12px]"
             >
               {v}
             </span>
