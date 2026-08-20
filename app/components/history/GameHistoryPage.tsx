@@ -144,7 +144,10 @@ export default function GameHistoryPage({ onBack }: Props) {
                   extraRows: [
                     {
                       label: "Game",
-                      value: g.gameName || g.majorGameType || "—",
+                      value: String(g.gameName || g.majorGameType || "—").replace(
+                        /\b0\.5\s*Min\b/gi,
+                        "30sec"
+                      ),
                     },
                   ],
                 }}

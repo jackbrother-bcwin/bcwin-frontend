@@ -108,17 +108,19 @@ function betMatchesCategory(g: GameHistoryItem, cat: StatsCategory): boolean {
   return categoriesForBet(g).includes(cat);
 }
 
-/** Pretty lottery name: "Wingo 0.5Min" → "Win Go 30s" */
+/** Pretty lottery name: "Wingo 0.5Min" / "Wingo 30sec" → "Win Go 30sec" */
 function formatLotteryGameName(name: string, major: string): string {
   const base = LOTTERY_GAME_LABELS[major] ?? name.split(/\s/)[0] ?? major;
+  const secMatch = name.match(/(\d+)\s*sec/i);
+  if (secMatch?.[1]) return `${base} ${secMatch[1]}sec`;
   const m = name.match(/([\d.]+)\s*Min/i);
   const rawMins = m?.[1];
   if (rawMins != null) {
     const mins = parseFloat(rawMins);
     if (!Number.isNaN(mins) && mins > 0) {
-      if (mins < 1) return `${base} ${Math.round(mins * 60)}s`;
-      if (mins === 1) return `${base} 1 min`;
-      return `${base} ${mins} min`;
+      if (mins < 1) return `${base} ${Math.round(mins * 60)}sec`;
+      if (mins === 1) return `${base} 1 Min`;
+      return `${base} ${mins} Min`;
     }
   }
   return name || base;
