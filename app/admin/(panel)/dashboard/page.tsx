@@ -6,6 +6,7 @@ import * as admin from "../../../lib/admin-api";
 import { useAuthState } from "../../../context/AuthContext";
 import { useToast } from "../../../components/ui/Toast";
 import { LoadingBlock, PageTitle, RefreshBtn, StatCard } from "../../components/ui";
+import { formatIstDateLong } from "../../../lib/ist-day";
 
 function num(v: unknown): number {
   const n = Number(v);
@@ -54,11 +55,7 @@ export default function AdminDashboardPage() {
   const bets = (data?.bets as Record<string, unknown>) ?? {};
   const cards = (pl?.cardItems as Record<string, unknown>) ?? {};
 
-  const today = new Date().toLocaleDateString("en-IN", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const today = formatIstDateLong();
 
   if (loading && !data) return <LoadingBlock label="Loading dashboard…" />;
 

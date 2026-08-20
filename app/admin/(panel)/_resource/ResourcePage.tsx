@@ -9,6 +9,7 @@ import {
   RefreshBtn,
   Surface,
 } from "../../components/ui";
+import { formatIstDateTime } from "../../../lib/ist-day";
 
 /** Generic admin resource viewer for list endpoints */
 export default function ResourcePage({
@@ -76,7 +77,10 @@ export default function ResourcePage({
                   <tr key={String(r.id ?? i)}>
                     {cols.map((c) => (
                       <td key={c} className="max-w-[180px] truncate text-[12px]">
-                        {String(r[c] ?? "—")}
+                        {typeof r[c] === "string" &&
+                        /^\d{4}-\d{2}-\d{2}T/.test(String(r[c]))
+                          ? formatIstDateTime(r[c])
+                          : String(r[c] ?? "—")}
                       </td>
                     ))}
                   </tr>

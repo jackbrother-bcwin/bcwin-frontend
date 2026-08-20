@@ -38,3 +38,31 @@ export function istDayEndLabel(ymd: string): string {
 export function istDayEndIso(ymd: string): string {
   return `${ymd}T23:59:59+05:30`;
 }
+
+const IST = "Asia/Kolkata";
+
+/** Admin / ops datetime: always Kolkata, 24h. */
+export function formatIstDateTime(iso: unknown): string {
+  if (iso == null || iso === "") return "—";
+  const d = iso instanceof Date ? iso : new Date(String(iso));
+  if (Number.isNaN(d.getTime())) return "—";
+  return d.toLocaleString("en-IN", {
+    timeZone: IST,
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+}
+
+/** Long IST calendar date (dashboard subtitle). */
+export function formatIstDateLong(d = new Date()): string {
+  return d.toLocaleDateString("en-IN", {
+    timeZone: IST,
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}

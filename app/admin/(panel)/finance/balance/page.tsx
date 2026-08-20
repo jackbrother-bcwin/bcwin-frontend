@@ -12,6 +12,7 @@ import {
   Surface,
 } from "../../../components/ui";
 import { AdminHubLink, AdminUserCell } from "../../../components/AdminUserCell";
+import { formatIstDateTime } from "../../../../lib/ist-day";
 
 export default function BalanceUpdatesPage() {
   const { toast } = useToast();
@@ -85,9 +86,7 @@ export default function BalanceUpdatesPage() {
                       </td>
                       <td className="text-[12px]">{String(by.username ?? "—")}</td>
                       <td className="text-[11px] text-slate-500">
-                        {r.createdAt
-                          ? new Date(String(r.createdAt)).toLocaleString()
-                          : "—"}
+                        {formatIstDateTime(r.createdAt)}
                       </td>
                       <td>
                         <AdminHubLink userId={String(u.id ?? "")} />

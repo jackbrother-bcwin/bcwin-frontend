@@ -10,6 +10,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import * as admin from "../../../lib/admin-api";
 import type { InoutGame, InoutGameCategory } from "../../../lib/admin-api";
 import { useToast } from "../../../components/ui/Toast";
+import { formatIstDateTime } from "../../../lib/ist-day";
 import {
   EmptyBlock,
   LoadingBlock,
@@ -302,7 +303,7 @@ export default function InoutGamesAdminPage() {
                       </td>
                       <td className="whitespace-nowrap text-[11px] text-slate-500">
                         {g.updatedAt
-                          ? new Date(g.updatedAt).toLocaleString()
+                          ? formatIstDateTime(g.updatedAt)
                           : "—"}
                       </td>
                     </tr>

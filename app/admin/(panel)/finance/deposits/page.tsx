@@ -16,6 +16,7 @@ import {
 import BulkBar from "../../../components/BulkBar";
 import { AdminPieChart, AdminBarChart } from "../../../components/Charts";
 import { AdminHubLink, AdminUserCell } from "../../../components/AdminUserCell";
+import { formatIstDateTime } from "../../../../lib/ist-day";
 
 function DepositsInner() {
   const { toast } = useToast();
@@ -217,7 +218,7 @@ function DepositsInner() {
                       <td>{String(r.method ?? "—")}</td>
                       <td><Badge status={st} /></td>
                       <td className="text-[11px] text-slate-500">
-                        {r.createdAt ? new Date(String(r.createdAt)).toLocaleString() : "—"}
+                        {formatIstDateTime(r.createdAt)}
                       </td>
                       <td>
                         <div className="flex flex-wrap items-center gap-1">

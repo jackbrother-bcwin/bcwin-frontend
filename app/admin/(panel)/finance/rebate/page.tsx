@@ -13,6 +13,7 @@ import {
   Surface,
 } from "../../../components/ui";
 import { AdminHubLink, AdminUserCell } from "../../../components/AdminUserCell";
+import { formatIstDateTime } from "../../../../lib/ist-day";
 
 export default function RebateHistoryPage() {
   const { toast } = useToast();
@@ -85,9 +86,7 @@ export default function RebateHistoryPage() {
                         <Badge status={r.settled ? "SUCCESS" : "PROCESSING"} />
                       </td>
                       <td className="text-[11px] text-slate-500">
-                        {r.createdAt
-                          ? new Date(String(r.createdAt)).toLocaleString()
-                          : "—"}
+                        {formatIstDateTime(r.createdAt)}
                       </td>
                       <td>
                         <AdminHubLink userId={String(u.id ?? "")} />

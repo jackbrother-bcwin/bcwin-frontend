@@ -28,6 +28,7 @@ import {
   Surface,
 } from "../../../components/ui";
 import { AdminBarChart, AdminPieChart } from "../../../components/Charts";
+import { formatIstDateTime } from "../../../../lib/ist-day";
 
 type TabId =
   | "overview"
@@ -54,16 +55,7 @@ function money(n: unknown) {
 }
 
 function fmtDate(iso: unknown) {
-  if (!iso) return "—";
-  const d = new Date(String(iso));
-  if (Number.isNaN(d.getTime())) return "—";
-  return d.toLocaleString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return formatIstDateTime(iso);
 }
 
 export default function UserDetailPage() {

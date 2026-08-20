@@ -14,6 +14,7 @@ import {
 } from "../../../components/ui";
 import BulkBar from "../../../components/BulkBar";
 import { AdminPieChart } from "../../../components/Charts";
+import { formatIstDateTime } from "../../../../lib/ist-day";
 import {
   IoCopyOutline,
   IoCheckmark,
@@ -329,7 +330,7 @@ export default function QueriesPage() {
               const description = getQueryDescription(q.details);
               const proofUrl = getProofImageUrl(q.details);
               const adminNotes = String(q.adminNotes || "");
-              const createdAt = q.createdAt ? new Date(String(q.createdAt)).toLocaleString("en-IN") : "";
+              const createdAt = q.createdAt ? formatIstDateTime(q.createdAt) : "";
 
               return (
                 <div
@@ -572,7 +573,7 @@ function QueryDetailModal({
               {String(query.subject || "Support Ticket Details")}
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
-              Submitted on: {query.createdAt ? new Date(String(query.createdAt)).toLocaleString("en-IN") : "N/A"}
+              Submitted on: {query.createdAt ? formatIstDateTime(query.createdAt) : "N/A"}
             </p>
           </div>
           <button
