@@ -78,6 +78,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
   /** Agency rebate tier (not XP VIP) — keys lottery L1–L6 rates */
   const [rebateLevel, setRebateLevel] = useState(0);
   const [teamSize, setTeamSize] = useState(0);
+  /** L1–L6 stake since IST 00:00 today (live, includes unsettled) */
   const [teamBetting, setTeamBetting] = useState(0);
   const [lifetime, setLifetime] = useState(0);
   /** Today IST: settled vs accrued (not in wallet / TX) */
@@ -128,16 +129,20 @@ export default function AgentCommissionPage({ onBack }: Props) {
     try {
       // Include today's unsettled (this is the only live commission screen).
       // Yesterday+ still match TX because those rows are settled.
-      const [rebateHist, ratesRes, overview, vipRes] = await Promise.all([
-        api.getAllRebates({ settled: "all" }),
-        api.getRebateRates().catch(() => null),
-        api.getTeamOverview().catch(() => null),
-        api.getVipStatus().catch(() => null),
-      ]);
+      const todayYmd = ymdIst();
+      // Lifetime overview for headcount + TOTAL INCOME. Dated today for
+      // live bet volume — undated overview must stay all-time (TeamMetrics).
+      const [rebateHist, ratesRes, overview, todayOverview, vipRes] =
+        await Promise.all([
+          api.getAllRebates({ settled: "all" }),
+          api.getRebateRates().catch(() => null),
+          api.getTeamOverview().catch(() => null),
+          api.getTeamOverview({ date: todayYmd }).catch(() => null),
+          api.getVipStatus().catch(() => null),
+        ]);
       if (signal?.aborted) return;
 
       const byDay = new Map<string, number>();
-      const todayYmd = ymdIst();
       let credited = 0;
       for (const r of rebateHist) {
         const d = rebateIstDay(r.createdAt);
@@ -177,9 +182,11 @@ export default function AgentCommissionPage({ onBack }: Props) {
 
       if (overview?.data) {
         setTeamSize(Number(overview.data.totalTeamSize ?? 0));
-        setTeamBetting(Number(overview.data.totalTeamBetting ?? 0));
         // Settled rebates (lifetime) from team overview after ADR-0011
         setLifetime(Number(overview.data.totalCommissionEarned ?? 0));
+      }
+      if (todayOverview?.data) {
+        setTeamBetting(Number(todayOverview.data.totalTeamBetting ?? 0));
       }
       // ADR-0012: tier for rates = rebateLevel (team ladder), not XP currentLevel
       const rl = Number(
@@ -660,7 +667,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
               </div>
               <div className="text-right">
                 <p className="text-xs font-bold text-white font-mono">{formatINR(teamBetting)}</p>
-                <p className="text-[10px] font-medium text-gray-400 mt-0.5">Total Bet Volume</p>
+                <p className="text-[10px] font-medium text-gray-400 mt-0.5">Today's Bet Volume</p>
               </div>
             </div>
 
