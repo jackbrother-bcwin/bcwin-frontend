@@ -79,6 +79,9 @@ const ChangePasswordPage = dynamic(
   { loading: loadFallback }
 );
 
+/** Lottery tables — hide CS / Dragon (iframe games use tpGameOpen). */
+const HIDE_FLOATS = new Set(["wingo", "trxwingo", "k3", "5d", "moto"]);
+
 /** Screens that hide the bottom tab bar */
 const HIDE_NAV = new Set([
   "wingo",
@@ -654,9 +657,17 @@ export default function AppShell() {
           )}
         </Suspense>
 
-        {!tpGameOpen && activeTab !== "home" && isLoggedIn && <FloatingCS />}
+        {!tpGameOpen &&
+          !HIDE_FLOATS.has(activeTab) &&
+          activeTab !== "home" &&
+          isLoggedIn && <FloatingCS />}
         <DragonAssistant
-          showFloatingButton={!tpGameOpen && activeTab !== "home" && isLoggedIn}
+          showFloatingButton={
+            !tpGameOpen &&
+            !HIDE_FLOATS.has(activeTab) &&
+            activeTab !== "home" &&
+            isLoggedIn
+          }
         />
         {!tpGameOpen && activeTab === "home" && (
           <HomeFloatingColumn onNavigate={pushScreen} />

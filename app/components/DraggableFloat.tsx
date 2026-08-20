@@ -33,11 +33,9 @@ function defaultBottomRight(size: number, offsetBottom: number, offsetRight: num
   if (typeof window === "undefined") {
     return { x: 0, y: 0 };
   }
-  const safeR = 0;
-  const safeB = 0;
   return {
-    x: window.innerWidth - size - offsetRight - safeR,
-    y: window.innerHeight - size - offsetBottom - safeB,
+    x: window.innerWidth - size - offsetRight,
+    y: window.innerHeight - size - offsetBottom,
   };
 }
 
@@ -59,8 +57,8 @@ interface DraggableFloatProps {
 }
 
 /**
- * Fixed floating control that the user can drag anywhere on screen.
- * Click (without drag) fires onClick. Position persists per `id`.
+ * Fixed floating control the user can drag. Position is GPU `translate3d`
+ * updated on rAF (no React render per move). Click without drag fires onClick.
  */
 export default function DraggableFloat({
   id,
@@ -75,15 +73,14 @@ export default function DraggableFloat({
   children,
 }: DraggableFloatProps) {
   const storageKey = `bcwin-float-${id}`;
-  const [pos, setPos] = useState<FloatPos>(() =>
-    defaultBottomRight(size, defaultBottom, defaultRight)
-  );
-  const [ready, setReady] = useState(false);
+  const elRef = useRef<HTMLButtonElement>(null);
+  const posRef = useRef<FloatPos>({ x: 0, y: 0 });
   const dragging = useRef(false);
   const moved = useRef(false);
   const start = useRef({ px: 0, py: 0, ox: 0, oy: 0 });
-  const posRef = useRef(pos);
-  posRef.current = pos;
+  const raf = useRef(0);
+  const pending = useRef<FloatPos | null>(null);
+  const [ready, setReady] = useState(false);
 
   const constrain = useCallback(
     (p: FloatPos): FloatPos => {
@@ -99,20 +96,43 @@ export default function DraggableFloat({
     [size]
   );
 
+  const paint = useCallback((p: FloatPos) => {
+    posRef.current = p;
+    const el = elRef.current;
+    if (!el) return;
+    el.style.transform = `translate3d(${p.x}px, ${p.y}px, 0)`;
+  }, []);
+
+  const schedulePaint = useCallback(
+    (p: FloatPos) => {
+      pending.current = p;
+      if (raf.current) return;
+      raf.current = requestAnimationFrame(() => {
+        raf.current = 0;
+        const next = pending.current;
+        if (next) paint(next);
+      });
+    },
+    [paint]
+  );
+
   useEffect(() => {
     const saved = loadPos(storageKey);
     const next = constrain(
       saved ?? defaultBottomRight(size, defaultBottom, defaultRight)
     );
-    setPos(next);
+    paint(next);
     setReady(true);
-  }, [storageKey, size, defaultBottom, defaultRight, constrain]);
+    return () => {
+      if (raf.current) cancelAnimationFrame(raf.current);
+    };
+  }, [storageKey, size, defaultBottom, defaultRight, constrain, paint]);
 
   useEffect(() => {
-    const onResize = () => setPos((p) => constrain(p));
+    const onResize = () => paint(constrain(posRef.current));
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
-  }, [constrain]);
+  }, [constrain, paint]);
 
   const onPointerDown = (e: React.PointerEvent) => {
     if (e.button !== 0) return;
@@ -124,15 +144,18 @@ export default function DraggableFloat({
       ox: posRef.current.x,
       oy: posRef.current.y,
     };
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    const el = e.currentTarget as HTMLElement;
+    el.setPointerCapture(e.pointerId);
+    el.style.willChange = "transform";
+    el.style.transition = "none";
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
     if (!dragging.current) return;
     const dx = e.clientX - start.current.px;
     const dy = e.clientY - start.current.py;
-    if (Math.abs(dx) > 5 || Math.abs(dy) > 5) moved.current = true;
-    setPos(
+    if (!moved.current && (dx * dx + dy * dy) > 25) moved.current = true;
+    schedulePaint(
       constrain({
         x: start.current.ox + dx,
         y: start.current.oy + dy,
@@ -140,37 +163,48 @@ export default function DraggableFloat({
     );
   };
 
-  const onPointerUp = (e: React.PointerEvent) => {
+  const endDrag = (e: React.PointerEvent) => {
     if (!dragging.current) return;
     dragging.current = false;
+    const el = e.currentTarget as HTMLElement;
     try {
-      (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+      el.releasePointerCapture(e.pointerId);
     } catch {
       /* ignore */
     }
+    if (raf.current) {
+      cancelAnimationFrame(raf.current);
+      raf.current = 0;
+    }
+    if (pending.current) {
+      paint(pending.current);
+      pending.current = null;
+    }
+    el.style.willChange = "";
+    el.style.transition = "";
     savePos(storageKey, posRef.current);
     if (!moved.current) onClick?.();
   };
 
   return (
     <button
+      ref={elRef}
       type="button"
       aria-label={ariaLabel}
-      className={`fixed touch-none select-none active:scale-95 transition-[transform,opacity] ${
+      className={`fixed top-0 left-0 touch-none select-none ${
         ready ? "opacity-100" : "opacity-0"
       } ${className}`}
       style={{
-        left: pos.x,
-        top: pos.y,
         width: size,
         height: size,
         zIndex,
+        transform: "translate3d(0,0,0)",
         ...style,
       }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
-      onPointerUp={onPointerUp}
-      onPointerCancel={onPointerUp}
+      onPointerUp={endDrag}
+      onPointerCancel={endDrag}
     >
       {children}
     </button>
