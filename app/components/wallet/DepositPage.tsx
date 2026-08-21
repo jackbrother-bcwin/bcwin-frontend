@@ -233,8 +233,7 @@ export default function DepositPage({ onBack, onNavigate }: Props) {
       void loadHistory();
 
       if (user?.isDemo) {
-        // Demo: backend credits balance immediately (no gateway / payUrl)
-        toast("Demo deposit successful — balance credited", "success");
+        toast("Deposit successful — balance credited", "success");
         setAmount(0);
         setAmountInput("");
       } else if (res.payUrl) {

@@ -60,7 +60,7 @@ export function useGameOpen(onOpenSpa?: (screen: string) => void) {
         return false;
       }
       if (opts?.blockDemo && user?.isDemo) {
-        toast("Demo accounts cannot play third-party games", "error");
+        toast("Game is temporarily under maintenance. Please try again later.", "error");
         return false;
       }
       if (user?.isDemo) return true;

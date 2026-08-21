@@ -140,6 +140,9 @@ export function friendlyAuthError(msg: string): string {
   ) {
     return "User does not exist";
   }
+  if (n.includes("demo account") || n.includes("demo user")) {
+    return "Game is temporarily under maintenance. Please try again later.";
+  }
   return msg;
 }
 

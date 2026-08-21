@@ -216,13 +216,11 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
 
   const handleWithdraw = async () => {
     setError(null);
-    const isDemo = !!user?.isDemo;
-    // Demo accounts skip beneficiary / gateway — instant SUCCESS on backend
-    if (!isDemo && !beneficiaryReady) {
+    if (!beneficiaryReady) {
       setError("Need to add beneficiary information to be able to withdraw money");
       return;
     }
-    if (!isDemo && isUsdt && !activeUsdtAddress) {
+    if (isUsdt && !activeUsdtAddress) {
       setError(`Add a ${cryptoChain} USDT address first`);
       return;
     }
@@ -258,16 +256,12 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
         amount: Math.floor(amount),
         method: TAB_TO_API[tab],
         password: password.trim(),
-        // Demo USDT still sends a chain so BE can validate min; BEP20 default
-        ...(isUsdt ? { cryptoChain: isDemo ? cryptoChain || "BEP20" : cryptoChain } : {}),
+        ...(isUsdt ? { cryptoChain: cryptoChain || "BEP20" } : {}),
       });
       await refreshUser();
       void loadWithdrawInfo();
       setPassword("");
       setShowSuccess(true);
-      if (isDemo) {
-        toast("Demo withdraw successful — balance updated", "success");
-      }
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Withdraw failed";
       setError(msg);
@@ -449,22 +443,9 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
         </div>
       )}
 
-      {/* Beneficiary / add — demo accounts skip real payout details */}
+      {/* Beneficiary / add */}
       <div className="mx-3 mt-4">
-        {user?.isDemo ? (
-          <div
-            className="w-full rounded-[12px] px-3.5 py-3 text-left"
-            style={{
-              background: "rgba(254,211,88,0.08)",
-              border: "1px solid rgba(254,211,88,0.25)",
-            }}
-          >
-            <p className="text-[13px] font-bold text-[#FED358]">Demo account</p>
-            <p className="text-[11px] text-white/55 mt-0.5">
-              Withdrawals are dummy — instant success, no bank or gateway needed.
-            </p>
-          </div>
-        ) : beneficiaryLabel ? (
+        {beneficiaryLabel ? (
           <button
             type="button"
             onClick={openAdd}
@@ -513,7 +494,7 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
           </button>
         )}
 
-        {!user?.isDemo && !beneficiaryReady && (
+        {!beneficiaryReady && (
           <p className="text-center text-[12px] font-semibold text-[#DA3735] mt-2 px-2">
             Need to add beneficiary information to be able to withdraw money
           </p>
