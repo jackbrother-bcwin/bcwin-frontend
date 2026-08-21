@@ -711,32 +711,56 @@ export async function deleteWinStreakRule(id: string) {
 
 // ─── Salary ──────────────────────────────────────────────────────────────────
 
-export async function listSalaryRules() {
-  return adminRequest<{ success: true; data?: unknown }>("/admin/salary/list");
+export async function listSalaryRules(params?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  userId?: string;
+  status?: "ACTIVE" | "STOPPED" | "ALL" | string;
+}) {
+  return adminRequest<{
+    success: true;
+    rules: Array<Record<string, unknown>>;
+    total: number;
+    currentPage: number;
+    totalPages: number;
+  }>(`/admin/salary/list${q(params ?? {})}`);
 }
 
 export async function createSalaryRule(body: Record<string, unknown>) {
-  return adminRequest<{ success: true }>("/admin/salary/create", {
-    method: "POST",
-    body: JSON.stringify(body),
-  });
+  return adminRequest<{ success: true; message?: string; rule?: Record<string, unknown> }>(
+    "/admin/salary/create",
+    {
+      method: "POST",
+      body: JSON.stringify(body),
+    }
+  );
 }
 
 export async function updateSalaryRule(id: string, body: Record<string, unknown>) {
-  return adminRequest<{ success: true }>(`/admin/salary/${id}`, {
-    method: "PATCH",
-    body: JSON.stringify(body),
-  });
+  return adminRequest<{ success: true; message?: string; rule?: Record<string, unknown> }>(
+    `/admin/salary/${id}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify(body),
+    }
+  );
+}
+
+export async function toggleSalaryRule(id: string, isActive: boolean) {
+  return updateSalaryRule(id, { isActive });
 }
 
 export async function deleteSalaryRule(id: string) {
-  return adminRequest<{ success: true }>(`/admin/salary/${id}`, {
+  return adminRequest<{ success: true; message?: string }>(`/admin/salary/${id}`, {
     method: "DELETE",
   });
 }
 
 export async function getSalaryStatistics() {
-  return adminRequest<{ success: true; data?: unknown }>("/admin/salary/statistics");
+  return adminRequest<{ success: true; data?: unknown; totalPaid?: number; activeRules?: number; totalUsers?: number }>(
+    "/admin/salary/statistics"
+  );
 }
 
 // ─── Auto salary slabs ───────────────────────────────────────────────────────

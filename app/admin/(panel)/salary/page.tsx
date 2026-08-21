@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import * as admin from "../../../lib/admin-api";
 import { useToast } from "../../../components/ui/Toast";
 import {
+  Badge,
   EmptyBlock,
   LoadingBlock,
   PageTitle,
@@ -13,6 +15,7 @@ import {
 } from "../../components/ui";
 import BulkBar from "../../components/BulkBar";
 import { AdminPieChart } from "../../components/Charts";
+import { formatIstDateTime } from "../../../lib/ist-day";
 
 type Tab = "manual" | "auto";
 
@@ -31,21 +34,27 @@ function formatMoney(n: number) {
 
 export default function SalaryPage() {
   const { toast } = useToast();
-  const [tab, setTab] = useState<Tab>("auto");
+  const [tab, setTab] = useState<Tab>("manual");
 
-  // ── Manual rules ────────────────────────────────────────────
+  // ── Manual & Recurring rules ────────────────────────────────────────────
   const [rows, setRows] = useState<Array<Record<string, unknown>>>([]);
   const [stats, setStats] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [editId, setEditId] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("ALL");
+  const [freqFilter, setFreqFilter] = useState<string>("ALL");
   const [form, setForm] = useState({
     number: "",
     amount: "500",
     frequency: "DAILY",
-    maxPayments: "30",
+    remark: "",
+    immediateFirst: false,
+    addToTurnover: false,
   });
   const [busy, setBusy] = useState(false);
+  const [actionId, setActionId] = useState<string | null>(null);
 
   // ── Auto slabs ──────────────────────────────────────────────
   const [slabs, setSlabs] = useState<
@@ -64,31 +73,40 @@ export default function SalaryPage() {
   const [claimSearch, setClaimSearch] = useState("");
   const [autoLoading, setAutoLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
-  const [actionId, setActionId] = useState<string | null>(null);
 
   const loadManual = useCallback(async () => {
     setLoading(true);
     try {
       const [list, st] = await Promise.all([
-        admin.listSalaryRules(),
-        admin.getSalaryStatistics().catch(() => ({ data: null })),
+        admin.listSalaryRules({
+          search: search || undefined,
+          status: statusFilter !== "ALL" ? statusFilter : undefined,
+          limit: 100,
+        }),
+        admin.getSalaryStatistics().catch(() => ({ success: true, data: null })),
       ]);
-      const raw = list as { rules?: unknown; data?: unknown };
-      const d = raw.rules ?? raw.data;
-      setRows(Array.isArray(d) ? (d as Array<Record<string, unknown>>) : []);
-      const stRaw = st as { data?: unknown; totalPaid?: number };
+      setRows(list.rules ?? []);
+      const stRaw = st as {
+        data?: unknown;
+        totalPaid?: number;
+        activeRules?: number;
+        totalUsers?: number;
+        frequencyDistribution?: Record<string, number>;
+      };
       setStats(
-        (stRaw.data as Record<string, unknown>) ??
-          (typeof stRaw.totalPaid === "number"
-            ? (st as Record<string, unknown>)
-            : null)
+        (stRaw.data as Record<string, unknown>) ?? {
+          totalPaid: stRaw.totalPaid ?? 0,
+          activeRules: stRaw.activeRules ?? 0,
+          totalUsers: stRaw.totalUsers ?? 0,
+          frequencyDistribution: stRaw.frequencyDistribution ?? {},
+        }
       );
     } catch (e: unknown) {
-      toast(e instanceof Error ? e.message : "Failed", "error");
+      toast(e instanceof Error ? e.message : "Failed to load salary rules", "error");
     } finally {
       setLoading(false);
     }
-  }, [toast]);
+  }, [toast, search, statusFilter]);
 
   const loadAuto = useCallback(async () => {
     setAutoLoading(true);
@@ -118,7 +136,12 @@ export default function SalaryPage() {
     else void loadAuto();
   }, [tab, loadManual, loadAuto]);
 
-  const pie = ["HOURLY", "DAILY", "MONTHLY", "ONE_TIME"]
+  const filteredRows = useMemo(() => {
+    if (freqFilter === "ALL") return rows;
+    return rows.filter((r) => String(r.frequency) === freqFilter);
+  }, [rows, freqFilter]);
+
+  const pie = ["DAILY", "WEEKLY", "MONTHLY", "HOURLY", "ONE_TIME"]
     .map((f) => ({
       name: f,
       value: rows.filter((r) => String(r.frequency) === f).length,
@@ -132,42 +155,79 @@ export default function SalaryPage() {
 
   const startEdit = (r: Record<string, unknown>) => {
     setEditId(String(r.id));
+    const u = r.user as { mobileNumber?: string; serialNumber?: number } | undefined;
     setForm({
-      number: String(r.number ?? r.mobileNumber ?? ""),
-      amount: String(r.amount ?? "0"),
+      number: String(u?.mobileNumber ?? u?.serialNumber ?? r.number ?? r.userId ?? ""),
+      amount: String(r.amount ?? "500"),
       frequency: String(r.frequency ?? "DAILY"),
-      maxPayments: String(r.maxPayments ?? "30"),
+      remark: String(r.remark ?? ""),
+      immediateFirst: Boolean(r.immediateFirst),
+      addToTurnover: Boolean(r.addToTurnover),
     });
   };
 
   const cancelEdit = () => {
     setEditId(null);
-    setForm({ number: "", amount: "500", frequency: "DAILY", maxPayments: "30" });
+    setForm({
+      number: "",
+      amount: "500",
+      frequency: "DAILY",
+      remark: "",
+      immediateFirst: false,
+      addToTurnover: false,
+    });
   };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!form.number.trim()) {
+      toast("Enter a mobile number or user ID", "error");
+      return;
+    }
+    const amt = Number(form.amount);
+    if (!amt || amt <= 0) {
+      toast("Enter a valid positive amount", "error");
+      return;
+    }
     setBusy(true);
     try {
       const body = {
-        number: form.number,
-        amount: Number(form.amount),
+        number: form.number.trim(),
+        amount: amt,
         frequency: form.frequency,
-        maxPayments: Number(form.maxPayments),
+        remark: form.remark.trim() || undefined,
+        immediateFirst: form.frequency === "ONE_TIME" ? true : form.immediateFirst,
+        addToTurnover: form.addToTurnover,
       };
       if (editId) {
         await admin.updateSalaryRule(editId, body);
-        toast("Salary rule updated", "success");
+        toast("Salary rule updated successfully", "success");
       } else {
-        await admin.createSalaryRule(body);
-        toast("Salary rule created", "success");
+        const res = await admin.createSalaryRule(body);
+        toast(res.message || "Salary credited / scheduled successfully", "success");
       }
       cancelEdit();
-      loadManual();
+      void loadManual();
     } catch (err: unknown) {
-      toast(err instanceof Error ? err.message : "Failed", "error");
+      toast(err instanceof Error ? err.message : "Failed to save salary rule", "error");
     } finally {
       setBusy(false);
+    }
+  };
+
+  const toggleStatus = async (id: string, currentActive: boolean) => {
+    setActionId(id);
+    try {
+      await admin.toggleSalaryRule(id, !currentActive);
+      toast(
+        currentActive ? "Salary rule stopped" : "Salary rule resumed",
+        "success"
+      );
+      void loadManual();
+    } catch (err: unknown) {
+      toast(err instanceof Error ? err.message : "Failed to toggle status", "error");
+    } finally {
+      setActionId(null);
     }
   };
 
@@ -224,8 +284,8 @@ export default function SalaryPage() {
   return (
     <div>
       <PageTitle
-        title="Salary"
-        subtitle="Manual rules · automatic slabs"
+        title="Salary Management"
+        subtitle="Manage recurring salaries, give instant credits, and review auto slabs"
         action={
           <RefreshBtn
             onClick={() => (tab === "manual" ? loadManual() : loadAuto())}
@@ -236,8 +296,8 @@ export default function SalaryPage() {
       <div className="mb-4 flex gap-2 border-b border-slate-200">
         {(
           [
-            { id: "auto" as const, label: "Auto slabs" },
-            { id: "manual" as const, label: "Manual rules" },
+            { id: "manual" as const, label: "Manual & Recurring Salary" },
+            { id: "auto" as const, label: "Auto Salary Slabs" },
           ] as const
         ).map((t) => (
           <button
@@ -255,7 +315,462 @@ export default function SalaryPage() {
         ))}
       </div>
 
-      {tab === "auto" ? (
+      {tab === "manual" ? (
+        <>
+          <BulkBar
+            count={selected.size}
+            onClear={() => setSelected(new Set())}
+            actions={[
+              {
+                label: "Delete selected",
+                variant: "danger",
+                icon: "trash",
+                onClick: async () => {
+                  if (!confirm(`Delete ${selected.size} salary rules?`)) return;
+                  await Promise.all(
+                    [...selected].map((id) => admin.deleteSalaryRule(id))
+                  );
+                  toast("Deleted selected rules", "success");
+                  setSelected(new Set());
+                  void loadManual();
+                },
+              },
+            ]}
+          />
+
+          {/* Stats summary */}
+          <div className="mb-4 grid gap-3 sm:grid-cols-3">
+            <StatCard
+              label="Total Salary Paid"
+              value={formatMoney(Number(stats?.totalPaid ?? 0))}
+            />
+            <StatCard
+              label="Active Salary Rules"
+              value={Number(stats?.activeRules ?? 0)}
+            />
+            <StatCard
+              label="Users Receiving Salary"
+              value={Number(stats?.totalUsers ?? 0)}
+            />
+          </div>
+
+          {/* Create / Edit Form + Chart */}
+          <div className="mb-4 grid gap-4 lg:grid-cols-2">
+            <Surface title={editId ? "Edit Salary Rule" : "Give Salary / Create Rule"}>
+              <p className="mb-3 text-xs text-slate-500">
+                {editId
+                  ? "Update payment amount, schedule, status, or remark"
+                  : "Give instant one-time salary or set up a recurring daily/weekly/monthly payout"}
+              </p>
+              {editId && (
+                <div className="mb-3 rounded bg-blue-50 p-2 text-xs text-blue-700 flex justify-between items-center">
+                  <span>Editing Rule #{editId.slice(0, 8)}…</span>
+                  <button
+                    type="button"
+                    className="font-bold underline"
+                    onClick={cancelEdit}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
+
+              <form className="space-y-3" onSubmit={submit}>
+                <div>
+                  <label className="mb-1 block text-xs font-semibold text-slate-700">
+                    Recipient User (Mobile Number / Serial # / UUID)
+                  </label>
+                  <input
+                    className="admin-input"
+                    placeholder="e.g. 9876543210 or 10009"
+                    value={form.number}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, number: e.target.value }))
+                    }
+                    required={!editId}
+                    disabled={!!editId}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="mb-1 block text-xs font-semibold text-slate-700">
+                      Amount (₹)
+                    </label>
+                    <input
+                      type="number"
+                      step="any"
+                      className="admin-input"
+                      placeholder="Amount"
+                      value={form.amount}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, amount: e.target.value }))
+                      }
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-xs font-semibold text-slate-700">
+                      Frequency
+                    </label>
+                    <select
+                      className="admin-input"
+                      value={form.frequency}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, frequency: e.target.value }))
+                      }
+                    >
+                      <option value="ONE_TIME">Instant One-Time Credit</option>
+                      <option value="DAILY">Daily</option>
+                      <option value="WEEKLY">Weekly (every 7 days)</option>
+                      <option value="MONTHLY">Monthly</option>
+                      <option value="HOURLY">Hourly</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="mb-1 block text-xs font-semibold text-slate-700">
+                    Remark (Visible to User in Transaction History)
+                  </label>
+                  <input
+                    className="admin-input"
+                    placeholder="e.g. Weekly Agent Salary, Top performer bonus"
+                    value={form.remark}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, remark: e.target.value }))
+                    }
+                  />
+                </div>
+
+                {form.frequency !== "ONE_TIME" && !editId && (
+                  <div className="flex items-center gap-2 pt-1">
+                    <input
+                      type="checkbox"
+                      id="immediateFirst"
+                      checked={form.immediateFirst}
+                      onChange={(e) =>
+                        setForm((f) => ({
+                          ...f,
+                          immediateFirst: e.target.checked,
+                        }))
+                      }
+                      className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <label
+                      htmlFor="immediateFirst"
+                      className="text-xs text-slate-700 select-none"
+                    >
+                      Pay first cycle immediately to wallet right now
+                    </label>
+                  </div>
+                )}
+
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="addToTurnover"
+                    checked={form.addToTurnover}
+                    onChange={(e) =>
+                      setForm((f) => ({
+                        ...f,
+                        addToTurnover: e.target.checked,
+                      }))
+                    }
+                    className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <label
+                    htmlFor="addToTurnover"
+                    className="text-xs text-slate-700 select-none"
+                  >
+                    Count salary credit towards deposit / turnover requirement
+                  </label>
+                </div>
+
+                <div className="pt-2 flex gap-2">
+                  <button
+                    type="submit"
+                    disabled={busy}
+                    className="admin-btn-primary flex-1"
+                  >
+                    {busy
+                      ? "Processing…"
+                      : editId
+                        ? "Save Changes"
+                        : form.frequency === "ONE_TIME"
+                          ? "Credit Instant Salary"
+                          : "Create Salary Schedule"}
+                  </button>
+                  {editId && (
+                    <button
+                      type="button"
+                      onClick={cancelEdit}
+                      className="admin-btn-ghost"
+                    >
+                      Cancel
+                    </button>
+                  )}
+                </div>
+              </form>
+            </Surface>
+
+            <div className="space-y-4">
+              <AdminPieChart data={pie} title="Salary rules by frequency" />
+              <div className="rounded-xl border border-slate-200 bg-white p-4 text-xs text-slate-600 space-y-1.5 leading-relaxed shadow-sm">
+                <p className="font-bold text-slate-800">
+                  💡 How Salary & Remarks work:
+                </p>
+                <p>
+                  • <strong>Instant One-Time</strong> credits user balance immediately with the provided Remark.
+                </p>
+                <p>
+                  • <strong>Daily, Weekly & Monthly</strong> schedules run automatically until an admin clicks <strong>Stop</strong>.
+                </p>
+                <p>
+                  • The <strong>Remark</strong> is permanently saved on each payout and displayed directly in the user&apos;s Transaction History ledger.
+                </p>
+                <p>
+                  • Click <strong>Hub ↗</strong> on any row to open the user&apos;s full 360° management profile.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Salary List Section */}
+          <Surface title="Salary List & Active Schedules">
+            <p className="mb-3 text-xs text-slate-500">
+              View, stop, resume, or manage all manual salary recipients
+            </p>
+            {/* Filter controls */}
+            <div className="mb-4 flex flex-wrap items-center gap-3">
+              <div className="min-w-[200px] flex-1">
+                <input
+                  className="admin-input"
+                  placeholder="Search user by Serial # / Username / Mobile"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <select
+                  className="admin-input"
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                  <option value="ALL">Status: All</option>
+                  <option value="ACTIVE">Active only</option>
+                  <option value="STOPPED">Stopped only</option>
+                </select>
+              </div>
+
+              <div>
+                <select
+                  className="admin-input"
+                  value={freqFilter}
+                  onChange={(e) => setFreqFilter(e.target.value)}
+                >
+                  <option value="ALL">Frequency: All</option>
+                  <option value="DAILY">Daily</option>
+                  <option value="WEEKLY">Weekly</option>
+                  <option value="MONTHLY">Monthly</option>
+                  <option value="ONE_TIME">One-Time</option>
+                  <option value="HOURLY">Hourly</option>
+                </select>
+              </div>
+
+              <button
+                type="button"
+                className="admin-btn-ghost"
+                onClick={() => void loadManual()}
+              >
+                Apply Filters
+              </button>
+            </div>
+
+            {loading ? (
+              <LoadingBlock label="Loading salary rules…" />
+            ) : filteredRows.length === 0 ? (
+              <EmptyBlock label="No salary rules found matching criteria" />
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th className="w-8">
+                        <input
+                          type="checkbox"
+                          checked={
+                            selected.size === filteredRows.length &&
+                            filteredRows.length > 0
+                          }
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelected(
+                                new Set(filteredRows.map((r) => String(r.id)))
+                              );
+                            } else {
+                              setSelected(new Set());
+                            }
+                          }}
+                        />
+                      </th>
+                      <th>User</th>
+                      <th>Amount</th>
+                      <th>Frequency</th>
+                      <th>Remark</th>
+                      <th>Status</th>
+                      <th>Next Payment</th>
+                      <th>Paid Count</th>
+                      <th className="text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredRows.map((r) => {
+                      const id = String(r.id);
+                      const u = r.user as
+                        | {
+                            id?: string;
+                            serialNumber?: number;
+                            username?: string;
+                            mobileNumber?: string;
+                          }
+                        | undefined;
+                      const userId = String(u?.id ?? r.userId ?? "");
+                      const isActive = Boolean(r.isActive);
+                      const freq = String(r.frequency ?? "DAILY");
+                      const remarkText = String(r.remark ?? "");
+
+                      return (
+                        <tr
+                          key={id}
+                          className={editId === id ? "bg-blue-50/70" : undefined}
+                        >
+                          <td>
+                            <input
+                              type="checkbox"
+                              checked={selected.has(id)}
+                              onChange={(e) => {
+                                const n = new Set(selected);
+                                e.target.checked ? n.add(id) : n.delete(id);
+                                setSelected(n);
+                              }}
+                            />
+                          </td>
+                          <td className="text-xs">
+                            <div className="font-bold text-slate-800 flex items-center gap-1.5">
+                              <span>
+                                #{u?.serialNumber ?? "—"} {u?.username ?? "User"}
+                              </span>
+                            </div>
+                            <div className="font-mono text-slate-400 text-[11px]">
+                              {u?.mobileNumber ?? userId.slice(0, 8)}
+                            </div>
+                          </td>
+                          <td className="font-bold text-slate-900">
+                            ₹{Number(r.amount ?? 0).toLocaleString("en-IN")}
+                          </td>
+                          <td>
+                            <span className="inline-flex rounded bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-700">
+                              {freq}
+                            </span>
+                          </td>
+                          <td className="text-xs max-w-[180px] truncate text-slate-600" title={remarkText || "No remark"}>
+                            {remarkText ? (
+                              <span className="font-medium text-slate-800">
+                                {remarkText}
+                              </span>
+                            ) : (
+                              <span className="text-slate-400 italic">None</span>
+                            )}
+                          </td>
+                          <td>
+                            {isActive ? (
+                              <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
+                                ACTIVE
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-bold text-slate-500">
+                                STOPPED
+                              </span>
+                            )}
+                          </td>
+                          <td className="text-xs text-slate-500 whitespace-nowrap">
+                            {isActive && freq !== "ONE_TIME" && r.nextPaymentAt ? (
+                              formatIstDateTime(r.nextPaymentAt)
+                            ) : (
+                              <span className="text-slate-400">—</span>
+                            )}
+                          </td>
+                          <td className="text-xs font-mono text-slate-700">
+                            {String(r.paidCount ?? 0)}
+                          </td>
+                          <td className="text-right space-x-1.5 whitespace-nowrap">
+                            {/* Go to user hub button */}
+                            {userId && (
+                              <Link
+                                href={`/admin/users/${userId}?tab=salary`}
+                                className="inline-flex items-center gap-1 rounded bg-blue-50 px-2 py-1 text-xs font-bold text-blue-700 hover:bg-blue-100 transition-colors no-underline"
+                              >
+                                Hub ↗
+                              </Link>
+                            )}
+
+                            {/* Stop / Resume button */}
+                            {freq !== "ONE_TIME" && (
+                              <button
+                                type="button"
+                                disabled={actionId === id}
+                                onClick={() => void toggleStatus(id, isActive)}
+                                className={`rounded px-2 py-1 text-xs font-bold transition-colors ${
+                                  isActive
+                                    ? "bg-amber-50 text-amber-700 hover:bg-amber-100"
+                                    : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+                                }`}
+                              >
+                                {actionId === id
+                                  ? "…"
+                                  : isActive
+                                    ? "Stop"
+                                    : "Resume"}
+                              </button>
+                            )}
+
+                            {/* Edit button */}
+                            <button
+                              type="button"
+                              className="rounded bg-slate-100 px-2 py-1 text-xs font-bold text-slate-700 hover:bg-slate-200 transition-colors"
+                              onClick={() => startEdit(r)}
+                            >
+                              Edit
+                            </button>
+
+                            {/* Delete button */}
+                            <button
+                              type="button"
+                              className="rounded bg-red-50 px-2 py-1 text-xs font-bold text-red-600 hover:bg-red-100 transition-colors"
+                              onClick={async () => {
+                                if (!confirm("Delete this salary rule?")) return;
+                                await admin.deleteSalaryRule(id);
+                                if (editId === id) cancelEdit();
+                                toast("Salary rule deleted", "success");
+                                void loadManual();
+                              }}
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </Surface>
+        </>
+      ) : (
+        /* Auto Slabs Tab */
         <>
           <p className="mb-3 text-xs text-slate-600 leading-relaxed max-w-3xl">
             Highest slab fully met is paid. Metrics: <strong>direct invites</strong>{" "}
@@ -313,7 +828,7 @@ export default function SalaryPage() {
             <button
               type="button"
               className="admin-btn-ghost"
-              onClick={() => loadAuto()}
+              onClick={() => void loadAuto()}
             >
               Apply filters
             </button>
@@ -377,20 +892,30 @@ export default function SalaryPage() {
                       const id = String(c.id);
                       const user = c.user as
                         | {
+                            id?: string;
                             serialNumber?: number;
                             username?: string;
                             mobileNumber?: string;
                           }
                         | undefined;
                       const status = String(c.status);
+                      const userId = String(user?.id ?? c.userId ?? "");
                       return (
                         <tr key={id}>
                           <td className="text-xs">
                             <div className="font-bold">
                               #{user?.serialNumber ?? "—"} {user?.username ?? ""}
                             </div>
-                            <div className="text-slate-500 font-mono">
-                              {user?.mobileNumber ?? String(c.userId).slice(0, 8)}
+                            <div className="text-slate-500 font-mono flex items-center gap-1">
+                              <span>{user?.mobileNumber ?? String(c.userId).slice(0, 8)}</span>
+                              {userId && (
+                                <Link
+                                  href={`/admin/users/${userId}?tab=salary`}
+                                  className="text-blue-600 hover:underline text-[10px]"
+                                >
+                                  Hub ↗
+                                </Link>
+                              )}
                             </div>
                           </td>
                           <td className="text-xs whitespace-nowrap">
@@ -418,7 +943,7 @@ export default function SalaryPage() {
                               <>
                                 <button
                                   type="button"
-                                  className="text-xs font-bold text-green-700"
+                                  className="text-xs font-bold text-green-700 hover:underline"
                                   disabled={actionId === id}
                                   onClick={() => approve(id)}
                                 >
@@ -426,7 +951,7 @@ export default function SalaryPage() {
                                 </button>
                                 <button
                                   type="button"
-                                  className="text-xs font-bold text-red-600"
+                                  className="text-xs font-bold text-red-600 hover:underline"
                                   disabled={actionId === id}
                                   onClick={() => reject(id)}
                                 >
@@ -441,169 +966,6 @@ export default function SalaryPage() {
                   </tbody>
                 </table>
               </div>
-            )}
-          </Surface>
-        </>
-      ) : (
-        <>
-          <BulkBar
-            count={selected.size}
-            onClear={() => setSelected(new Set())}
-            actions={[
-              {
-                label: "Delete selected",
-                variant: "danger",
-                icon: "trash",
-                onClick: async () => {
-                  if (!confirm(`Delete ${selected.size} salary rules?`)) return;
-                  await Promise.all(
-                    [...selected].map((id) => admin.deleteSalaryRule(id))
-                  );
-                  toast("Deleted", "success");
-                  setSelected(new Set());
-                  loadManual();
-                },
-              },
-            ]}
-          />
-          {stats && (
-            <div className="mb-4 grid gap-3 sm:grid-cols-3">
-              {Object.entries(stats)
-                .filter(([, v]) => typeof v === "number")
-                .slice(0, 6)
-                .map(([k, v]) => (
-                  <StatCard key={k} label={k} value={Number(v)} />
-                ))}
-            </div>
-          )}
-          <div className="mb-4 grid gap-4 lg:grid-cols-2">
-            <AdminPieChart data={pie} title="Rules by frequency" />
-            <Surface title={editId ? "Edit salary rule" : "Create salary rule"}>
-              {editId && (
-                <p className="mb-2 text-xs text-blue-600 font-semibold">
-                  Editing #{editId.slice(0, 8)}…{" "}
-                  <button type="button" className="underline" onClick={cancelEdit}>
-                    Cancel
-                  </button>
-                </p>
-              )}
-              <form className="space-y-2" onSubmit={submit}>
-                <input
-                  className="admin-input"
-                  placeholder="Mobile number"
-                  value={form.number}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, number: e.target.value }))
-                  }
-                  required={!editId}
-                  disabled={!!editId}
-                />
-                <input
-                  className="admin-input"
-                  placeholder="Amount"
-                  value={form.amount}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, amount: e.target.value }))
-                  }
-                />
-                <select
-                  className="admin-input"
-                  value={form.frequency}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, frequency: e.target.value }))
-                  }
-                >
-                  {["HOURLY", "DAILY", "MONTHLY", "ONE_TIME"].map((f) => (
-                    <option key={f} value={f}>
-                      {f}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  className="admin-input"
-                  placeholder="Max payments"
-                  value={form.maxPayments}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, maxPayments: e.target.value }))
-                  }
-                />
-                <button type="submit" disabled={busy} className="admin-btn-primary">
-                  {busy ? "Saving…" : editId ? "Update rule" : "Create"}
-                </button>
-              </form>
-            </Surface>
-          </div>
-          <Surface>
-            {loading ? (
-              <LoadingBlock />
-            ) : rows.length === 0 ? (
-              <EmptyBlock />
-            ) : (
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th />
-                    <th>User</th>
-                    <th>Amount</th>
-                    <th>Frequency</th>
-                    <th>Paid</th>
-                    <th />
-                  </tr>
-                </thead>
-                <tbody>
-                  {rows.map((r) => {
-                    const id = String(r.id);
-                    return (
-                      <tr
-                        key={id}
-                        className={editId === id ? "bg-blue-50" : undefined}
-                      >
-                        <td>
-                          <input
-                            type="checkbox"
-                            checked={selected.has(id)}
-                            onChange={(e) => {
-                              const n = new Set(selected);
-                              e.target.checked ? n.add(id) : n.delete(id);
-                              setSelected(n);
-                            }}
-                          />
-                        </td>
-                        <td className="font-mono text-xs">
-                          {String(r.userId ?? r.number ?? "—").slice(0, 14)}
-                        </td>
-                        <td className="font-bold">₹{Number(r.amount ?? 0)}</td>
-                        <td>{String(r.frequency)}</td>
-                        <td>
-                          {String(r.paidCount ?? 0)}/
-                          {String(r.maxPayments ?? "∞")}
-                        </td>
-                        <td className="space-x-2 whitespace-nowrap">
-                          <button
-                            type="button"
-                            className="text-xs font-bold text-blue-600"
-                            onClick={() => startEdit(r)}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            type="button"
-                            className="text-xs font-bold text-red-600"
-                            onClick={async () => {
-                              if (!confirm("Delete this salary rule?")) return;
-                              await admin.deleteSalaryRule(id);
-                              if (editId === id) cancelEdit();
-                              loadManual();
-                            }}
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
             )}
           </Surface>
         </>
