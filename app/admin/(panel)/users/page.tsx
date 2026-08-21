@@ -18,6 +18,7 @@ export default function UsersListPage() {
   const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [role, setRole] = useState("");
+  const [demoFilter, setDemoFilter] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [rows, setRows] = useState<Array<Record<string, unknown>>>([]);
@@ -31,6 +32,7 @@ export default function UsersListPage() {
         limit: 20,
         search: search || undefined,
         role: role || undefined,
+        isDemo: demoFilter || undefined,
       });
       setRows(res.users ?? []);
       setTotalPages(res.totalPages ?? 1);
@@ -39,7 +41,7 @@ export default function UsersListPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, search, role, toast]);
+  }, [page, search, role, demoFilter, toast]);
 
   useEffect(() => {
     load();
@@ -81,6 +83,18 @@ export default function UsersListPage() {
           <option value="SUB_ADMIN">SUB_ADMIN</option>
           <option value="ADMIN">ADMIN</option>
         </select>
+        <select
+          className="admin-input max-w-[160px]"
+          value={demoFilter}
+          onChange={(e) => {
+            setDemoFilter(e.target.value);
+            setPage(1);
+          }}
+        >
+          <option value="">All (Real & Demo)</option>
+          <option value="false">Real only</option>
+          <option value="true">Demo only</option>
+        </select>
         <button type="button" className="admin-btn-primary text-xs" onClick={() => { setPage(1); load(); }}>
           Search
         </button>
@@ -100,6 +114,7 @@ export default function UsersListPage() {
                   <th>Mobile</th>
                   <th>Balance</th>
                   <th>Role</th>
+                  <th>Type</th>
                   <th>Status</th>
                   <th>Penalty</th>
                   <th />
@@ -108,6 +123,7 @@ export default function UsersListPage() {
               <tbody>
                 {rows.map((u) => {
                   const uid = String(u.id);
+                  const isDemo = Boolean(u.isDemo);
                   return (
                     <tr key={uid}>
                       <td className="font-mono">{String(u.serialNumber ?? "—")}</td>
@@ -115,6 +131,17 @@ export default function UsersListPage() {
                       <td>{String(u.mobileNumber ?? "—")}</td>
                       <td>₹{Number(u.balance ?? 0).toLocaleString("en-IN")}</td>
                       <td>{String(u.role ?? "—")}</td>
+                      <td>
+                        {isDemo ? (
+                          <span className="inline-flex items-center rounded bg-purple-50 px-2 py-0.5 text-xs font-bold text-purple-700 ring-1 ring-inset ring-purple-600/20">
+                            DEMO
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center rounded bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
+                            REAL
+                          </span>
+                        )}
+                      </td>
                       <td>
                         <Badge status={u.isBanned ? "BANNED" : "ACTIVE"} />
                       </td>
@@ -134,6 +161,12 @@ export default function UsersListPage() {
                             className="text-xs font-bold text-blue-600 hover:underline"
                           >
                             Hub
+                          </Link>
+                          <Link
+                            href={`/admin/users/${uid}?tab=salary`}
+                            className="text-xs font-semibold text-slate-500 hover:text-blue-600 hover:underline"
+                          >
+                            Salary
                           </Link>
                           <Link
                             href={`/admin/users/${uid}?tab=deposits`}

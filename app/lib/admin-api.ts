@@ -159,6 +159,7 @@ export async function listUsers(params?: {
   isBanned?: string;
   hasIllegalBetPenalty?: string;
   role?: string;
+  isDemo?: string;
 }) {
   return adminRequest<{
     success: true;
