@@ -76,12 +76,13 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
 
   const mobile = user?.mobileNumber ?? "";
   const email = (user?.email ?? "").trim().toLowerCase();
+  const isDemo = !!user?.isDemo;
   /**
    * Email-primary accounts (have email on profile) verify bank via email OTP.
-   * Phone-only accounts keep SMS OTP.
+   * Phone-only accounts keep SMS OTP. Demo accounts always allow simulated OTP.
    */
-  const otpViaEmail = !!email;
-  const otpTargetReady = otpViaEmail ? !!email : !!mobile;
+  const otpViaEmail = !isDemo && !!email;
+  const otpTargetReady = isDemo ? true : otpViaEmail ? !!email : !!mobile;
 
   const maskEmail = (e: string) => {
     const [local, domain] = e.split("@");
@@ -140,8 +141,8 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
           setNetwork("BEP20");
           setTronAddress("");
         }
-        setCanUpdate(d.canUpdate !== false);
-        setNextUpdateAt(d.nextUpdateAt ?? null);
+        setCanUpdate(isDemo ? true : d.canUpdate !== false);
+        setNextUpdateAt(isDemo ? null : (d.nextUpdateAt ?? null));
       })
       .catch(() => {
         setExists(false);
@@ -194,8 +195,8 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
         : network === "TRC20"
           ? !!savedTrc20.trim()
           : !!savedBep20.trim();
-  /** First-time add of empty fields always allowed; changing saved values needs 24h */
-  const updateAllowed = !modeAlreadySet || canUpdate;
+  /** First-time add of empty fields always allowed; changing saved values needs 24h (demo can always update) */
+  const updateAllowed = isDemo || !modeAlreadySet || canUpdate;
   const canSave = fieldsOk && otpOk && updateAllowed && otpTargetReady;
 
   const sendOtp = async () => {
@@ -211,6 +212,21 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
     if (otpCountdown > 0 || otpSending) return;
     setOtpSending(true);
     setError(null);
+
+    if (isDemo) {
+      setTimeout(() => {
+        setOtpSending(false);
+        setOtpCountdown(120);
+        toast(
+          otpViaEmail
+            ? "OTP sent to your registered email"
+            : "OTP sent to your registered mobile",
+          "success"
+        );
+      }, 200);
+      return;
+    }
+
     try {
       // Prefer email when present (works for all countries)
       if (otpViaEmail) {
@@ -255,7 +271,7 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
       setError("Please complete all required fields");
       return;
     }
-    if (!otpTargetReady) {
+    if (!isDemo && !otpTargetReady) {
       setError(
         otpViaEmail
           ? "Email missing on account"
@@ -267,7 +283,7 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
       setError("Enter the 6-digit OTP");
       return;
     }
-    if (modeAlreadySet && !canUpdate) {
+    if (!isDemo && modeAlreadySet && !canUpdate) {
       setError(
         nextUpdateAt
           ? `You can change saved details once every 24 hours. Try after ${new Date(nextUpdateAt).toLocaleString()}`
@@ -309,8 +325,10 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
       if (exists) await api.updateBank(payload);
       else await api.saveBank(payload);
       setExists(true);
-      setCanUpdate(false);
-      setNextUpdateAt(new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString());
+      if (!isDemo) {
+        setCanUpdate(false);
+        setNextUpdateAt(new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString());
+      }
       toast("Saved successfully", "success");
       onBack();
     } catch (e: unknown) {
@@ -619,6 +637,13 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
                 OTP will be sent to your registered number{" "}
                 <span className="text-[#FED358] font-bold">
                   {maskMobile(mobile)}
+                </span>
+              </>
+            ) : isDemo ? (
+              <>
+                OTP will be sent to your registered number{" "}
+                <span className="text-[#FED358] font-bold">
+                  ******8888
                 </span>
               </>
             ) : (
