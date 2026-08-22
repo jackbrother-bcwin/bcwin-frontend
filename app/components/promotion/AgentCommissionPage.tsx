@@ -71,6 +71,34 @@ function rebateSettledParam(
   return "all";
 }
 
+function CopyUidButton({ uid }: { uid: string }) {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    void navigator.clipboard.writeText(uid);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleCopy}
+      className="p-1 text-[#FED358] hover:text-[#FFE9A8] transition-colors flex items-center gap-1 cursor-pointer"
+      title="Copy UID"
+    >
+      {copied ? (
+        <span className="text-[10px] text-green-400 font-semibold">Copied!</span>
+      ) : (
+        <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-none stroke-current stroke-2">
+          <rect x="9" y="9" width="13" height="13" rx="2" />
+          <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+        </svg>
+      )}
+    </button>
+  );
+}
+
 export default function AgentCommissionPage({ onBack }: Props) {
   const [loading, setLoading] = useState(true);
   const [daily, setDaily] = useState<DailyCommissionRow[]>([]);
@@ -107,6 +135,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
   const [listLoading, setListLoading] = useState(false);
   const [subs, setSubs] = useState<TeamMember[]>([]);
   const [subsLoading, setSubsLoading] = useState(false);
+  const [subsLayerFilter, setSubsLayerFilter] = useState<number | "all">("all");
   /** Expanded person keys in list mode (fromUserId or username|layer) */
   const [expandedPeople, setExpandedPeople] = useState<Set<string>>(
     () => new Set()
@@ -340,7 +369,12 @@ export default function AgentCommissionPage({ onBack }: Props) {
     setSubsLoading(true);
     (async () => {
       try {
-        const res = await api.getTeamMembers({ page: 1, limit: 50 });
+        const todayStr = ymdIst();
+        const res = await api.getTeamMembers({
+          date: todayStr,
+          page: 1,
+          limit: 100,
+        });
         if (cancelled) return;
         setSubs(res.data ?? []);
       } catch {
@@ -353,6 +387,25 @@ export default function AgentCommissionPage({ onBack }: Props) {
       cancelled = true;
     };
   }, [bottomTab]);
+
+  const todayDepositors = useMemo(() => {
+    return subs.filter((m) => Number(m.totalDeposit ?? 0) > 0);
+  }, [subs]);
+
+  const filteredDepositors = useMemo(() => {
+    if (subsLayerFilter === "all") return todayDepositors;
+    return todayDepositors.filter((m) => Number(m.layer) === subsLayerFilter);
+  }, [todayDepositors, subsLayerFilter]);
+
+  const totalTodayDepositSum = useMemo(() => {
+    return roundMoney(
+      filteredDepositors.reduce(
+        (sum, m) => sum + Number(m.totalDeposit ?? 0),
+        0
+      ),
+      2
+    );
+  }, [filteredDepositors]);
 
   const today = ymdIst();
   const yesterday = rangeForPreset("yesterday").startDate!;
@@ -826,7 +879,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
                 }`}
                 onClick={() => setBottomTab("subordinate")}
               >
-                Subordinates
+                Subordinates{todayDepositors.length > 0 ? ` (${todayDepositors.length})` : ""}
               </button>
             </div>
 
@@ -1108,34 +1161,139 @@ export default function AgentCommissionPage({ onBack }: Props) {
 
             {bottomTab === "subordinate" && (
               <section className="dash-card mt-3">
-                <h2 className="dash-card-title mb-3">Subordinates</h2>
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <div>
+                    <h2 className="dash-card-title">Live Subordinates Today</h2>
+                    <p className="text-[11px] text-gray-400 mt-0.5">
+                      Subordinates with successful deposits today (IST)
+                    </p>
+                  </div>
+                  {filteredDepositors.length > 0 && (
+                    <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                      {filteredDepositors.length} {filteredDepositors.length === 1 ? "depositor" : "depositors"}
+                    </span>
+                  )}
+                </div>
+
+                {/* Subordinate Level Filters */}
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-2 scrollbar-none mb-3">
+                  <button
+                    type="button"
+                    className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
+                      subsLayerFilter === "all"
+                        ? "bg-amber-500/20 text-amber-300 border border-amber-500/50"
+                        : "bg-white/[0.04] text-gray-400 hover:text-white border border-transparent"
+                    }`}
+                    onClick={() => setSubsLayerFilter("all")}
+                  >
+                    All levels ({todayDepositors.length})
+                  </button>
+                  {[1, 2, 3, 4, 5, 6].map((L) => {
+                    const countInTier = todayDepositors.filter((m) => Number(m.layer) === L).length;
+                    return (
+                      <button
+                        key={L}
+                        type="button"
+                        className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
+                          subsLayerFilter === L
+                            ? "bg-amber-500/20 text-amber-300 border border-amber-500/50"
+                            : "bg-white/[0.04] text-gray-400 hover:text-white border border-transparent"
+                        }`}
+                        onClick={() => setSubsLayerFilter(L)}
+                      >
+                        L{L} {countInTier > 0 ? `(${countInTier})` : ""}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Summary Strip if we have depositors */}
+                {filteredDepositors.length > 0 && (
+                  <div className="grid grid-cols-2 gap-2 p-2.5 mb-3 bg-[#1e181c] rounded-xl border border-white/5">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">
+                        Today's Depositors
+                      </span>
+                      <span className="text-sm font-extrabold text-white font-mono mt-0.5">
+                        {filteredDepositors.length}
+                      </span>
+                    </div>
+                    <div className="flex flex-col text-right">
+                      <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">
+                        Total Deposit (Today)
+                      </span>
+                      <span className="text-sm font-extrabold text-amber-300 font-mono mt-0.5">
+                        {formatINR(totalTodayDepositSum)}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
                 {subsLoading ? (
                   <div className="flex items-center justify-center py-10 text-amber-400/60 gap-2">
                     <div className="w-5 h-5 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
-                    <span className="text-xs font-semibold">Loading data…</span>
+                    <span className="text-xs font-semibold">Loading live subordinates…</span>
                   </div>
-                ) : subs.length === 0 ? (
-                  <EmptyState label="No downline yet — share your invite link" />
+                ) : filteredDepositors.length === 0 ? (
+                  <EmptyState
+                    label={
+                      subsLayerFilter === "all"
+                        ? "No downline deposits today"
+                        : `No Tier ${subsLayerFilter} deposits today`
+                    }
+                  />
                 ) : (
                   <div className="space-y-2.5">
-                    {subs.map((m) => (
-                      <div key={m.id} className="bg-[#1c161a] border border-white/5 hover:border-amber-500/20 rounded-xl p-3.5 flex items-center justify-between gap-3 shadow-sm">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-8 h-8 rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-300 font-bold text-xs flex items-center justify-center flex-shrink-0">
-                            L{m.layer}
+                    {filteredDepositors.map((m) => {
+                      const uid = String(m.serialNumber ?? m.id);
+                      const nickname = String(m.username ?? "—").trim() || "—";
+                      return (
+                        <div
+                          key={m.id}
+                          className="bg-[#1c161a] border border-white/5 hover:border-amber-500/20 rounded-xl p-3.5 flex flex-col gap-2.5 shadow-sm transition-colors"
+                        >
+                          {/* Card Header: UID + Copy Button (left), Username (right) */}
+                          <div className="flex items-center justify-between gap-2 pb-2 border-b border-white/5">
+                            <div className="flex items-center gap-1 min-w-0">
+                              <span className="text-xs font-bold text-gray-300 tracking-wide tabular-nums font-mono">
+                                UID: {uid}
+                              </span>
+                              <CopyUidButton uid={uid} />
+                            </div>
+                            <span
+                              className="text-xs font-bold text-[#FED358] truncate max-w-[50%] text-right"
+                              title={nickname}
+                            >
+                              {nickname}
+                            </span>
                           </div>
-                          <div className="min-w-0">
-                            <p className="text-white font-bold text-sm tracking-tight truncate">{m.username}</p>
-                            <p className="text-xs text-gray-400 mt-0.5 truncate">
-                              Bet <span className="text-amber-200/80 font-medium">{formatINR(m.totalBetting)}</span> · Dep <span className="text-gray-300 font-medium">{formatINR(m.totalDeposit)}</span>
-                            </p>
+
+                          {/* Card Body Details */}
+                          <div className="grid grid-cols-2 gap-2 text-xs">
+                            <div className="flex items-center justify-between bg-black/20 px-2.5 py-1.5 rounded-lg">
+                              <span className="text-[11px] text-gray-400 font-medium">Level</span>
+                              <span className="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                                L{m.layer}
+                              </span>
+                            </div>
+                            <div className="flex items-center justify-between bg-black/20 px-2.5 py-1.5 rounded-lg">
+                              <span className="text-[11px] text-gray-400 font-medium">Deposit (Today)</span>
+                              <span className="font-extrabold text-amber-300 font-mono">
+                                {formatINR(m.totalDeposit ?? 0)}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* User ID Row */}
+                          <div className="flex items-center justify-between text-[11px] px-1 text-gray-400">
+                            <span className="font-medium text-gray-500">User ID</span>
+                            <span className="font-mono text-gray-400 truncate max-w-[70%]" title={m.id}>
+                              {m.id}
+                            </span>
                           </div>
                         </div>
-                        <p className="text-amber-400 font-extrabold text-sm font-mono flex-shrink-0">
-                          {formatINR(m.commissionGenerated)}
-                        </p>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </section>
