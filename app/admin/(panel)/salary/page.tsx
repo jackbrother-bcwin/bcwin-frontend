@@ -16,6 +16,7 @@ import {
 import BulkBar from "../../components/BulkBar";
 import { AdminPieChart } from "../../components/Charts";
 import { formatIstDateTime } from "../../../lib/ist-day";
+import { ADMIN_AUTO_SALARY_NOTICE, AUTO_SALARY_LIVE } from "../../../lib/auto-salary";
 
 type Tab = "manual" | "auto";
 
@@ -132,7 +133,7 @@ export default function SalaryPage() {
   }, [toast, claimStatus, periodDate, claimSearch]);
 
   useEffect(() => {
-    if (tab === "manual") void loadManual();
+    if (!AUTO_SALARY_LIVE || tab === "manual") void loadManual();
     else void loadAuto();
   }, [tab, loadManual, loadAuto]);
 
@@ -285,35 +286,45 @@ export default function SalaryPage() {
     <div>
       <PageTitle
         title="Salary Management"
-        subtitle="Manage recurring salaries, give instant credits, and review auto slabs"
+        subtitle={
+          AUTO_SALARY_LIVE
+            ? "Manage recurring salaries, give instant credits, and review auto slabs"
+            : "Manual & recurring salary only"
+        }
         action={
           <RefreshBtn
-            onClick={() => (tab === "manual" ? loadManual() : loadAuto())}
+            onClick={() => (tab === "manual" || !AUTO_SALARY_LIVE ? loadManual() : loadAuto())}
           />
         }
       />
 
-      <div className="mb-4 flex gap-2 border-b border-slate-200">
-        {(
-          [
-            { id: "manual" as const, label: "Manual & Recurring Salary" },
-            { id: "auto" as const, label: "Auto Salary Slabs" },
-          ] as const
-        ).map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            onClick={() => setTab(t.id)}
-            className={`px-3 py-2 text-sm font-bold border-b-2 -mb-px transition-colors ${
-              tab === t.id
-                ? "border-blue-600 text-blue-700"
-                : "border-transparent text-slate-500 hover:text-slate-800"
-            }`}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
+      {!AUTO_SALARY_LIVE ? (
+        <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-900">
+          {ADMIN_AUTO_SALARY_NOTICE}
+        </div>
+      ) : (
+        <div className="mb-4 flex gap-2 border-b border-slate-200">
+          {(
+            [
+              { id: "manual" as const, label: "Manual & Recurring Salary" },
+              { id: "auto" as const, label: "Auto Salary Slabs" },
+            ] as const
+          ).map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setTab(t.id)}
+              className={`px-3 py-2 text-sm font-bold border-b-2 -mb-px transition-colors ${
+                tab === t.id
+                  ? "border-blue-600 text-blue-700"
+                  : "border-transparent text-slate-500 hover:text-slate-800"
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      )}
 
       {tab === "manual" ? (
         <>

@@ -9,10 +9,49 @@ import type {
 import { formatDateTime, formatINR } from "../../lib/format";
 import DatePickerSheet from "./shared/DatePickerSheet";
 import { type DatePreset, rangeForPreset, ymdLocal } from "./dateRange";
+import { AUTO_SALARY_LIVE, SALARY_DASHBOARD_NOTICE } from "../../lib/auto-salary";
 
 interface Props {
   onBack: () => void;
   onOpenDepositGenealogy?: () => void;
+}
+
+function SalaryDashboardMaintenance({ onBack }: { onBack: () => void }) {
+  return (
+    <div className="sal-page">
+      <header className="sal-topbar">
+        <button type="button" className="sal-topbar-btn" onClick={onBack} aria-label="Back">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+            <path d="M15 5l-7 7 7 7" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+        <h1 className="sal-topbar-title">Salary Dashboard</h1>
+        <div className="sal-topbar-right">
+          <span className="sal-topbar-spacer" />
+        </div>
+      </header>
+      <div className="sal-topbar-spacer-flow" aria-hidden />
+      <div className="sal-body">
+        <div
+          className="rounded-[14px] px-4 py-8 text-center"
+          style={{
+            background: "#201c26",
+            border: "1px solid rgba(254,211,88,0.35)",
+          }}
+        >
+          <p className="text-[15px] font-bold text-[#FED358] mb-2">Under maintenance</p>
+          <p className="text-[14px] text-[#FDE4BC] leading-relaxed">{SALARY_DASHBOARD_NOTICE}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function SalaryDashboardPage(props: Props) {
+  if (!AUTO_SALARY_LIVE) {
+    return <SalaryDashboardMaintenance onBack={props.onBack} />;
+  }
+  return <SalaryDashboardLive {...props} />;
 }
 
 const HISTORY_PRESETS: { id: DatePreset; label: string }[] = [
@@ -150,7 +189,7 @@ function shortInr(n: number): string {
   return String(n);
 }
 
-export default function SalaryDashboardPage({
+function SalaryDashboardLive({
   onBack,
   onOpenDepositGenealogy,
 }: Props) {

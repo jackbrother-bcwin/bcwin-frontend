@@ -9,6 +9,7 @@ import AgencyHeader from "./shared/AgencyHeader";
 import MenuRow from "./shared/MenuRow";
 import type { AgencyView } from "./types";
 import { latestSettledYmd, shiftYmd, ymdIst } from "./dateRange";
+import { AUTO_SALARY_LIVE, SALARY_DASHBOARD_NOTICE } from "../../lib/auto-salary";
 
 interface Props {
   onOpen: (view: AgencyView) => void;
@@ -174,6 +175,18 @@ export default function AgencyHub({ onOpen, onNavigate }: Props) {
           INVITATION LINK
         </button>
 
+        {!AUTO_SALARY_LIVE ? (
+          <div
+            className="mx-3 mb-3 rounded-[12px] px-3 py-2.5 text-[13px] leading-relaxed text-[#FDE4BC]"
+            style={{
+              background: "#282330",
+              border: "1px solid rgba(254,211,88,0.35)",
+            }}
+          >
+            {SALARY_DASHBOARD_NOTICE}
+          </div>
+        ) : null}
+
         <div className="agency-menu">
           <MenuRow
             icon={<MenuIconCommissionNew />}
@@ -184,7 +197,8 @@ export default function AgencyHub({ onOpen, onNavigate }: Props) {
           <MenuRow
             icon={<MenuIconSalaryNew />}
             label="Salary dashboard"
-            isNew
+            subtitle={!AUTO_SALARY_LIVE ? "Maintenance" : undefined}
+            isNew={AUTO_SALARY_LIVE}
             onClick={() => onOpen("salary")}
           />
           <MenuRow
