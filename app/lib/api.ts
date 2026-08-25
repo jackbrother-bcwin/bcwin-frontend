@@ -758,6 +758,20 @@ export async function getTeamOverview(params?: {
   return request(`/user/team/overview${buildQuery(params ?? {})}`);
 }
 
+export type AgencyHubData = {
+  yesterday: TeamOverviewData;
+  lifetime: TeamOverviewData;
+  yesterdayCommission: number;
+  weekCommission: number;
+};
+
+export async function getAgencyHub(): Promise<{
+  success: true;
+  data: AgencyHubData;
+}> {
+  return request("/user/team/hub");
+}
+
 /** Sum team-rebate amounts for an inclusive IST date range (pages history). */
 export async function sumRebatesInRange(opts: {
   startDate: string;
@@ -999,6 +1013,17 @@ export async function getRebateDaily(params: {
   date: string;
 }): Promise<{ success: true; data: RebateDailySummary | null }> {
   return request(`/user/rebate/daily${buildQuery(params)}`);
+}
+
+export type RebateDayTotal = { date: string; total: number };
+
+/** IST-day totals. Replaces paging every rebate row on commission / TX. */
+export async function getRebateDayTotals(params?: {
+  startDate?: string;
+  endDate?: string;
+  settled?: "true" | "false" | "all";
+}): Promise<{ success: true; data: RebateDayTotal[] }> {
+  return request(`/user/rebate/day-totals${buildQuery(params ?? {})}`);
 }
 
 export async function getRebateRates(): Promise<{

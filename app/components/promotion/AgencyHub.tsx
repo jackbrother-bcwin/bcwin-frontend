@@ -8,8 +8,8 @@ import { useToast } from "../ui/Toast";
 import AgencyHeader from "./shared/AgencyHeader";
 import MenuRow from "./shared/MenuRow";
 import type { AgencyView } from "./types";
-import { latestSettledYmd, shiftYmd, ymdIst } from "./dateRange";
 import { AUTO_SALARY_LIVE, SALARY_DASHBOARD_NOTICE } from "../../lib/auto-salary";
+import { sessionCachePeek, sessionCacheSet } from "../../lib/session-cache";
 
 interface Props {
   onOpen: (view: AgencyView) => void;
@@ -39,63 +39,48 @@ export default function AgencyHub({ onOpen, onNavigate }: Props) {
   const [lifetime, setLifetime] = useState(0);
   const [copied, setCopied] = useState(false);
 
-  const load = useCallback(async () => {
-    try {
-      const ymdYest = latestSettledYmd();
-      const today = ymdIst();
-      const weekStart = shiftYmd(today, -6);
-
-      const [ovLife, ovYest, rebateYest, weekSum] = await Promise.all([
-        api.getTeamOverview().catch(() => null),
-        api.getTeamOverview({ date: ymdYest }).catch(() => null),
-        api.getRebateDaily({ date: ymdYest }).catch(() => null),
-        api
-          .sumRebatesInRange({
-            startDate: weekStart,
-            endDate: today,
-            settled: "all",
-          })
-          .catch(() => 0),
-      ]);
-
-      if (ovYest?.data) {
-        const d = ovYest.data;
-        const l1 = n(d.directTeamSize);
-        const all = n(d.totalTeamSize);
-        setDirect(l1);
-        setTeam(Math.max(0, all - l1));
-        setDirectDeposit(n(d.directTeamDeposit));
-        setTeamDeposit(
-          Math.max(0, n(d.totalTeamDeposit) - n(d.directTeamDeposit))
-        );
-        setDirectDepCount(n(d.directDepositCount));
-        setTeamDepCount(
-          Math.max(0, n(d.teamDepositCount) - n(d.directDepositCount))
-        );
-        setDirectFirstDep(n(d.directFirstDepositUsers));
-        setTeamFirstDep(
-          Math.max(0, n(d.teamFirstDepositUsers) - n(d.directFirstDepositUsers))
-        );
-      }
-
-      if (ovLife?.data) {
-        const d = ovLife.data;
-        const l1 = n(d.directTeamSize);
-        setLifeDirect(l1);
-        setLifeTeam(Math.max(0, n(d.totalTeamSize) - l1));
-        setLifetime(n(d.totalCommissionEarned));
-      }
-
-      setYesterday(n(rebateYest?.data?.totalCommission));
-      setWeekCommission(n(weekSum));
-    } catch {
-      /* keep zeros */
-    }
+  const applyHub = useCallback((data: api.AgencyHubData) => {
+    const d = data.yesterday;
+    const l1 = n(d.directTeamSize);
+    const all = n(d.totalTeamSize);
+    setDirect(l1);
+    setTeam(Math.max(0, all - l1));
+    setDirectDeposit(n(d.directTeamDeposit));
+    setTeamDeposit(Math.max(0, n(d.totalTeamDeposit) - n(d.directTeamDeposit)));
+    setDirectDepCount(n(d.directDepositCount));
+    setTeamDepCount(
+      Math.max(0, n(d.teamDepositCount) - n(d.directDepositCount))
+    );
+    setDirectFirstDep(n(d.directFirstDepositUsers));
+    setTeamFirstDep(
+      Math.max(0, n(d.teamFirstDepositUsers) - n(d.directFirstDepositUsers))
+    );
+    const life = data.lifetime;
+    const lifeL1 = n(life.directTeamSize);
+    setLifeDirect(lifeL1);
+    setLifeTeam(Math.max(0, n(life.totalTeamSize) - lifeL1));
+    setLifetime(n(life.totalCommissionEarned));
+    setYesterday(n(data.yesterdayCommission));
+    setWeekCommission(n(data.weekCommission));
   }, []);
 
+  const load = useCallback(async () => {
+    try {
+      const res = await api.getAgencyHub();
+      if (res?.data) {
+        sessionCacheSet("agency-hub", res.data);
+        applyHub(res.data);
+      }
+    } catch {
+      /* keep zeros / cache */
+    }
+  }, [applyHub]);
+
   useEffect(() => {
+    const hit = sessionCachePeek<api.AgencyHubData>("agency-hub");
+    if (hit) applyHub(hit.data);
     void load();
-  }, [load]);
+  }, [load, applyHub]);
 
   const code = user?.referralCode ?? "—";
   const handleCopy = async () => {

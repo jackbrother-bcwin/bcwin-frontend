@@ -34,6 +34,7 @@ import {
   rebateIstDay,
   ymdIst,
 } from "../../lib/ist-day";
+import { sessionCachePeek, sessionCacheSet } from "../../lib/session-cache";
 
 /** Client-side page size (ledger is already merged in memory) */
 const PAGE_SIZE = 20;
@@ -119,44 +120,25 @@ const LEDGER_SOURCE_LABEL: Record<LedgerSource, string> = {
   gifts: "gift codes",
 };
 
-/** Build unified ledger from existing user APIs */
-async function loadLedger(): Promise<{ items: TxItem[]; failed: LedgerSource[] }> {
+function sortLedger(items: TxItem[]): TxItem[] {
+  return [...items].sort(
+    (a, b) =>
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+}
+
+/** First paint: deposits, withdrawals, games. */
+async function loadLedgerCore(): Promise<{ items: TxItem[]; failed: LedgerSource[] }> {
   const out: TxItem[] = [];
   const failed: LedgerSource[] = [];
 
   const settled = await Promise.allSettled([
-    // Higher caps so ledger closer to DB (same APIs; no new architecture)
-    api.getDeposits({ page: 1, limit: 500, status: "SUCCESS" }),
-    api.getWithdrawals({ page: 1, limit: 500, status: "SUCCESS" }),
-    api.getGameHistory({ page: 1, limit: 200 }),
-    // ADR-0011: legacy commission list not used for new ledger; rebate only
-    Promise.resolve({ data: [] as api.CommissionBreakdownItem[] }),
-    // Settled team rebate only; grouped below by IST 00:00–24:00 (same as Agency)
-    api.getAllSettledRebates().then((data) => ({ data })),
-    api.getSelfRebateHistory({ limit: 500 }),
-    // Backend activity history max 200; stay at 100 for headroom
-    api.getActivityHistory({ page: 1, limit: ACTIVITY_HISTORY_LIMIT }),
-    api.getSalary({ page: 1, limit: 100, creditedOnly: true }),
-    api.getVipClaimHistory({ page: 1, limit: 100, type: "all" }),
-    api.getSpinHistory({ page: 1, limit: 50 }),
-    api.getLuckySpinHistory({ page: 1, limit: 50 }),
-    api.getGiftHistory(),
+    api.getDeposits({ page: 1, limit: 100, status: "SUCCESS" }),
+    api.getWithdrawals({ page: 1, limit: 100, status: "SUCCESS" }),
+    api.getGameHistory({ page: 1, limit: 50 }),
   ]);
 
-  const [
-    deposits,
-    withdrawals,
-    games,
-    commissions,
-    rebates,
-    selfRebates,
-    bonuses,
-    salary,
-    vipClaims,
-    inviteSpins,
-    luckySpins,
-    gifts,
-  ] = settled;
+  const [deposits, withdrawals, games] = settled;
 
   const track = (r: PromiseSettledResult<unknown>, key: LedgerSource) => {
     if (r.status === "rejected") failed.push(key);
@@ -164,14 +146,6 @@ async function loadLedger(): Promise<{ items: TxItem[]; failed: LedgerSource[] }
   track(deposits, "deposits");
   track(withdrawals, "withdrawals");
   track(games, "games");
-  track(rebates, "rebates");
-  track(selfRebates, "selfRebates");
-  track(bonuses, "bonuses");
-  track(salary, "salary");
-  track(vipClaims, "vip");
-  track(inviteSpins, "inviteSpins");
-  track(luckySpins, "luckySpins");
-  track(gifts, "gifts");
 
   if (deposits.status === "fulfilled") {
     for (const d of deposits.value.deposits ?? []) {
@@ -224,7 +198,6 @@ async function loadLedger(): Promise<{ items: TxItem[]; failed: LedgerSource[] }
       const isSlot =
         major === "INOUT" || major.includes("SLOT");
 
-      // Stake: lottery → Bet; third-party/slots → Game moved in (wallet → game)
       push(out, {
         id: `bet-${g.id}`,
         type: isSlot ? "GAME_MOVED_IN" : "BET",
@@ -232,13 +205,12 @@ async function loadLedger(): Promise<{ items: TxItem[]; failed: LedgerSource[] }
           ? labelForTxType("GAME_MOVED_IN")
           : labelForTxType("BET"),
         amount: betAmt,
-        credit: false, // debit → red
+        credit: false,
         createdAt: g.createdAt,
         detail: g.gameName || g.majorGameType,
       });
 
       if (winAmt > 0) {
-        // Win / return: lottery → Win; slots → Game moved out (game → wallet)
         push(out, {
           id: `win-${g.id}`,
           type: isSlot ? "GAME_MOVED_OUT" : "WIN",
@@ -246,7 +218,7 @@ async function loadLedger(): Promise<{ items: TxItem[]; failed: LedgerSource[] }
             ? labelForTxType("GAME_MOVED_OUT")
             : labelForTxType("WIN"),
           amount: winAmt,
-          credit: true, // credit → green
+          credit: true,
           createdAt: g.createdAt,
           detail: g.gameName || g.majorGameType,
         });
@@ -254,52 +226,62 @@ async function loadLedger(): Promise<{ items: TxItem[]; failed: LedgerSource[] }
     }
   }
 
-  if (commissions.status === "fulfilled") {
-    const rows = commissions.value.data ?? [];
-    for (const c of rows) {
-      const amt = Number(c.commissionAmount ?? c.amount ?? 0);
-      push(out, {
-        id: `com-${c.id}`,
-        type: "AGENT_COMMISSION",
-        title: labelForTxType("AGENT_COMMISSION"),
-        amount: amt,
-        credit: true,
-        createdAt: c.createdAt ?? new Date().toISOString(),
-        detail: c.fromUser?.username
-          ? `From ${c.fromUser.username}`
-          : undefined,
-      });
-    }
-  }
+  return { items: sortLedger(out), failed };
+}
+
+/** Second wave: commission day totals + bonuses / spins / gifts / salary / VIP. */
+async function loadLedgerExtras(): Promise<{ items: TxItem[]; failed: LedgerSource[] }> {
+  const out: TxItem[] = [];
+  const failed: LedgerSource[] = [];
+
+  const settled = await Promise.allSettled([
+    api.getRebateDayTotals({ settled: "true" }),
+    api.getSelfRebateHistory({ limit: 200 }),
+    api.getActivityHistory({ page: 1, limit: ACTIVITY_HISTORY_LIMIT }),
+    api.getSalary({ page: 1, limit: 100, creditedOnly: true }),
+    api.getVipClaimHistory({ page: 1, limit: 100, type: "all" }),
+    api.getSpinHistory({ page: 1, limit: 50 }),
+    api.getLuckySpinHistory({ page: 1, limit: 50 }),
+    api.getGiftHistory(),
+  ]);
+
+  const [
+    rebates,
+    selfRebates,
+    bonuses,
+    salary,
+    vipClaims,
+    inviteSpins,
+    luckySpins,
+    gifts,
+  ] = settled;
+
+  const track = (r: PromiseSettledResult<unknown>, key: LedgerSource) => {
+    if (r.status === "rejected") failed.push(key);
+  };
+  track(rebates, "rebates");
+  track(selfRebates, "selfRebates");
+  track(bonuses, "bonuses");
+  track(salary, "salary");
+  track(vipClaims, "vip");
+  track(inviteSpins, "inviteSpins");
+  track(luckySpins, "luckySpins");
+  track(gifts, "gifts");
 
   if (rebates.status === "fulfilled") {
-    // One ledger line per IST calendar day (00:00–24:00), same total as Agency
-    const byDay = new Map<
-      string,
-      { amount: number; count: number }
-    >();
-    for (const r of rebates.value.data ?? []) {
-      if (r.settled === false) continue;
-      const day = rebateIstDay(r.createdAt);
-      if (!day) continue;
-      const prev = byDay.get(day) ?? { amount: 0, count: 0 };
-      prev.amount += Number(r.amount ?? 0);
-      prev.count += 1;
-      byDay.set(day, prev);
-    }
-    for (const [day, v] of byDay) {
+    for (const row of rebates.value.data ?? []) {
+      const amt = Number(row.total ?? 0);
+      if (!amt) continue;
+      const day = row.date;
       push(out, {
         id: `reb-day-${day}`,
         type: "AGENT_COMMISSION",
         title: labelForTxType("AGENT_COMMISSION"),
-        amount: Number(v.amount),
+        amount: amt,
         credit: true,
         createdAt: istDayEndIso(day),
         timeDisplay: istDayEndLabel(day),
-        detail:
-          v.count > 1
-            ? `${v.count} team bets settled`
-            : "Agent commission settled",
+        detail: "Agent commission settled",
       });
     }
   }
@@ -441,11 +423,7 @@ async function loadLedger(): Promise<{ items: TxItem[]; failed: LedgerSource[] }
     }
   }
 
-  out.sort(
-    (a, b) =>
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-  return { items: out, failed };
+  return { items: sortLedger(out), failed };
 }
 
 // ─── Page ────────────────────────────────────────────────────────────────────
@@ -482,34 +460,47 @@ export default function TransactionHistoryPage({ onBack }: Props) {
         lastSilentAt.current = nowMs;
       }
       const gen = ++loadGen.current;
-      if (silent) setRefreshing(true);
-      else setLoading(true);
-      try {
-        const { items: list, failed } = await loadLedger();
-        if (gen !== loadGen.current) return;
-        setItems(list);
-        if (!silent) setPage(1);
-        if (failed.length > 0) {
-          if (typeof console !== "undefined") {
-            console.warn("[tx-history] ledger sources failed:", failed);
-          }
-          // Toast on open/refresh; skip visibility auto-refetch to avoid spam
-          if (reportFailures) {
-            const labels = failed
-              .slice(0, 3)
-              .map((k) => LEDGER_SOURCE_LABEL[k])
-              .join(", ");
-            const extra =
-              failed.length > 3 ? ` +${failed.length - 3} more` : "";
-            toast(
-              `Some history failed to load (${labels}${extra}). Try refresh.`,
-              "error"
-            );
-          }
+      const cached = sessionCachePeek<TxItem[]>("tx-ledger");
+      if (cached && !silent) {
+        setItems(cached.data);
+        setLoading(false);
+      } else if (silent) {
+        setRefreshing(true);
+      } else if (!cached) {
+        setLoading(true);
+      }
+      const report = (failed: LedgerSource[]) => {
+        if (failed.length === 0) return;
+        if (typeof console !== "undefined") {
+          console.warn("[tx-history] ledger sources failed:", failed);
         }
+        if (!reportFailures) return;
+        const labels = failed
+          .slice(0, 3)
+          .map((k) => LEDGER_SOURCE_LABEL[k])
+          .join(", ");
+        const extra = failed.length > 3 ? ` +${failed.length - 3} more` : "";
+        toast(
+          `Some history failed to load (${labels}${extra}). Try refresh.`,
+          "error"
+        );
+      };
+      try {
+        const core = await loadLedgerCore();
+        if (gen !== loadGen.current) return;
+        setItems(core.items);
+        setLoading(false);
+        if (!silent) setPage(1);
+        report(core.failed);
+        const extra = await loadLedgerExtras();
+        if (gen !== loadGen.current) return;
+        const merged = sortLedger([...core.items, ...extra.items]);
+        setItems(merged);
+        sessionCacheSet("tx-ledger", merged);
+        report(extra.failed);
       } catch {
         if (gen !== loadGen.current) return;
-        setItems([]);
+        if (!cached) setItems([]);
         if (!silent) setPage(1);
         if (reportFailures) toast("Could not load transaction history", "error");
       } finally {

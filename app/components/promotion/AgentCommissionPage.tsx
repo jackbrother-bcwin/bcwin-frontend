@@ -21,6 +21,7 @@ import {
   ymdLocal,
 } from "./dateRange";
 import { rebateIstDay } from "../../lib/ist-day";
+import { sessionCachePeek, sessionCacheSet } from "../../lib/session-cache";
 
 interface Props {
   onBack: () => void;
@@ -153,41 +154,55 @@ export default function AgentCommissionPage({ onBack }: Props) {
     Record<string, PersonDetailState>
   >({});
 
+  type OverviewSnap = {
+    daily: DailyCommissionRow[];
+    rates: CommissionRateRow[];
+    rebateLevel: number;
+    teamSize: number;
+    teamBetting: number;
+    lifetime: number;
+    todayCredited: number;
+  };
+
+  const applyOverview = useCallback((s: OverviewSnap) => {
+    setDaily(s.daily);
+    setRates(s.rates);
+    setRebateLevel(s.rebateLevel);
+    setTeamSize(s.teamSize);
+    setTeamBetting(s.teamBetting);
+    setLifetime(s.lifetime);
+    setTodayCredited(s.todayCredited);
+  }, []);
+
   const loadOverview = useCallback(async (signal?: AbortSignal) => {
-    setLoading(true);
+    const hit = sessionCachePeek<OverviewSnap>("agent-commission");
+    if (hit) {
+      applyOverview(hit.data);
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
     try {
-      // Include today's unsettled (this is the only live commission screen).
-      // Yesterday+ still match TX because those rows are settled.
       const todayYmd = ymdIst();
-      // Lifetime overview for headcount + TOTAL INCOME. Dated today for
-      // live bet volume — undated overview must stay all-time (TeamMetrics).
-      const [rebateHist, ratesRes, overview, todayOverview, vipRes, dayPreview] =
-        await Promise.all([
-          api.getAllRebates({ settled: "all" }),
-          api.getRebateRates().catch(() => null),
-          api.getTeamOverview().catch(() => null),
-          api.getTeamOverview({ date: todayYmd }).catch(() => null),
-          api.getVipStatus().catch(() => null),
-          api.getRebateDayPreview({ date: todayYmd }).catch(() => null),
-        ]);
+      const [dayTotals, ratesRes, overview, dayPreview] = await Promise.all([
+        api.getRebateDayTotals({ settled: "true" }).catch(() => null),
+        api.getRebateRates().catch(() => null),
+        api.getTeamOverview().catch(() => null),
+        api.getRebateDayPreview({ date: todayYmd }).catch(() => null),
+      ]);
       if (signal?.aborted) return;
 
       const byDay = new Map<string, number>();
-      let credited = 0;
-      for (const r of rebateHist) {
-        const d = rebateIstDay(r.createdAt);
-        if (!d) continue;
-        const amt = Number(r.amount ?? 0);
-        byDay.set(d, roundMoney((byDay.get(d) ?? 0) + amt, 3));
-        if (d === todayYmd && r.settled !== false) credited += amt;
+      for (const row of dayTotals?.data ?? []) {
+        byDay.set(row.date, roundMoney(Number(row.total || 0), 3));
       }
+      const credited = byDay.get(todayYmd) ?? 0;
       if (dayPreview?.data) {
         byDay.set(
           todayYmd,
           roundMoney(Number(dayPreview.data.totalCommission || 0), 3)
         );
       }
-      setTodayCredited(roundMoney(credited, 3));
       const dailyRows: DailyCommissionRow[] = [...byDay.entries()]
         .sort((a, b) => (a[0] < b[0] ? 1 : -1))
         .map(([date, totalCommission]) => ({
@@ -200,50 +215,39 @@ export default function AgentCommissionPage({ onBack }: Props) {
           layer5Commission: 0,
           layer6Commission: 0,
         }));
-      setDaily(dailyRows);
 
-      // Map lottery rates → CommissionRateRow shape for existing UI
       const lottery = ratesRes?.data?.lottery ?? [];
-      setRates(
-        lottery.map((row) => ({
-          vipLevel: row.vipLevel,
-          layer1: row.layer1,
-          layer2: row.layer2,
-          layer3: row.layer3,
-          layer4: row.layer4,
-          layer5: row.layer5,
-          layer6: row.layer6,
-        })) as CommissionRateRow[]
-      );
+      const nextRates = lottery.map((row) => ({
+        vipLevel: row.vipLevel,
+        layer1: row.layer1,
+        layer2: row.layer2,
+        layer3: row.layer3,
+        layer4: row.layer4,
+        layer5: row.layer5,
+        layer6: row.layer6,
+      })) as CommissionRateRow[];
 
-      if (overview?.data) {
-        setTeamSize(Number(overview.data.totalTeamSize ?? 0));
-        // Settled rebates (lifetime) from team overview after ADR-0011
-        setLifetime(Number(overview.data.totalCommissionEarned ?? 0));
-      }
-      if (todayOverview?.data) {
-        setTeamBetting(Number(todayOverview.data.totalTeamBetting ?? 0));
-      }
-      // Today's rebate level is the live daily qualify (ADR-0036), not stored VIP.
       const previewLvl = Number(dayPreview?.data?.rebateLevel);
-      const rl = Number.isFinite(previewLvl)
-        ? previewLvl
-        : Number(
-            (vipRes?.data as { rebateLevel?: number } | undefined)
-              ?.rebateLevel ??
-              vipRes?.data?.currentLevel ??
-              0
-          );
-      if (Number.isFinite(rl)) setRebateLevel(rl);
+      const snap: OverviewSnap = {
+        daily: dailyRows,
+        rates: nextRates,
+        rebateLevel: Number.isFinite(previewLvl) ? previewLvl : 0,
+        teamSize: Number(overview?.data?.totalTeamSize ?? 0),
+        teamBetting: Number(dayPreview?.data?.teamBetting ?? 0),
+        lifetime: Number(overview?.data?.totalCommissionEarned ?? 0),
+        todayCredited: roundMoney(credited, 3),
+      };
+      applyOverview(snap);
+      sessionCacheSet("agent-commission", snap);
     } catch {
-      if (!signal?.aborted) {
+      if (!signal?.aborted && !hit) {
         setDaily([]);
         setRates([]);
       }
     } finally {
       if (!signal?.aborted) setLoading(false);
     }
-  }, []);
+  }, [applyOverview]);
 
   useEffect(() => {
     const ac = new AbortController();
