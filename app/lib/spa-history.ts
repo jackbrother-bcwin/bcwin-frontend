@@ -96,3 +96,23 @@ export function capStack(stack: string[], max: number): string[] {
   if (stack.length <= max) return stack;
   return stack.slice(-max);
 }
+
+export function stacksEqual(a: string[], b: string[]): boolean {
+  if (a.length !== b.length) return false;
+  return a.every((s, i) => s === b[i]);
+}
+
+/**
+ * Overlay dismiss used to replace() the current entry, leaving duplicate
+ * nested screens behind. Those slots always stamp `overlays` (even `[]`).
+ * Real screen pushes and the root trap pad omit the field — do not skip them.
+ */
+export function isLeftoverOverlaySlot(
+  state: unknown,
+  currentStack: string[]
+): boolean {
+  if (!isSpaHistoryState(state)) return false;
+  if (!Array.isArray(state.overlays)) return false;
+  if (currentStack.length <= 1) return false;
+  return stacksEqual(state.stack, currentStack);
+}

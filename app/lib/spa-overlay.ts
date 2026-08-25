@@ -2,11 +2,16 @@
  * SPA overlay / dialog back-stack.
  * Opens push a history entry; system-back / swipe-back closes top overlay
  * before leaving the current screen. Coordinates with AppShell popstate.
+ *
+ * UI dismiss pops that overlay entry when still on the same screen.
+ * Same-tap navigate (daily [GO] → deposit) already pushed a new screen —
+ * do not history.back() or the new screen is eaten.
  */
 
 import {
   isSpaHistoryState,
   nextGen,
+  stacksEqual,
   stackToHash,
   type SpaHistoryState,
 } from "./spa-history";
@@ -14,6 +19,8 @@ import {
 export type SpaOverlayEntry = {
   id: string;
   onClose: () => void;
+  /** Screen stack at open — used so dismiss does not pop a later navigate */
+  stack: string[];
 };
 
 let overlays: SpaOverlayEntry[] = [];
@@ -49,14 +56,17 @@ function writeHistoryWithOverlays(mode: "push" | "replace"): void {
  */
 export function pushSpaOverlay(id: string, onClose: () => void): void {
   if (typeof window === "undefined") return;
+  const stack = currentNavStack();
   // Replace same id if re-opened
   overlays = overlays.filter((o) => o.id !== id);
-  overlays.push({ id, onClose });
+  overlays.push({ id, onClose, stack });
   writeHistoryWithOverlays("push");
 }
 
 /**
- * UI close (X / cancel). Removes overlay and pops history if it was top.
+ * UI close (X / cancel / Confirm). Pops the overlay history entry when
+ * still on that screen. If a new screen was already pushed on this tap,
+ * leave history alone so the navigate is not eaten.
  */
 export function dismissSpaOverlay(id: string): void {
   if (typeof window === "undefined") return;
@@ -70,12 +80,14 @@ export function dismissSpaOverlay(id: string): void {
   if (idx < 0) return;
 
   const isTop = idx === overlays.length - 1;
+  const entry = overlays[idx]!;
   overlays = overlays.filter((o) => o.id !== id);
 
-  if (isTop) {
-    // Replace — do not history.back(). back() races with the same tap's
-    // navigate (daily [GO] → deposit) and eats the first click.
-    writeHistoryWithOverlays("replace");
+  if (!isTop) return;
+
+  if (stacksEqual(currentNavStack(), entry.stack)) {
+    suppressNextPop = true;
+    window.history.back();
   }
 }
 

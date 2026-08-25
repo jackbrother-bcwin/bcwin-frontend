@@ -18,6 +18,7 @@ import { useAuthState, useAuthActions } from "../context/AuthContext";
 import {
   bootstrapSpaHistory,
   capStack,
+  isLeftoverOverlaySlot,
   isSpaHistoryState,
   parseHash,
   pushSpaHistory,
@@ -188,6 +189,8 @@ export default function AppShell() {
   /** Skip writing history when applying popstate */
   const applyingPopRef = useRef(false);
   const bootstrappedRef = useRef(false);
+  /** Consecutive leftover overlay slots skipped in one Back gesture */
+  const leftoverSkipRef = useRef(0);
   const navStackRef = useRef(navStack);
   navStackRef.current = navStack;
   const isLoggedInRef = useRef(isLoggedIn);
@@ -312,6 +315,7 @@ export default function AppShell() {
     const onPopState = (e: PopStateEvent) => {
       // 1) Close top dialog / sheet / nested view first
       if (consumeSpaOverlayPop()) {
+        leftoverSkipRef.current = 0;
         return;
       }
 
@@ -319,6 +323,18 @@ export default function AppShell() {
       try {
         if (isSpaHistoryState(e.state)) {
           let stack = sanitizeStack(e.state.stack);
+          // Overlay dismiss used to replace() and leave duplicate nested
+          // entries (Win Go 30s→5min bets). Collapse those in one Back.
+          // Root trap pad omits `overlays` — never skip it (would leave site).
+          if (
+            isLeftoverOverlaySlot(e.state, sanitizeStack(navStackRef.current)) &&
+            leftoverSkipRef.current < MAX_STACK
+          ) {
+            leftoverSkipRef.current += 1;
+            window.history.back();
+            return;
+          }
+          leftoverSkipRef.current = 0;
           // Signed-in: never land on login / register / forgot
           if (
             isLoggedInRef.current &&
@@ -339,6 +355,7 @@ export default function AppShell() {
           return;
         }
 
+        leftoverSkipRef.current = 0;
         const fromHash = parseHash(window.location.hash);
         if (fromHash) {
           let stack = sanitizeStack(fromHash);
@@ -455,9 +472,9 @@ export default function AppShell() {
   );
 
   /**
-   * In-app header Back: always walk SPA stack via history.back() when nested.
-   * Never use history.length (unreliable; includes prior websites).
-   * Root: trap in-app (do not exit).
+   * In-app header Back: same stack as swipe-back.
+   * Overlay (slip / how-to) closes first; leftover overlay slots are skipped;
+   * then the previous `#/` screen (Home from Win Go). Root: trap in-app.
    */
   const goBack = useCallback(() => {
     const s = navStackRef.current;
