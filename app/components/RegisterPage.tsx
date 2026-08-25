@@ -5,7 +5,8 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useAuthActions } from "../context/AuthContext";
 import * as api from "../lib/api";
-import { sanitizeErrorMessage } from "../lib/safe";
+import { openSafeUrl, sanitizeErrorMessage } from "../lib/safe";
+import { OFFICIAL_TELEGRAM_URL } from "../lib/official-hosts";
 import CountryCodeSelect from "./ui/CountryCodeSelect";
 import { getCountryOption, isSmsOtpCountryCode } from "../lib/countryPhone";
 
@@ -640,7 +641,11 @@ export default function RegisterPage({ onBack, onLoginClick, onSuccess }: Regist
             </span>
             <span>Forgot password</span>
           </button>
-          <button type="button" className="flex flex-col items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => openSafeUrl(OFFICIAL_TELEGRAM_URL)}
+            className="flex flex-col items-center gap-1.5"
+          >
             <span className="home-icon-btn" style={{ background: "rgba(255,255,255,0.05)", borderColor: "rgba(255,255,255,0.1)" }}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FED358" strokeWidth="2.5">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />

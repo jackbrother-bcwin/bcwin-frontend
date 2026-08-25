@@ -10,8 +10,6 @@ import React, {
 } from "react";
 import dynamic from "next/dynamic";
 import BottomNav from "./BottomNav";
-import FloatingCS from "./FloatingCS";
-import FloatingTelegram from "./FloatingTelegram";
 import HomeFloatingColumn from "./HomeFloatingColumn";
 import DragonAssistant from "./dragon/DragonAssistant";
 import BrandSplash from "./ui/BrandSplash";
@@ -78,9 +76,6 @@ const ChangePasswordPage = dynamic(
   () => import("./account/ChangePasswordPage"),
   { loading: loadFallback }
 );
-
-/** Lottery tables — hide CS / Dragon (iframe games use tpGameOpen). */
-const HIDE_FLOATS = new Set(["wingo", "trxwingo", "k3", "5d", "moto"]);
 
 /** Screens that hide the bottom tab bar */
 const HIDE_NAV = new Set([
@@ -657,18 +652,7 @@ export default function AppShell() {
           )}
         </Suspense>
 
-        {!tpGameOpen &&
-          !HIDE_FLOATS.has(activeTab) &&
-          activeTab !== "home" &&
-          isLoggedIn && <FloatingCS />}
-        <DragonAssistant
-          showFloatingButton={
-            !tpGameOpen &&
-            !HIDE_FLOATS.has(activeTab) &&
-            activeTab !== "home" &&
-            isLoggedIn
-          }
-        />
+        <DragonAssistant showFloatingButton={false} />
         {!tpGameOpen && activeTab === "home" && (
           <HomeFloatingColumn onNavigate={pushScreen} />
         )}

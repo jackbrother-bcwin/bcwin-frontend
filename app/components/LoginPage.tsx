@@ -16,7 +16,8 @@ import {
   IoClose,
 } from "react-icons/io5";
 import { useAuthActions } from "../context/AuthContext";
-import { sanitizeErrorMessage } from "../lib/safe";
+import { openSafeUrl, sanitizeErrorMessage } from "../lib/safe";
+import { OFFICIAL_TELEGRAM_URL } from "../lib/official-hosts";
 import { persistLocale, type AppLocale } from "../lib/i18n";
 import PuzzleCaptcha, {
   preloadNatureScene,
@@ -453,6 +454,7 @@ export default function LoginPage({
           </button>
           <button
             type="button"
+            onClick={() => openSafeUrl(OFFICIAL_TELEGRAM_URL)}
             className="flex flex-col items-center gap-1.5 text-[12px] text-[#B79C8B] font-bold active:text-[#FED358]"
           >
             <div

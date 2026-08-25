@@ -161,13 +161,14 @@ export default function AgentCommissionPage({ onBack }: Props) {
       const todayYmd = ymdIst();
       // Lifetime overview for headcount + TOTAL INCOME. Dated today for
       // live bet volume — undated overview must stay all-time (TeamMetrics).
-      const [rebateHist, ratesRes, overview, todayOverview, vipRes] =
+      const [rebateHist, ratesRes, overview, todayOverview, vipRes, dayPreview] =
         await Promise.all([
           api.getAllRebates({ settled: "all" }),
           api.getRebateRates().catch(() => null),
           api.getTeamOverview().catch(() => null),
           api.getTeamOverview({ date: todayYmd }).catch(() => null),
           api.getVipStatus().catch(() => null),
+          api.getRebateDayPreview({ date: todayYmd }).catch(() => null),
         ]);
       if (signal?.aborted) return;
 
@@ -179,6 +180,12 @@ export default function AgentCommissionPage({ onBack }: Props) {
         const amt = Number(r.amount ?? 0);
         byDay.set(d, roundMoney((byDay.get(d) ?? 0) + amt, 3));
         if (d === todayYmd && r.settled !== false) credited += amt;
+      }
+      if (dayPreview?.data) {
+        byDay.set(
+          todayYmd,
+          roundMoney(Number(dayPreview.data.totalCommission || 0), 3)
+        );
       }
       setTodayCredited(roundMoney(credited, 3));
       const dailyRows: DailyCommissionRow[] = [...byDay.entries()]
@@ -217,12 +224,16 @@ export default function AgentCommissionPage({ onBack }: Props) {
       if (todayOverview?.data) {
         setTeamBetting(Number(todayOverview.data.totalTeamBetting ?? 0));
       }
-      // ADR-0012: tier for rates = rebateLevel (team ladder), not XP currentLevel
-      const rl = Number(
-        (vipRes?.data as { rebateLevel?: number } | undefined)?.rebateLevel ??
-          vipRes?.data?.currentLevel ??
-          0
-      );
+      // Today's rebate level is the live daily qualify (ADR-0036), not stored VIP.
+      const previewLvl = Number(dayPreview?.data?.rebateLevel);
+      const rl = Number.isFinite(previewLvl)
+        ? previewLvl
+        : Number(
+            (vipRes?.data as { rebateLevel?: number } | undefined)
+              ?.rebateLevel ??
+              vipRes?.data?.currentLevel ??
+              0
+          );
       if (Number.isFinite(rl)) setRebateLevel(rl);
     } catch {
       if (!signal?.aborted) {
@@ -249,6 +260,27 @@ export default function AgentCommissionPage({ onBack }: Props) {
           ? rangeForPreset("custom", { start: levelCustom, end: levelCustom })
           : rangeForPreset(levelPreset);
       try {
+        const usePreview =
+          (levelPreset === "today" ||
+            (levelPreset === "custom" && levelCustom === ymdIst())) &&
+          range.startDate === ymdIst();
+        if (usePreview) {
+          const prev = await api.getRebateDayPreview({
+            date: range.startDate,
+          });
+          if (cancelled) return;
+          const out: typeof levelSummary = {};
+          for (let i = 1; i <= 6; i++) {
+            const row = prev.data?.byLayer?.[`L${i}`];
+            out[`L${i}`] = {
+              commission: Number(row?.commission ?? 0),
+              bet: Number(row?.bet ?? 0),
+              users: Number(row?.users ?? 0),
+            };
+          }
+          setLevelSummary(out);
+          return;
+        }
         const res = await api.getRebateHistory({
           startDate: range.startDate,
           endDate: range.endDate,
@@ -697,7 +729,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
                   {formatINR(todayCredited)} credited
                 </p>
                 <p className="text-[10px] text-amber-100/70 mt-1">
-                  Live today (not in wallet yet). Yesterday matches Transaction history.
+                  Live today (not in wallet yet). Credits at 24:00 IST. Yesterday matches Transaction history.
                 </p>
               </div>
             </div>

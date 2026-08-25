@@ -4,8 +4,7 @@ import React from "react";
 import { FaTelegramPlane } from "react-icons/fa";
 import DraggableFloat from "./DraggableFloat";
 import { openSafeUrl } from "../lib/safe";
-
-const TELEGRAM_URL = "https://t.me/bcwingame_official";
+import { OFFICIAL_TELEGRAM_URL } from "../lib/official-hosts";
 
 /**
  * Floating Telegram shortcut — sits above CS + Dragon on the right stack.
@@ -20,7 +19,7 @@ export default function FloatingTelegram() {
       zIndex={42}
       aria-label="Telegram official channel"
       onClick={() => {
-        openSafeUrl(TELEGRAM_URL);
+        openSafeUrl(OFFICIAL_TELEGRAM_URL);
       }}
       className="rounded-full flex items-center justify-center"
       style={{

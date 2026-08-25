@@ -941,6 +941,23 @@ export async function getRebateHistory(params?: {
   return request(`/user/rebate/history${buildQuery(params ?? {})}`);
 }
 
+export type RebateDayPreview = {
+  date: string;
+  rebateLevel: number;
+  teamSize: number;
+  teamBetting: number;
+  teamDeposit: number;
+  totalCommission: number;
+  byLayer: Record<string, { commission: number; bet: number; users: number }>;
+};
+
+/** Live IST-day Agent commission (not in wallet until 00:00 close). */
+export async function getRebateDayPreview(params?: {
+  date?: string;
+}): Promise<{ success: true; data: RebateDayPreview }> {
+  return request(`/user/rebate/day-preview${buildQuery(params ?? {})}`);
+}
+
 export type RebateGameCategory =
   | "LOTTERY"
   | "SLOTS"

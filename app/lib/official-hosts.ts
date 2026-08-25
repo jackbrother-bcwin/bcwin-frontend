@@ -15,3 +15,6 @@ export function isOfficialWebHost(hostname: string): boolean {
 
 /** API origin for live game socket (Next on the site host cannot upgrade WS). */
 export const OFFICIAL_WS_URL = "wss://api.bcwin.club/api/v1/ws";
+
+/** Official Telegram — home button and logged-out Customer Service */
+export const OFFICIAL_TELEGRAM_URL = "https://t.me/bcwingame_official";

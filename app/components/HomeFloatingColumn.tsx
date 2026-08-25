@@ -6,8 +6,7 @@ import { FaTelegramPlane } from "react-icons/fa";
 import { IoChevronBack, IoHeadset } from "react-icons/io5";
 import { openSafeUrl } from "../lib/safe";
 import { useAuthState } from "../context/AuthContext";
-
-const TELEGRAM_URL = "https://t.me/bcwingame_official";
+import { OFFICIAL_TELEGRAM_URL } from "../lib/official-hosts";
 
 interface HomeFloatingColumnProps {
   onNavigate: (screen: string) => void;
@@ -166,7 +165,7 @@ export default function HomeFloatingColumn({ onNavigate }: HomeFloatingColumnPro
         <button
           type="button"
           aria-label="Telegram Channel"
-          onClick={() => handleButtonClick(() => openSafeUrl(TELEGRAM_URL))}
+          onClick={() => handleButtonClick(() => openSafeUrl(OFFICIAL_TELEGRAM_URL))}
           className="group relative flex flex-col items-center justify-center w-[54px] h-[54px] rounded-full bg-gradient-to-br from-[#2AABEE] via-[#229ED9] to-[#1D82B6] border border-cyan-300/50 shadow-[0_4px_18px_rgba(42,171,238,0.45)] hover:scale-105 active:scale-95 transition-all duration-200"
         >
           <FaTelegramPlane size={24} color="#ffffff" className="ml-0.5 group-hover:scale-110 transition-transform" />
@@ -201,7 +200,9 @@ export default function HomeFloatingColumn({ onNavigate }: HomeFloatingColumnPro
           <button
             type="button"
             aria-label="Customer Support"
-            onClick={() => handleButtonClick(() => openSafeUrl(TELEGRAM_URL))}
+            onClick={() =>
+              handleButtonClick(() => openSafeUrl(OFFICIAL_TELEGRAM_URL))
+            }
             className="group relative flex flex-col items-center justify-center w-[54px] h-[54px] rounded-full bg-gradient-to-br from-[#FED358] via-[#FFB472] to-[#CF7C10] border border-amber-200/60 shadow-[0_4px_18px_rgba(254,211,88,0.5)] hover:scale-105 active:scale-95 transition-all duration-200"
           >
             <IoHeadset size={24} color="#110D14" className="group-hover:scale-110 transition-transform" />
