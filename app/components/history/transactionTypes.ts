@@ -138,4 +138,6 @@ export type TxItem = {
   timeDisplay?: string;
   /** Optional extra detail text */
   detail?: string;
+  /** Optional bottom remark / note (e.g. for salary) */
+  remark?: string;
 };

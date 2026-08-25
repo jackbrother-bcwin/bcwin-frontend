@@ -406,6 +406,8 @@ async function loadLedger(): Promise<{ items: TxItem[]; failed: LedgerSource[] }
     for (const s of pays) {
       const st = String(s.status ?? "APPROVED").toUpperCase();
       if (st !== "APPROVED") continue;
+      const salaryRemark =
+        s.note || (s.periodDate ? `Period ${s.periodDate}` : undefined);
       push(out, {
         id: `sal-${s.id}`,
         type: "AGENT_SALARY",
@@ -413,7 +415,8 @@ async function loadLedger(): Promise<{ items: TxItem[]; failed: LedgerSource[] }
         amount: Number(s.amount),
         credit: true,
         createdAt: s.createdAt,
-        detail: s.note || (s.periodDate ? `Period ${s.periodDate}` : undefined),
+        detail: "Daily salary bonus",
+        remark: salaryRemark,
       });
     }
   }
@@ -683,9 +686,8 @@ export default function TransactionHistoryPage({ onBack }: Props) {
             >
               {/* Title strip */}
               <div
-                className="px-3.5 py-2.5 text-[16px] font-bold"
+                className="px-3.5 py-2.5 text-[16px] font-bold text-[#EDEDED]"
                 style={{
-                  color: "rgba(254,211,88,0.92)",
                   background: "rgba(0,0,0,0.18)",
                   borderBottom: "1px solid rgba(255,255,255,0.04)",
                 }}
@@ -723,11 +725,15 @@ export default function TransactionHistoryPage({ onBack }: Props) {
                 ) : null}
               </div>
 
-              {/* Spacer bar like screenshot bottom strip */}
-              <div
-                className="h-10 mx-3 mb-3 mt-1 rounded-md"
-                style={{ background: "rgba(0,0,0,0.22)" }}
-              />
+              {/* Remark box (only for Agent salary when remark/note is present) */}
+              {it.type === "AGENT_SALARY" && it.remark ? (
+                <div
+                  className="mx-3.5 mb-3 mt-1.5 px-3.5 py-2.5 rounded-[8px] text-[12.5px] leading-relaxed font-medium text-white/70 uppercase tracking-wide break-words"
+                  style={{ background: "rgba(0,0,0,0.26)" }}
+                >
+                  {it.remark}
+                </div>
+              ) : null}
             </article>
           ))}
 
