@@ -197,7 +197,7 @@ export default function GiftsPage({ onBack, onNavigate }: Props) {
             value={code}
             onChange={(e) => setCode(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && void handleRedeem()}
-            placeholder="Please enter gift code"
+            placeholder="BCWIN0X…"
             className="w-full h-11 bg-[#181316] text-[#FDE4BC] placeholder-[#837064] text-xs px-4 rounded-full border border-[#3D363A]/60 focus:outline-none focus:border-[#FED358]/60 transition-colors mb-4"
           />
           <button
