@@ -261,7 +261,7 @@ export default function CommissionDetailPage({
           onClick={() => setDateOpen(true)}
         >
           <span>{date}</span>
-          <span className="text-[#837064] text-[10px]">▼</span>
+          <span className="text-[#837064] text-[12px]">▼</span>
         </button>
 
         {loading ? (
@@ -287,7 +287,7 @@ export default function CommissionDetailPage({
               <p className="text-xs text-[#837064] font-mono">
                 {rebateSummary?.settlementTime || `${date} 24:00:00`}
               </p>
-              <p className="text-[11px] text-[#837064] leading-relaxed">
+              <p className="text-[13px] text-[#837064] leading-relaxed">
                 {rebateSummary && !rebateSummary.settled
                   ? "Team rebate accrues and settles on schedule"
                   : "The commission has been automatically credited to your balance"}

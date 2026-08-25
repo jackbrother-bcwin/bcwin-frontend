@@ -293,7 +293,7 @@ export default function BeginnerGuidePage({ onBack, onNavigate }: Props) {
             key={item.id}
             data-nav={item.id}
             onClick={() => scrollToSection(item.id)}
-            className="shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-semibold transition-all duration-300 whitespace-nowrap"
+            className="shrink-0 px-3.5 py-1.5 rounded-full text-[13px] font-semibold transition-all duration-300 whitespace-nowrap"
             style={{
               background:
                 activeSection === item.id
@@ -323,10 +323,10 @@ export default function BeginnerGuidePage({ onBack, onNavigate }: Props) {
           border: "1px solid rgba(254,211,88,0.2)",
         }}>
           <div className="text-3xl mb-2">🎮</div>
-          <h2 className="text-[16px] font-bold text-[#FDE4BC] mb-1">
+          <h2 className="text-[18px] font-bold text-[#FDE4BC] mb-1">
             Welcome to BCWIN!
           </h2>
-          <p className="text-[12px] text-[#B79C8B] leading-relaxed">
+          <p className="text-[14px] text-[#B79C8B] leading-relaxed">
             This guide will walk you through every feature of the app —
             from creating your account to playing games, making deposits,
             and withdrawing your winnings.
@@ -346,7 +346,7 @@ export default function BeginnerGuidePage({ onBack, onNavigate }: Props) {
             {/* Section header */}
             <div className="flex items-center gap-3 mb-3">
               <div
-                className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-[13px] font-black"
+                className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-[15px] font-black"
                 style={{
                   background: "linear-gradient(135deg, #FED358 0%, #FFB472 100%)",
                   color: "#110D14",
@@ -356,10 +356,10 @@ export default function BeginnerGuidePage({ onBack, onNavigate }: Props) {
                 {section.number}
               </div>
               <div className="min-w-0">
-                <h3 className="text-[14px] font-bold text-[#FDE4BC] truncate">
+                <h3 className="text-[16px] font-bold text-[#FDE4BC] truncate">
                   {section.title}
                 </h3>
-                <p className="text-[10px] text-[#837064] truncate">
+                <p className="text-[12px] text-[#837064] truncate">
                   {section.subtitle}
                 </p>
               </div>
@@ -390,7 +390,7 @@ export default function BeginnerGuidePage({ onBack, onNavigate }: Props) {
                   />
                 </div>
                 {/* Tap to expand overlay */}
-                <div className="absolute bottom-2 right-2 px-2.5 py-1 rounded-full text-[9px] font-semibold flex items-center gap-1 opacity-70 group-hover:opacity-100 transition-opacity" style={{
+                <div className="absolute bottom-2 right-2 px-2.5 py-1 rounded-full text-[11px] font-semibold flex items-center gap-1 opacity-70 group-hover:opacity-100 transition-opacity" style={{
                   background: "rgba(0,0,0,0.7)",
                   color: "#FED358",
                   backdropFilter: "blur(4px)",
@@ -408,7 +408,7 @@ export default function BeginnerGuidePage({ onBack, onNavigate }: Props) {
                   {section.steps.map((step, i) => (
                     <div key={i} className="flex items-start gap-2.5">
                       <div
-                        className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-[9px] font-bold"
+                        className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-[11px] font-bold"
                         style={{
                           background: "rgba(254,211,88,0.15)",
                           color: "#FED358",
@@ -418,7 +418,7 @@ export default function BeginnerGuidePage({ onBack, onNavigate }: Props) {
                         {i + 1}
                       </div>
                       <p
-                        className="text-[12px] leading-[1.6] text-[#B79C8B] flex-1"
+                        className="text-[14px] leading-[1.6] text-[#B79C8B] flex-1"
                         dangerouslySetInnerHTML={{
                           __html: step
                             .replaceAll(
@@ -441,14 +441,14 @@ export default function BeginnerGuidePage({ onBack, onNavigate }: Props) {
                     }}
                   >
                     <div className="flex items-center gap-1.5 mb-2">
-                      <span className="text-[13px]">💡</span>
-                      <span className="text-[10px] font-bold text-[#FED358] uppercase tracking-wider">
+                      <span className="text-[15px]">💡</span>
+                      <span className="text-[12px] font-bold text-[#FED358] uppercase tracking-wider">
                         Tips
                       </span>
                     </div>
                     <div className="space-y-1.5">
                       {section.tips.map((tip, i) => (
-                        <p key={i} className="text-[11px] text-[#837064] leading-[1.5] pl-5">
+                        <p key={i} className="text-[13px] text-[#837064] leading-[1.5] pl-5">
                           • {tip}
                         </p>
                       ))}
@@ -461,7 +461,7 @@ export default function BeginnerGuidePage({ onBack, onNavigate }: Props) {
                   <button
                     type="button"
                     onClick={() => onNavigate(section.action!.screen)}
-                    className="mt-4 w-full h-10 rounded-full text-[12px] font-bold uppercase tracking-wider transition-all duration-300 active:scale-[0.97]"
+                    className="mt-4 w-full h-10 rounded-full text-[14px] font-bold uppercase tracking-wider transition-all duration-300 active:scale-[0.97]"
                     style={{
                       background: "linear-gradient(135deg, #FED358 0%, #FFB472 100%)",
                       color: "#110D14",
@@ -481,7 +481,7 @@ export default function BeginnerGuidePage({ onBack, onNavigate }: Props) {
           background: "rgba(56,46,53,0.3)",
           border: "1px solid rgba(162,132,34,0.1)",
         }}>
-          <p className="text-[11px] text-[#837064] leading-[1.6]">
+          <p className="text-[13px] text-[#837064] leading-[1.6]">
             Need more help? Contact our{" "}
             <span className="text-[#FED358] font-semibold">Customer Service</span>{" "}
             team — available 24/7 through the floating chat icon or the Account page.

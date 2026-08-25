@@ -200,7 +200,7 @@ export function CountdownDigit({ digit, large }: { digit: string; large?: boolea
   return (
     <div
       className={`flex items-center justify-center font-black leading-none rounded-[3px] ${
-        large ? "w-[24px] h-[30px] text-[20px]" : "w-[20px] h-[26px] text-[18px]"
+        large ? "w-[24px] h-[30px] text-[22px]" : "w-[20px] h-[26px] text-[20px]"
       }`}
       style={{
         background: "#110D14",
@@ -223,7 +223,7 @@ export function CountdownDisplay({ seconds }: { seconds: number }) {
     <div className="flex items-center gap-[3px]">
       <CountdownDigit digit={a[0]!} />
       <CountdownDigit digit={a[1]!} />
-      <span className="text-[#110D14] text-[18px] font-black leading-none mx-0.5">:</span>
+      <span className="text-[#110D14] text-[20px] font-black leading-none mx-0.5">:</span>
       <CountdownDigit digit={b[0]!} />
       <CountdownDigit digit={b[1]!} />
     </div>
@@ -362,7 +362,7 @@ export function GameHeader({
               />
             </div>
             {title ? (
-              <span className="text-[12px] font-bold text-[#FED358] tracking-wide truncate">
+              <span className="text-[14px] font-bold text-[#FED358] tracking-wide truncate">
                 {title}
               </span>
             ) : null}
@@ -410,7 +410,7 @@ export function GameWalletCard({
       <div className="relative px-5 pt-4 pb-4">
         {/* Balance + Refresh */}
         <div className="flex items-center justify-center gap-2 mb-1">
-          <span className="text-[28px] font-black text-white tracking-tight tabular-nums">
+          <span className="text-[30px] font-black text-white tracking-tight tabular-nums">
             {formatINR(balance)}
           </span>
           <button
@@ -428,8 +428,8 @@ export function GameWalletCard({
 
         {/* Subtitle with Wallet Icon */}
         <div className="flex items-center justify-center gap-1.5 mb-4">
-          <span className="text-[16px]">👛</span>
-          <span className="text-[13px] font-medium text-[#FED358]">Wallet balance</span>
+          <span className="text-[18px]">👛</span>
+          <span className="text-[15px] font-medium text-[#FED358]">Wallet balance</span>
         </div>
 
         {/* Action Buttons */}
@@ -437,7 +437,7 @@ export function GameWalletCard({
           <button
             type="button"
             onClick={onWithdraw}
-            className="flex-1 h-[42px] rounded-full font-extrabold text-[15px] text-white active:scale-[0.98] transition-transform"
+            className="flex-1 h-[42px] rounded-full font-extrabold text-[17px] text-white active:scale-[0.98] transition-transform"
             style={{
               background: "#DA3735",
               boxShadow: "0 3px 12px rgba(218,55,53,0.4)",
@@ -448,7 +448,7 @@ export function GameWalletCard({
           <button
             type="button"
             onClick={onDeposit}
-            className="flex-1 h-[42px] rounded-full font-extrabold text-[15px] text-white active:scale-[0.98] transition-transform"
+            className="flex-1 h-[42px] rounded-full font-extrabold text-[17px] text-white active:scale-[0.98] transition-transform"
             style={{
               background: "#17B15E",
               boxShadow: "0 3px 12px rgba(23,177,94,0.4)",
@@ -471,15 +471,15 @@ export function GameNoticeBar({ text = "Welcome to BCWIN game platform, we will 
         border: "1px solid rgba(254,211,88,0.4)",
       }}
     >
-      <span className="text-[#FED358] shrink-0 text-[16px]" aria-hidden>
+      <span className="text-[#FED358] shrink-0 text-[18px]" aria-hidden>
         🔊
       </span>
       <div className="flex-1 overflow-hidden min-w-0">
-        <p className="text-[12px] font-medium text-[#FDE4BC]/90 whitespace-nowrap animate-marquee">{text}</p>
+        <p className="text-[14px] font-medium text-[#FDE4BC]/90 whitespace-nowrap animate-marquee">{text}</p>
       </div>
       <button
         type="button"
-        className="shrink-0 h-7 px-3.5 rounded-full text-[11px] font-bold text-[#110D14]"
+        className="shrink-0 h-7 px-3.5 rounded-full text-[13px] font-bold text-[#110D14]"
         style={{ background: "linear-gradient(180deg, #FED358 0%, #FFB472 100%)" }}
       >
         Detail
@@ -545,11 +545,11 @@ export function DurationTabs({
               </svg>
             </div>
             <span
-              className="text-[11px] font-bold leading-tight text-center"
+              className="text-[13px] font-bold leading-tight text-center"
               style={{ color: active ? "#110D14" : "#A195A8" }}
             >
               <span className="block">{tab.label}</span>
-              <span className="block text-[10px] opacity-90">{tab.subLabel}</span>
+              <span className="block text-[12px] opacity-90">{tab.subLabel}</span>
             </span>
           </button>
         );
@@ -591,7 +591,7 @@ export function PeriodBanner({
           <button
             type="button"
             onClick={onHowToPlay}
-            className="inline-flex items-center gap-1.5 self-start h-6 px-3 rounded-full text-[11px] font-bold text-[#110D14]"
+            className="inline-flex items-center gap-1.5 self-start h-6 px-3 rounded-full text-[13px] font-bold text-[#110D14]"
             style={{
               background: "rgba(255,255,255,0.4)",
               border: "1px solid rgba(17,13,20,0.25)",
@@ -603,7 +603,7 @@ export function PeriodBanner({
             How to play
           </button>
           <div>
-            <p className="text-[12px] font-bold text-[#110D14] leading-tight mb-1.5">{gameLabel}</p>
+            <p className="text-[14px] font-bold text-[#110D14] leading-tight mb-1.5">{gameLabel}</p>
             <div className="flex items-center gap-1.5">
               {recentBalls.length > 0
                 ? recentBalls.map((n, i) => <NumberBall key={`${n}-${i}`} num={n} size={22} />)
@@ -619,15 +619,15 @@ export function PeriodBanner({
 
         {/* Right section */}
         <div className="flex-1 pr-4 pl-2 py-3 flex flex-col items-end justify-between min-w-0">
-          <p className="text-[12px] font-bold text-[#110D14]">Time remaining</p>
+          <p className="text-[14px] font-bold text-[#110D14]">Time remaining</p>
           <CountdownDisplay seconds={countdown} />
           <div className="flex flex-col items-end min-w-0 max-w-full">
-            <p className="text-[12px] font-mono font-extrabold text-[#110D14] tracking-tight truncate max-w-full">
+            <p className="text-[14px] font-mono font-extrabold text-[#110D14] tracking-tight truncate max-w-full">
               {periodNumber ?? "—"}
             </p>
             {blockHashSuffix != null && blockHashSuffix !== "" && (
               <p
-                className="text-[10px] font-mono font-bold text-[#110D14]/80 tracking-wide"
+                className="text-[12px] font-mono font-bold text-[#110D14]/80 tracking-wide"
                 title="Tron block hash (last 5)"
               >
                 …{blockHashSuffix}
@@ -658,7 +658,7 @@ export function HistoryTabBar({
             key={t.id}
             type="button"
             onClick={() => onChange(t.id)}
-            className="flex-1 h-10 rounded-[12px] text-[13px] font-bold transition-all active:scale-[0.98]"
+            className="flex-1 h-10 rounded-[12px] text-[15px] font-bold transition-all active:scale-[0.98]"
             style={{
               background: isActive
                 ? "linear-gradient(180deg, #FFDF73 0%, #FFB454 100%)"
@@ -766,7 +766,7 @@ export function Pagination({
       >
         ‹
       </button>
-      <span className="text-white text-[12px] font-bold tabular-nums">
+      <span className="text-white text-[14px] font-bold tabular-nums">
         {safe}/{last}
       </span>
       <button
@@ -854,7 +854,7 @@ export function WingoTrendChart({
 
   if (rows.length === 0) {
     return (
-      <p className="py-8 text-center text-[14px] text-white/30">No chart data</p>
+      <p className="py-8 text-center text-[18px] text-white/30">No chart data</p>
     );
   }
 
@@ -889,10 +889,10 @@ export function WingoTrendChart({
           key={row.id}
           className="relative z-[1] grid w-full min-w-0 items-center gap-x-1 border-b border-white/5 py-1.5"
           style={{
-            gridTemplateColumns: "minmax(56px, 32%) minmax(0, 1fr) 20px",
+            gridTemplateColumns: "minmax(64px, 34%) minmax(0, 1fr) 22px",
           }}
         >
-          <span className="min-w-0 truncate font-mono text-[10px] leading-tight text-white/50 sm:text-[11px]">
+          <span className="min-w-0 truncate font-mono text-[14px] leading-tight font-semibold text-[#FED358] sm:text-[15px]">
             {row.periodNumber}
           </span>
           <div className="relative z-[1] grid min-w-0 grid-cols-10 gap-px">
@@ -912,7 +912,7 @@ export function WingoTrendChart({
                         }
                       : undefined
                   }
-                  className="relative z-[2] mx-auto flex aspect-square w-full max-w-[22px] items-center justify-center rounded-full text-[10px] font-bold leading-none sm:text-[11px]"
+                  className="relative z-[2] mx-auto flex aspect-square w-full max-w-[24px] items-center justify-center rounded-full text-[14px] font-bold leading-none sm:text-[15px]"
                   style={{
                     background: bg,
                     color,
@@ -926,7 +926,7 @@ export function WingoTrendChart({
             })}
           </div>
           <span
-            className="relative z-[1] flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full text-[10px] font-black text-white sm:text-[11px]"
+            className="relative z-[1] flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full text-[14px] font-black text-white sm:text-[15px]"
             style={{
               background: sizeStyle(isBig(row.resultNumber)).bg,
             }}

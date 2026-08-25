@@ -74,7 +74,7 @@ export default function FeedbackPage({ onBack }: Props) {
           <button
             key={t}
             onClick={() => setTab(t)}
-            className="h-9 rounded-lg text-[12px] font-bold"
+            className="h-9 rounded-lg text-[14px] font-bold"
             style={{
               background: tab === t ? "linear-gradient(180deg, #FED358 0%, #FFB472 100%)" : "transparent",
               color: tab === t ? "#110D14" : "rgba(255,255,255,0.55)",
@@ -88,13 +88,13 @@ export default function FeedbackPage({ onBack }: Props) {
       {tab === "new" ? (
         <div className="mx-3 mt-4 space-y-3">
           <div>
-            <p className="text-[11px] text-white/50 mb-1.5">Type</p>
+            <p className="text-[13px] text-white/50 mb-1.5">Type</p>
             <div className="grid grid-cols-2 gap-2">
               {TYPES.map((t) => (
                 <button
                   key={t}
                   onClick={() => setType(t)}
-                  className="h-9 rounded-lg text-[10px] font-bold"
+                  className="h-9 rounded-lg text-[12px] font-bold"
                   style={{
                     background: type === t ? "rgba(254,211,88,0.15)" : "#382E35",
                     color: type === t ? "#FED358" : "rgba(255,255,255,0.55)",
@@ -107,7 +107,7 @@ export default function FeedbackPage({ onBack }: Props) {
             </div>
           </div>
           <div>
-            <p className="text-[11px] text-white/50 mb-1.5">Subject</p>
+            <p className="text-[13px] text-white/50 mb-1.5">Subject</p>
             <input
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
@@ -117,7 +117,7 @@ export default function FeedbackPage({ onBack }: Props) {
             />
           </div>
           <div>
-            <p className="text-[11px] text-white/50 mb-1.5">Details</p>
+            <p className="text-[13px] text-white/50 mb-1.5">Details</p>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -146,13 +146,13 @@ export default function FeedbackPage({ onBack }: Props) {
             <div key={q.id} className="rounded-[10px] p-3"
               style={{ background: "#241E22", border: "1px solid rgba(255,255,255,0.06)" }}>
               <div className="flex justify-between items-start gap-2">
-                <p className="text-[12px] font-bold text-white">{q.subject}</p>
+                <p className="text-[14px] font-bold text-white">{q.subject}</p>
                 <StatusBadge status={q.status} />
               </div>
-              <p className="text-[10px] text-white/40 mt-1">{q.type} · {q.ticketId}</p>
-              <p className="text-[10px] text-white/30 mt-0.5">{formatDateTime(q.createdAt)}</p>
+              <p className="text-[12px] text-white/40 mt-1">{q.type} · {q.ticketId}</p>
+              <p className="text-[12px] text-white/30 mt-0.5">{formatDateTime(q.createdAt)}</p>
               {q.adminNotes && (
-                <p className="text-[11px] text-[#FED358]/80 mt-2">Admin: {q.adminNotes}</p>
+                <p className="text-[13px] text-[#FED358]/80 mt-2">Admin: {q.adminNotes}</p>
               )}
             </div>
           ))}

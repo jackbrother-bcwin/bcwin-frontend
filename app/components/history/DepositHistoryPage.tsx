@@ -72,18 +72,18 @@ export default function DepositHistoryPage({ onBack }: Props) {
                     {formatDepositAmount(d)}
                   </span>
                   {inrHint ? (
-                    <p className="text-[10px] font-medium text-white/35 tabular-nums mt-0.5">
+                    <p className="text-[12px] font-medium text-white/35 tabular-nums mt-0.5">
                       {inrHint}
                     </p>
                   ) : null}
                 </div>
                 <StatusBadge status={d.status} />
               </div>
-              <div className="flex justify-between text-[10px] text-white/40">
+              <div className="flex justify-between text-[12px] text-white/40">
                 <span>{d.method}</span>
                 <span>{formatDateTime(d.createdAt)}</span>
               </div>
-              <p className="text-[10px] text-white/30 mt-1 font-mono truncate">{d.orderId}</p>
+              <p className="text-[12px] text-white/30 mt-1 font-mono truncate">{d.orderId}</p>
             </div>
             );
           })}

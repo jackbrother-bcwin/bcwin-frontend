@@ -36,11 +36,11 @@ export default function NotificationsPage({ onBack }: Props) {
             <div key={n.id} className="rounded-[10px] p-3"
               style={{ background: "#241E22", border: "1px solid rgba(254,211,88,0.12)" }}>
               <div className="flex justify-between items-start gap-2">
-                <p className="text-[12px] font-bold text-white">{n.title}</p>
-                <span className="text-[9px] text-[#FED358] shrink-0 uppercase">{n.importance}</span>
+                <p className="text-[14px] font-bold text-white">{n.title}</p>
+                <span className="text-[11px] text-[#FED358] shrink-0 uppercase">{n.importance}</span>
               </div>
-              <p className="text-[11px] text-white/55 mt-1 leading-relaxed">{n.message}</p>
-              <p className="text-[10px] text-white/30 mt-2">{formatDateTime(n.createdAt)}</p>
+              <p className="text-[13px] text-white/55 mt-1 leading-relaxed">{n.message}</p>
+              <p className="text-[12px] text-white/30 mt-2">{formatDateTime(n.createdAt)}</p>
             </div>
           ))}
         </div>

@@ -86,9 +86,9 @@ function DetailRow({
 }) {
   return (
     <div className="flex items-start justify-between gap-3 py-[7px] border-b border-white/[0.04] last:border-0">
-      <span className="text-[12px] text-white/45 shrink-0">{label}</span>
+      <span className="text-[14px] text-white/45 shrink-0">{label}</span>
       <span
-        className={`text-[12px] text-right font-medium break-all ${
+        className={`text-[14px] text-right font-medium break-all ${
           valueClass ?? "text-white/85"
         }`}
       >
@@ -154,7 +154,7 @@ export default function BetHistoryCard({ detail }: { detail: BetHistoryDetail })
         {/* Period number with tiny chevron arrow + date time */}
         <div className="min-w-0 shrink-0">
           {detail.periodNumber && (
-            <div className="flex items-center gap-1.5 text-[14px] sm:text-[14.5px] text-white/90 font-medium tracking-tight">
+            <div className="flex items-center gap-1.5 text-[16px] sm:text-[16.5px] text-white/90 font-medium tracking-tight">
               <span>{detail.periodNumber}</span>
               <IoChevronDown
                 size={13}
@@ -165,7 +165,7 @@ export default function BetHistoryCard({ detail }: { detail: BetHistoryDetail })
             </div>
           )}
           {detail.createdAt && (
-            <p className="text-[11.5px] text-white/40 leading-snug truncate mt-0.5">
+            <p className="text-[13.5px] text-white/40 leading-snug truncate mt-0.5">
               {formatDateTime(detail.createdAt)}
             </p>
           )}
@@ -174,7 +174,7 @@ export default function BetHistoryCard({ detail }: { detail: BetHistoryDetail })
         {/* Right side: status badge + win/lose amount stacked vertically */}
         <div className="flex flex-col items-end gap-1 shrink-0 ml-auto pl-1">
           <StatusBadge status={detail.status} />
-          <span className={`text-[13.5px] sm:text-[14px] tabular-nums font-bold ${wl.className}`}>
+          <span className={`text-[15.5px] sm:text-[16px] tabular-nums font-bold ${wl.className}`}>
             {wl.text}
           </span>
         </div>
@@ -183,7 +183,7 @@ export default function BetHistoryCard({ detail }: { detail: BetHistoryDetail })
       {/* Expandable details */}
       {open && (
         <div className="mt-2.5 pt-1">
-          <p className="text-[13px] font-bold text-white/80 mb-1">Details</p>
+          <p className="text-[15px] font-bold text-white/80 mb-1">Details</p>
           <div
             className="rounded-[10px] px-3 py-1"
             style={{
@@ -197,7 +197,7 @@ export default function BetHistoryCard({ detail }: { detail: BetHistoryDetail })
                 <button
                   type="button"
                   onClick={copyOrder}
-                  className="inline-flex items-center gap-1 text-left text-[11px] font-mono text-[#c4b5fd] active:opacity-80"
+                  className="inline-flex items-center gap-1 text-left text-[13px] font-mono text-[#c4b5fd] active:opacity-80"
                 >
                   <span className="break-all">{order}</span>
                   {copied ? (
@@ -211,7 +211,7 @@ export default function BetHistoryCard({ detail }: { detail: BetHistoryDetail })
             <DetailRow
               label="Period"
               value={detail.periodNumber ?? "—"}
-              valueClass="text-white/80 font-mono text-[11px]"
+              valueClass="text-white/80 font-mono text-[13px]"
             />
             <DetailRow
               label="Purchase amount"
@@ -266,7 +266,7 @@ export default function BetHistoryCard({ detail }: { detail: BetHistoryDetail })
               value={
                 detail.createdAt ? formatDateTime(detail.createdAt) : "—"
               }
-              valueClass="text-white/60 text-[11px]"
+              valueClass="text-white/60 text-[13px]"
             />
             {detail.extraRows?.map((r) => (
               <DetailRow

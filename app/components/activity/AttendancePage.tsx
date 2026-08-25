@@ -214,7 +214,7 @@ export default function AttendancePage({ onBack, onNavigate }: Props) {
           >
             <IoChevronBack size={22} />
           </button>
-          <h1 className="text-white text-[17px] font-bold tracking-wide">
+          <h1 className="text-white text-[19px] font-bold tracking-wide">
             Game Rules
           </h1>
           <div className="w-9" />
@@ -229,7 +229,7 @@ export default function AttendancePage({ onBack, onNavigate }: Props) {
           <div className="bg-white rounded-[16px] p-2.5 shadow-sm border border-gray-200/60 overflow-hidden">
             {/* Table Header */}
             <div
-              className="rounded-t-[12px] py-2 px-1 flex items-center text-center text-white font-bold text-[12px] leading-tight"
+              className="rounded-t-[12px] py-2 px-1 flex items-center text-center text-white font-bold text-[14px] leading-tight"
               style={{
                 background: "linear-gradient(90deg, #ED6A1B 0%, #E34E17 100%)",
               }}
@@ -262,13 +262,13 @@ export default function AttendancePage({ onBack, onNavigate }: Props) {
                       isEven ? "bg-[#F7F8FA]" : "bg-white"
                     }`}
                   >
-                    <div className="flex-1 text-[#333333] text-[13px] font-medium">
+                    <div className="flex-1 text-[#333333] text-[15px] font-medium">
                       {t.day}
                     </div>
-                    <div className="flex-1 text-[#444444] text-[13px] font-semibold tabular-nums">
+                    <div className="flex-1 text-[#444444] text-[15px] font-semibold tabular-nums">
                       {formatRulesCurrency(t.accumulatedDeposit)}
                     </div>
-                    <div className="flex-1 text-[#444444] text-[13px] font-semibold tabular-nums">
+                    <div className="flex-1 text-[#444444] text-[15px] font-semibold tabular-nums">
                       {formatRulesCurrency(t.reward)}
                     </div>
                   </div>
@@ -303,7 +303,7 @@ export default function AttendancePage({ onBack, onNavigate }: Props) {
                   fill="url(#rulesRibbonGrad)"
                 />
               </svg>
-              <span className="relative z-10 text-white font-black text-[15px] tracking-wide">
+              <span className="relative z-10 text-white font-black text-[17px] tracking-wide">
                 Rules
               </span>
             </div>
@@ -313,9 +313,9 @@ export default function AttendancePage({ onBack, onNavigate }: Props) {
               {rulesList.map((text, idx) => (
                 <div
                   key={idx}
-                  className="flex items-start gap-2.5 text-[12.5px] leading-snug text-[#555555]"
+                  className="flex items-start gap-2.5 text-[14.5px] leading-snug text-[#555555]"
                 >
-                  <span className="text-[#ED6A1B] text-[9px] mt-1 flex-shrink-0">
+                  <span className="text-[#ED6A1B] text-[11px] mt-1 flex-shrink-0">
                     ◆
                   </span>
                   <p className="flex-1 font-medium">{text}</p>
@@ -333,7 +333,7 @@ export default function AttendancePage({ onBack, onNavigate }: Props) {
       <div className="flex-1 flex flex-col min-h-screen pb-24" style={{ background: "#110D14" }}>
         <PageHeader title="Attendance history" onBack={() => setShowHistory(false)} />
         {history.length === 0 ? (
-          <p className="text-center text-white/35 text-[13px] py-16">No more</p>
+          <p className="text-center text-white/35 text-[15px] py-16">No more</p>
         ) : (
           <div className="px-3 space-y-2">
             {history.map((h) => (
@@ -342,12 +342,12 @@ export default function AttendancePage({ onBack, onNavigate }: Props) {
                 className="rounded-xl p-3 flex justify-between"
                 style={{ background: "#241E22" }}
               >
-                <span className="text-[11px] text-white/45">
+                <span className="text-[13px] text-white/45">
                   {h.createdAt
                     ? new Date(h.createdAt).toLocaleString("en-IN")
                     : h.id.slice(0, 8)}
                 </span>
-                <span className="text-[13px] font-bold text-[#FED358]">
+                <span className="text-[15px] font-bold text-[#FED358]">
                   {formatINR(h.amount)}
                 </span>
               </div>
@@ -374,18 +374,18 @@ export default function AttendancePage({ onBack, onNavigate }: Props) {
             }}
           >
             <div className="relative z-[1] pr-[110px]">
-              <h2 className="text-[18px] font-black text-white">Attendance bonus</h2>
-              <p className="text-[11px] text-white/85 mt-1 leading-snug">
+              <h2 className="text-[20px] font-black text-white">Attendance bonus</h2>
+              <p className="text-[13px] text-white/85 mt-1 leading-snug">
                 Get rewards based on consecutive login days
               </p>
               <div
-                className="inline-flex mt-3 rounded-full px-3 py-1 text-[11px] font-bold text-white"
+                className="inline-flex mt-3 rounded-full px-3 py-1 text-[13px] font-bold text-white"
                 style={{ background: "rgba(0,0,0,0.2)" }}
               >
                 Attended consecutively{" "}
                 <span className="text-[#FED358] ml-1">{streak} Day</span>
               </div>
-              <p className="text-[12px] text-white/90 mt-2">
+              <p className="text-[14px] text-white/90 mt-2">
                 Accumulated{" "}
                 <span className="font-black text-[#FED358]">{formatINR(accumulated)}</span>
               </p>
@@ -404,7 +404,7 @@ export default function AttendancePage({ onBack, onNavigate }: Props) {
             <button
               type="button"
               onClick={() => setShowRules(true)}
-              className="flex-1 h-10 rounded-full text-[12px] font-bold text-[#110D14] flex items-center justify-center gap-1.5"
+              className="flex-1 h-10 rounded-full text-[14px] font-bold text-[#110D14] flex items-center justify-center gap-1.5"
               style={{ background: "linear-gradient(180deg,#FED358,#E8A84A)" }}
             >
               <IoDocumentText size={16} />
@@ -413,7 +413,7 @@ export default function AttendancePage({ onBack, onNavigate }: Props) {
             <button
               type="button"
               onClick={() => setShowHistory(true)}
-              className="flex-1 h-10 rounded-full text-[12px] font-bold text-[#110D14] flex items-center justify-center gap-1.5"
+              className="flex-1 h-10 rounded-full text-[14px] font-bold text-[#110D14] flex items-center justify-center gap-1.5"
               style={{ background: "linear-gradient(180deg,#FED358,#E8A84A)" }}
             >
               <IoTime size={16} />
@@ -439,7 +439,7 @@ export default function AttendancePage({ onBack, onNavigate }: Props) {
                     opacity: claimed ? 0.65 : 1,
                   }}
                 >
-                  <span className="text-[13px] font-black text-[#FED358] tabular-nums">
+                  <span className="text-[15px] font-black text-[#FED358] tabular-nums">
                     {formatINR(t.reward ?? 0)}
                   </span>
                   <div
@@ -449,9 +449,9 @@ export default function AttendancePage({ onBack, onNavigate }: Props) {
                       boxShadow: "0 4px 12px rgba(254,211,88,0.35)",
                     }}
                   >
-                    <span className="text-[16px]">★</span>
+                    <span className="text-[18px]">★</span>
                   </div>
-                  <span className="text-[11px] text-white/55 font-medium">
+                  <span className="text-[13px] text-white/55 font-medium">
                     {day} Day
                   </span>
                 </div>
@@ -476,10 +476,10 @@ export default function AttendancePage({ onBack, onNavigate }: Props) {
                   <IoGift size={32} className="text-[#FED358]" />
                 </div>
                 <div>
-                  <p className="text-[15px] font-black text-[#FED358] tabular-nums">
+                  <p className="text-[17px] font-black text-[#FED358] tabular-nums">
                     {formatINR(tiers[6].reward ?? 0)}
                   </p>
-                  <p className="text-[11px] text-white/50">7 Day</p>
+                  <p className="text-[13px] text-white/50">7 Day</p>
                 </div>
               </div>
             </div>
@@ -506,7 +506,7 @@ export default function AttendancePage({ onBack, onNavigate }: Props) {
           type="button"
           disabled={claiming || loading}
           onClick={() => void handleAttendance()}
-          className="w-full h-12 rounded-full text-[15px] font-black text-[#110D14] disabled:opacity-60 active:scale-[0.98]"
+          className="w-full h-12 rounded-full text-[17px] font-black text-[#110D14] disabled:opacity-60 active:scale-[0.98]"
           style={{ background: "linear-gradient(180deg,#FED358,#E8A84A)" }}
         >
           {claiming ? "Claiming…" : claimable ? "Claim reward" : "Attendance"}

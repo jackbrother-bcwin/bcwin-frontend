@@ -65,7 +65,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           <div
             key={t.id}
             role={t.kind === "error" ? "alert" : "status"}
-            className="pointer-events-auto px-4 py-2.5 rounded-xl text-[12px] font-semibold text-center shadow-lg animate-[fadeIn_0.25s_ease]"
+            className="pointer-events-auto px-4 py-2.5 rounded-xl text-[14px] font-semibold text-center shadow-lg animate-[fadeIn_0.25s_ease]"
             style={{
               background:
                 t.kind === "success"

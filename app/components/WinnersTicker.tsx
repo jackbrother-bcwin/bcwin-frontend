@@ -66,7 +66,7 @@ export default function WinnersTicker() {
         {winners.map((winner, idx) => (
           <div
             key={winner.id}
-            className={`flex items-center justify-between p-2 rounded bg-bg-level-4/50 text-[11px] transition-all duration-500 ease-in-out ${
+            className={`flex items-center justify-between p-2 rounded bg-bg-level-4/50 text-[13px] transition-all duration-500 ease-in-out ${
               idx === 0 ? "animate-fadeIn" : ""
             }`}
           >

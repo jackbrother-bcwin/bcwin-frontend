@@ -85,7 +85,7 @@ export default function SettingsPage({ onBack, onNavigate }: Props) {
               priority
             />
           </div>
-          <div className="flex items-center gap-1 text-[13px] text-white/55 font-medium">
+          <div className="flex items-center gap-1 text-[15px] text-white/55 font-medium">
             {t("settings.changeAvatar")}
             <IoChevronForward size={16} className="opacity-60" />
           </div>
@@ -99,9 +99,9 @@ export default function SettingsPage({ onBack, onNavigate }: Props) {
           onClick={() => setEditNickOpen(true)}
           className="w-full flex items-center justify-between px-3.5 py-3.5 active:bg-white/[0.03] gap-3 min-w-0"
         >
-          <span className="text-[13px] text-white/45 shrink-0">{t("settings.nickname")}</span>
+          <span className="text-[15px] text-white/45 shrink-0">{t("settings.nickname")}</span>
           <span className="flex items-center gap-0.5 min-w-0">
-            <span className="text-[13px] font-semibold text-white/90 truncate max-w-[11rem] sm:max-w-[14rem]">
+            <span className="text-[15px] font-semibold text-white/90 truncate max-w-[11rem] sm:max-w-[14rem]">
               {nickname}
             </span>
             <IoChevronForward
@@ -115,13 +115,13 @@ export default function SettingsPage({ onBack, onNavigate }: Props) {
 
         {/* UID */}
         <div className="w-full flex items-center justify-between px-3.5 py-3.5 gap-3">
-          <span className="text-[13px] text-white/45 shrink-0">UID</span>
+          <span className="text-[15px] text-white/45 shrink-0">UID</span>
           <button
             type="button"
             onClick={copyUid}
             className="flex items-center gap-1.5 active:opacity-80 min-w-0"
           >
-            <span className="text-[13px] font-bold text-[#FED358] tabular-nums truncate">
+            <span className="text-[15px] font-bold text-[#FED358] tabular-nums truncate">
               {uid}
             </span>
             {copied ? (
@@ -142,7 +142,7 @@ export default function SettingsPage({ onBack, onNavigate }: Props) {
           className="w-0.5 h-3.5 rounded-full shrink-0"
           style={{ background: "#FED358" }}
         />
-        <h2 className="text-[14px] font-bold text-[#FED358]">
+        <h2 className="text-[16px] font-bold text-[#FED358]">
           {t("settings.security")}
         </h2>
       </div>
@@ -242,10 +242,10 @@ function SettingsRow({
       className="w-full flex items-center gap-3 px-3.5 py-3.5 active:bg-white/[0.03] min-w-0"
     >
       {icon}
-      <span className="flex-1 text-left text-[13px] font-semibold text-white min-w-0 truncate">
+      <span className="flex-1 text-left text-[15px] font-semibold text-white min-w-0 truncate">
         {label}
       </span>
-      <span className="flex items-center gap-0.5 shrink-0 min-w-0 max-w-[55%] text-[12px] text-white/40 font-medium">
+      <span className="flex items-center gap-0.5 shrink-0 min-w-0 max-w-[55%] text-[14px] text-white/40 font-medium">
         <span className="truncate">{action}</span>
         <IoChevronForward size={15} className="opacity-70 shrink-0" />
       </span>

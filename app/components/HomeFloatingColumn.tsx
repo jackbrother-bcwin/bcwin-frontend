@@ -137,7 +137,7 @@ export default function HomeFloatingColumn({ onNavigate }: HomeFloatingColumnPro
               className="w-full h-full object-contain filter drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)] group-hover:rotate-45 transition-transform duration-500"
             />
           </div>
-          <span className="absolute -bottom-1 bg-gradient-to-r from-amber-500 to-yellow-400 text-[9px] font-black text-black px-1.5 py-[1px] rounded-full uppercase tracking-tighter shadow-md whitespace-nowrap">
+          <span className="absolute -bottom-1 bg-gradient-to-r from-amber-500 to-yellow-400 text-[11px] font-black text-black px-1.5 py-[1px] rounded-full uppercase tracking-tighter shadow-md whitespace-nowrap">
             Lucky
           </span>
         </button>
@@ -156,7 +156,7 @@ export default function HomeFloatingColumn({ onNavigate }: HomeFloatingColumnPro
               className="w-full h-full object-contain filter drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)] group-hover:rotate-45 transition-transform duration-500"
             />
           </div>
-          <span className="absolute -bottom-1 bg-gradient-to-r from-red-500 to-amber-400 text-[9px] font-black text-white px-1.5 py-[1px] rounded-full uppercase tracking-tighter shadow-md whitespace-nowrap">
+          <span className="absolute -bottom-1 bg-gradient-to-r from-red-500 to-amber-400 text-[11px] font-black text-white px-1.5 py-[1px] rounded-full uppercase tracking-tighter shadow-md whitespace-nowrap">
             Invite
           </span>
         </button>
@@ -169,7 +169,7 @@ export default function HomeFloatingColumn({ onNavigate }: HomeFloatingColumnPro
           className="group relative flex flex-col items-center justify-center w-[54px] h-[54px] rounded-full bg-gradient-to-br from-[#2AABEE] via-[#229ED9] to-[#1D82B6] border border-cyan-300/50 shadow-[0_4px_18px_rgba(42,171,238,0.45)] hover:scale-105 active:scale-95 transition-all duration-200"
         >
           <FaTelegramPlane size={24} color="#ffffff" className="ml-0.5 group-hover:scale-110 transition-transform" />
-          <span className="absolute -bottom-1 bg-gradient-to-r from-cyan-400 to-blue-500 text-[9px] font-black text-white px-1.5 py-[1px] rounded-full uppercase tracking-tighter shadow-md whitespace-nowrap">
+          <span className="absolute -bottom-1 bg-gradient-to-r from-cyan-400 to-blue-500 text-[11px] font-black text-white px-1.5 py-[1px] rounded-full uppercase tracking-tighter shadow-md whitespace-nowrap">
             Telegram
           </span>
         </button>
@@ -189,7 +189,7 @@ export default function HomeFloatingColumn({ onNavigate }: HomeFloatingColumnPro
                 className="w-full h-full object-contain pointer-events-none group-hover:scale-110 transition-transform duration-300"
               />
             </div>
-            <span className="absolute -bottom-1 bg-gradient-to-r from-purple-500 to-fuchsia-500 text-[9px] font-black text-white px-1.5 py-[1px] rounded-full uppercase tracking-tighter shadow-md whitespace-nowrap">
+            <span className="absolute -bottom-1 bg-gradient-to-r from-purple-500 to-fuchsia-500 text-[11px] font-black text-white px-1.5 py-[1px] rounded-full uppercase tracking-tighter shadow-md whitespace-nowrap">
               Dragon
             </span>
           </button>
@@ -206,7 +206,7 @@ export default function HomeFloatingColumn({ onNavigate }: HomeFloatingColumnPro
             className="group relative flex flex-col items-center justify-center w-[54px] h-[54px] rounded-full bg-gradient-to-br from-[#FED358] via-[#FFB472] to-[#CF7C10] border border-amber-200/60 shadow-[0_4px_18px_rgba(254,211,88,0.5)] hover:scale-105 active:scale-95 transition-all duration-200"
           >
             <IoHeadset size={24} color="#110D14" className="group-hover:scale-110 transition-transform" />
-            <span className="absolute -bottom-1 bg-gradient-to-r from-amber-600 to-yellow-600 text-[9px] font-black text-white px-1.5 py-[1px] rounded-full uppercase tracking-tighter shadow-md whitespace-nowrap">
+            <span className="absolute -bottom-1 bg-gradient-to-r from-amber-600 to-yellow-600 text-[11px] font-black text-white px-1.5 py-[1px] rounded-full uppercase tracking-tighter shadow-md whitespace-nowrap">
               Support
             </span>
           </button>

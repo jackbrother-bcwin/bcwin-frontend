@@ -11,7 +11,7 @@ export default function NoticeBar() {
         <IoVolumeHigh size={13} color="#FED358" />
       </div>
       <div className="overflow-hidden flex-1 min-w-0">
-        <p className="text-[11px] text-[#FDE4BC]/90 whitespace-nowrap animate-marquee font-medium">
+        <p className="text-[13px] text-[#FDE4BC]/90 whitespace-nowrap animate-marquee font-medium">
           {NOTICE_TEXT}
         </p>
       </div>

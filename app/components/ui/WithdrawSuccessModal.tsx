@@ -163,7 +163,7 @@ export default function WithdrawSuccessModal({
         {/* Title */}
         <h2
           id="withdraw-success-title"
-          className="text-center text-[17px] font-bold leading-snug mb-2"
+          className="text-center text-[19px] font-bold leading-snug mb-2"
           style={{ color: "#FFFFFF" }}
         >
           Withdrawal request successful
@@ -171,7 +171,7 @@ export default function WithdrawSuccessModal({
 
         {/* Subtitle */}
         <p
-          className="text-center text-[13px] leading-relaxed mb-6"
+          className="text-center text-[15px] leading-relaxed mb-6"
           style={{ color: "rgba(255,255,255,0.55)" }}
         >
           We will complete the withdrawal within 2 hours!
@@ -183,7 +183,7 @@ export default function WithdrawSuccessModal({
         <button
           type="button"
           onClick={onConfirm}
-          className="w-full h-[46px] rounded-full text-[15px] font-bold active:scale-[0.98] transition-transform"
+          className="w-full h-[46px] rounded-full text-[17px] font-bold active:scale-[0.98] transition-transform"
           style={{
             background: "linear-gradient(180deg, #FFD166 0%, #FFA03D 100%)",
             color: "#1A1A1A",

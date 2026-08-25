@@ -313,7 +313,7 @@ export default function DepositPage({ onBack, onNavigate }: Props) {
                     setTab(t.id);
                     if (t.id === "history") void loadHistory();
                   }}
-                  className="relative min-w-0 px-3 py-2 text-[14px] font-bold transition-colors sm:px-4"
+                  className="relative min-w-0 px-3 py-2 text-[16px] font-bold transition-colors sm:px-4"
                   style={{ color: active ? "#FED358" : "#837064" }}
                 >
                   <span className="truncate">{t.label}</span>
@@ -352,9 +352,9 @@ export default function DepositPage({ onBack, onNavigate }: Props) {
             <div className="pointer-events-none absolute -bottom-10 left-10 h-24 w-24 rounded-full bg-black/10" />
             <div className="relative flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-[12px] font-medium text-white/85">Balance</p>
+                <p className="text-[14px] font-medium text-white/85">Balance</p>
                 <div className="mt-1 flex items-center gap-2">
-                  <p className="text-[28px] font-black tabular-nums leading-none text-white tracking-tight">
+                  <p className="text-[30px] font-black tabular-nums leading-none text-white tracking-tight">
                     {formatINR(user?.balance)}
                   </p>
                   <button
@@ -378,7 +378,7 @@ export default function DepositPage({ onBack, onNavigate }: Props) {
           </div>
 
           {/* Payment methods */}
-          <p className="mb-2 mt-5 text-[13px] font-bold text-white/90">
+          <p className="mb-2 mt-5 text-[15px] font-bold text-white/90">
             Payment methods
           </p>
           <div className="grid grid-cols-4 gap-2 sm:grid-cols-5">
@@ -405,7 +405,7 @@ export default function DepositPage({ onBack, onNavigate }: Props) {
                   aria-label={m.label}
                 >
                   {mBonus > 0 && (
-                    <span className="absolute -right-1 -top-1 rounded-md bg-[#E53935] px-1 py-0.5 text-[9px] font-black leading-none text-white shadow">
+                    <span className="absolute -right-1 -top-1 rounded-md bg-[#E53935] px-1 py-0.5 text-[11px] font-black leading-none text-white shadow">
                       +{mBonus}%
                     </span>
                   )}
@@ -423,7 +423,7 @@ export default function DepositPage({ onBack, onNavigate }: Props) {
                     )}
                   </div>
                   <span
-                    className="line-clamp-2 text-center text-[10px] font-bold leading-tight"
+                    className="line-clamp-2 text-center text-[12px] font-bold leading-tight"
                     style={{ color: active ? "#FED358" : "rgba(255,255,255,0.7)" }}
                   >
                     {m.label}
@@ -434,7 +434,7 @@ export default function DepositPage({ onBack, onNavigate }: Props) {
           </div>
 
           {/* Select channel */}
-          <p className="mb-2 mt-5 text-[13px] font-bold text-white/90">
+          <p className="mb-2 mt-5 text-[15px] font-bold text-white/90">
             Select channel
           </p>
           <div className="space-y-2">
@@ -477,13 +477,13 @@ export default function DepositPage({ onBack, onNavigate }: Props) {
                     ) : null}
                     <div className="min-w-0">
                       <p
-                        className="truncate text-[13px] font-bold"
+                        className="truncate text-[15px] font-bold"
                         style={{ color: active ? "#110D14" : "#FDE4BC" }}
                       >
                         {ch.name}
                       </p>
                       <p
-                        className="mt-0.5 text-[11px] font-medium"
+                        className="mt-0.5 text-[13px] font-medium"
                         style={{
                           color: active ? "rgba(17,13,20,0.65)" : "#837064",
                         }}
@@ -497,7 +497,7 @@ export default function DepositPage({ onBack, onNavigate }: Props) {
                   </div>
                   {bonusPct > 0 && (
                     <span
-                      className="shrink-0 rounded-md px-2 py-1 text-[11px] font-black"
+                      className="shrink-0 rounded-md px-2 py-1 text-[13px] font-black"
                       style={{
                         background: active
                           ? "rgba(17,13,20,0.12)"
@@ -524,7 +524,7 @@ export default function DepositPage({ onBack, onNavigate }: Props) {
               }}
             >
               <TetherMark size={28} />
-              <p className="text-[12px] font-semibold leading-snug text-[#26A17B]">
+              <p className="text-[14px] font-semibold leading-snug text-[#26A17B]">
                 Pay with USDT (Tether) and get a{" "}
                 <span className="font-black">+{bonusPct}% bonus</span>{" "}
                 credited with your deposit.
@@ -533,10 +533,10 @@ export default function DepositPage({ onBack, onNavigate }: Props) {
           )}
 
           {/* Deposit amount */}
-          <p className="mb-2 mt-5 text-[13px] font-bold text-white/90">
+          <p className="mb-2 mt-5 text-[15px] font-bold text-white/90">
             Deposit amount
             {isUsdt && (
-              <span className="ml-2 text-[11px] font-medium text-white/40">
+              <span className="ml-2 text-[13px] font-medium text-white/40">
                 (USDT)
               </span>
             )}
@@ -549,7 +549,7 @@ export default function DepositPage({ onBack, onNavigate }: Props) {
                   key={n}
                   type="button"
                   onClick={() => pickQuick(n)}
-                  className="h-10 rounded-lg text-[12px] font-bold active:scale-95 transition-transform"
+                  className="h-10 rounded-lg text-[14px] font-bold active:scale-95 transition-transform"
                   style={{
                     background: active
                       ? "linear-gradient(180deg, #FED358 0%, #E8A84A 100%)"
@@ -574,7 +574,7 @@ export default function DepositPage({ onBack, onNavigate }: Props) {
               height: 48,
             }}
           >
-            <span className="text-[14px] font-bold text-[#FED358] shrink-0">
+            <span className="text-[16px] font-bold text-[#FED358] shrink-0">
               {isUsdt ? "$" : "₹"}
             </span>
             <input
@@ -590,7 +590,7 @@ export default function DepositPage({ onBack, onNavigate }: Props) {
                 const n = Number(e.target.value);
                 if (Number.isFinite(n)) setAmount(n);
               }}
-              className="min-w-0 flex-1 bg-transparent text-[15px] font-semibold text-white outline-none placeholder:text-white/30"
+              className="min-w-0 flex-1 bg-transparent text-[17px] font-semibold text-white outline-none placeholder:text-white/30"
               aria-label="Deposit amount"
             />
           </div>
@@ -605,14 +605,14 @@ export default function DepositPage({ onBack, onNavigate }: Props) {
               }}
             >
               <div className="min-w-0">
-                <p className="text-[10px] font-medium text-white/45">
+                <p className="text-[12px] font-medium text-white/45">
                   You will receive (INR)
                 </p>
-                <p className="text-[16px] font-black text-[#FED358] tabular-nums leading-tight mt-0.5">
+                <p className="text-[18px] font-black text-[#FED358] tabular-nums leading-tight mt-0.5">
                   {formatINR(usdtInrCredit, 0)}
                 </p>
               </div>
-              <p className="text-[10px] text-white/40 text-right shrink-0 leading-snug">
+              <p className="text-[12px] text-white/40 text-right shrink-0 leading-snug">
                 1 USDT ≈ {formatINR(usdtToInrRate, 0)}
                 <br />
                 <span className="text-white/30">wallet credit</span>
@@ -620,7 +620,7 @@ export default function DepositPage({ onBack, onNavigate }: Props) {
             </div>
           )}
 
-          <p className="mt-1.5 text-[11px] text-[#837064]">
+          <p className="mt-1.5 text-[13px] text-[#837064]">
             {formatAmountHint(channel.min, channel.max, unit)}
             {bonusInrEst > 0 && (
               <span className="ml-2 font-semibold text-[#17B15E]">
@@ -637,14 +637,14 @@ export default function DepositPage({ onBack, onNavigate }: Props) {
               border: "1px solid #3D363A",
             }}
           >
-            <p className="mb-2 text-[12px] font-bold text-[#FED358]">
+            <p className="mb-2 text-[14px] font-bold text-[#FED358]">
               Recharge instructions
             </p>
             <ul className="space-y-1.5">
               {RECHARGE_INSTRUCTIONS.map((line, idx) => (
                 <li
                   key={idx}
-                  className="flex gap-2 text-[11px] leading-relaxed text-[#B79C8B]"
+                  className="flex gap-2 text-[13px] leading-relaxed text-[#B79C8B]"
                 >
                   <span
                     className="mt-1.5 h-1 w-1 shrink-0 rounded-full"
@@ -658,7 +658,7 @@ export default function DepositPage({ onBack, onNavigate }: Props) {
 
           {error && (
             <div
-              className="mt-3 rounded-lg px-3 py-2 text-[12px] font-medium text-[#FD565C]"
+              className="mt-3 rounded-lg px-3 py-2 text-[14px] font-medium text-[#FD565C]"
               style={{
                 background: "rgba(229,56,59,0.12)",
                 border: "1px solid rgba(229,56,59,0.3)",
@@ -671,7 +671,7 @@ export default function DepositPage({ onBack, onNavigate }: Props) {
 
           {lastPayUrl && (
             <div
-              className="mt-3 rounded-lg px-3 py-2 text-[11px] text-[#FED358]"
+              className="mt-3 rounded-lg px-3 py-2 text-[13px] text-[#FED358]"
               style={{
                 background: "rgba(254,211,88,0.1)",
                 border: "1px solid rgba(254,211,88,0.25)",
@@ -703,14 +703,14 @@ export default function DepositPage({ onBack, onNavigate }: Props) {
 
           {/* Recent history preview */}
           <div className="mb-2 mt-6 flex items-center justify-between">
-            <p className="text-[13px] font-bold text-white/90">Deposit history</p>
+            <p className="text-[15px] font-bold text-white/90">Deposit history</p>
             <button
               type="button"
               onClick={() => {
                 setTab("history");
                 void loadHistory();
               }}
-              className="text-[11px] font-bold text-[#FED358] active:opacity-70"
+              className="text-[13px] font-bold text-[#FED358] active:opacity-70"
             >
               View all
             </button>
@@ -720,7 +720,7 @@ export default function DepositPage({ onBack, onNavigate }: Props) {
               <LoadingSpinner />
             </div>
           ) : history.length === 0 ? (
-            <p className="py-4 text-center text-[11px] text-white/35">
+            <p className="py-4 text-center text-[13px] text-white/35">
               No deposits yet
             </p>
           ) : (
@@ -753,13 +753,13 @@ export default function DepositPage({ onBack, onNavigate }: Props) {
             <div className="flex min-w-0 items-center gap-2">
               <IoCardOutline size={16} className="shrink-0 text-[#FED358]" />
               <div className="min-w-0">
-                <p className="text-[10px] text-[#837064]">Recharge method</p>
-                <p className="truncate text-[12px] font-bold text-[#FDE4BC]">
+                <p className="text-[12px] text-[#837064]">Recharge method</p>
+                <p className="truncate text-[14px] font-bold text-[#FDE4BC]">
                   {channel.name}
                 </p>
               </div>
             </div>
-            <p className="shrink-0 text-[14px] font-black tabular-nums text-white">
+            <p className="shrink-0 text-[16px] font-black tabular-nums text-white">
               {formatMoney(finalAmount || 0, unit)}
             </p>
           </div>
@@ -767,7 +767,7 @@ export default function DepositPage({ onBack, onNavigate }: Props) {
             type="button"
             disabled={loading}
             onClick={() => void handleDeposit()}
-            className="ts-btn-gold w-full h-[48px] text-[15px] font-bold disabled:opacity-60"
+            className="ts-btn-gold w-full h-[48px] text-[17px] font-bold disabled:opacity-60"
           >
             {loading ? "Processing…" : "Deposit"}
           </button>
@@ -789,15 +789,15 @@ function HistoryCard({ d }: { d: Deposit }) {
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="text-[14px] font-bold text-white">
+          <p className="text-[16px] font-bold text-white">
             {formatDepositAmount(d)}
           </p>
           {inrHint ? (
-            <p className="mt-0.5 text-[10px] font-medium text-white/35 tabular-nums">
+            <p className="mt-0.5 text-[12px] font-medium text-white/35 tabular-nums">
               {inrHint}
             </p>
           ) : null}
-          <p className="mt-0.5 text-[11px] text-[#B79C8B]">
+          <p className="mt-0.5 text-[13px] text-[#B79C8B]">
             {d.method}
             {d.method === "CXPAY" ? " · UPI / QR" : ""}
             {d.method === "OXAPAY" ? " · USDT" : ""}
@@ -805,7 +805,7 @@ function HistoryCard({ d }: { d: Deposit }) {
         </div>
         <StatusBadge status={mapStatus(d.status)} />
       </div>
-      <div className="mt-2 flex flex-wrap items-center justify-between gap-1 text-[10px] text-white/35">
+      <div className="mt-2 flex flex-wrap items-center justify-between gap-1 text-[12px] text-white/35">
         <span>{formatDateTime(d.createdAt)}</span>
         <span className="max-w-[55%] truncate font-mono">{d.orderId}</span>
       </div>
@@ -838,7 +838,7 @@ function HistoryPanel({
         <button
           type="button"
           onClick={onReload}
-          className="mt-3 text-[12px] font-bold text-[#FED358]"
+          className="mt-3 text-[14px] font-bold text-[#FED358]"
         >
           Refresh
         </button>

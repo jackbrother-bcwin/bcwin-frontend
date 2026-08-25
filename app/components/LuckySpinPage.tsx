@@ -284,10 +284,10 @@ export default function LuckySpinPage({ onBack, onNavigate }: Props) {
           {/* Card 1: Activity time */}
           <div className="rounded-xl bg-[#221b22] border border-white/5 overflow-hidden shadow-md">
             <div className="flex items-center gap-2 px-4 py-3 bg-[#2f242e] border-b border-white/5">
-              <span className="text-[#fed358] text-[12px] font-black">▶</span>
-              <h2 className="text-[15px] font-bold text-[#fed358]">Activity time</h2>
+              <span className="text-[#fed358] text-[14px] font-black">▶</span>
+              <h2 className="text-[17px] font-bold text-[#fed358]">Activity time</h2>
             </div>
-            <div className="p-4 text-[13px] text-[#fde4bc] font-medium">
+            <div className="p-4 text-[15px] text-[#fde4bc] font-medium">
               From now on
             </div>
           </div>
@@ -295,17 +295,17 @@ export default function LuckySpinPage({ onBack, onNavigate }: Props) {
           {/* Card 2: Validity period */}
           <div className="rounded-xl bg-[#221b22] border border-white/5 overflow-hidden shadow-md">
             <div className="flex items-center gap-2 px-4 py-3 bg-[#2f242e] border-b border-white/5">
-              <span className="text-[#fed358] text-[12px] font-black">▶</span>
-              <h2 className="text-[15px] font-bold text-[#fed358]">Validity period</h2>
+              <span className="text-[#fed358] text-[14px] font-black">▶</span>
+              <h2 className="text-[17px] font-bold text-[#fed358]">Validity period</h2>
             </div>
-            <div className="p-4 text-[13px] text-[#fde4bc] font-medium">
+            <div className="p-4 text-[15px] text-[#fde4bc] font-medium">
               Official website notification shall prevail
             </div>
           </div>
 
           {/* Card 3: Red Notice */}
           <div className="rounded-xl bg-[#221b22] border border-white/5 p-4 shadow-md">
-            <p className="text-[13px] font-bold text-[#f44336] leading-relaxed">
+            <p className="text-[15px] font-bold text-[#f44336] leading-relaxed">
               Members whose single deposit amount or accumulated deposit amount reaches the set amount can participate in the lottery..
             </p>
           </div>
@@ -313,10 +313,10 @@ export default function LuckySpinPage({ onBack, onNavigate }: Props) {
           {/* Card 4: Conditions of participation */}
           <div className="rounded-xl bg-[#221b22] border border-white/5 overflow-hidden shadow-md">
             <div className="flex items-center gap-2 px-4 py-3 bg-[#2f242e] border-b border-white/5">
-              <span className="text-[#fed358] text-[12px] font-black">▶</span>
-              <h2 className="text-[15px] font-bold text-[#fed358]">Conditions of participation</h2>
+              <span className="text-[#fed358] text-[14px] font-black">▶</span>
+              <h2 className="text-[17px] font-bold text-[#fed358]">Conditions of participation</h2>
             </div>
-            <div className="p-4 text-[13px] text-[#b79c8b] leading-relaxed font-medium">
+            <div className="p-4 text-[15px] text-[#b79c8b] leading-relaxed font-medium">
               Members who meet the requirements for{" "}
               <span className="text-[#f44336] font-bold">
                 Vip0, Vip1, Vip2, Vip3, Vip4, Vip5, Vip6, Vip7, Vip8, Vip9, Vip10
@@ -592,7 +592,7 @@ function ActivityDetailsView({
         {/* Table Container */}
         <div className="rounded-xl overflow-hidden border border-white/10 shadow-lg bg-[#181318]">
           {/* Header */}
-          <div className="grid grid-cols-3 text-center py-2.5 px-2 bg-gradient-to-b from-[#d97706] to-[#b45309] text-white text-[13px] font-extrabold tracking-wide">
+          <div className="grid grid-cols-3 text-center py-2.5 px-2 bg-gradient-to-b from-[#d97706] to-[#b45309] text-white text-[15px] font-extrabold tracking-wide">
             <div>Task</div>
             <div>Number of spins</div>
             <div>Spin time</div>
@@ -603,7 +603,7 @@ function ActivityDetailsView({
             {tiers.map((row, idx) => (
               <div
                 key={row.minDeposit}
-                className={`grid grid-cols-3 items-center text-center py-2.5 px-2 text-[12px] ${
+                className={`grid grid-cols-3 items-center text-center py-2.5 px-2 text-[14px] ${
                   idx % 2 === 0 ? "bg-[#1d181c]" : "bg-[#251c19]"
                 }`}
               >
@@ -611,14 +611,14 @@ function ActivityDetailsView({
                   <span className="text-[#f44336] font-extrabold">
                     {formatINR(row.minDeposit)}
                   </span>
-                  <span className="text-[10px] text-[#b79c8b] font-medium">
+                  <span className="text-[12px] text-[#b79c8b] font-medium">
                     Total Deposit
                   </span>
                 </div>
-                <div className="font-extrabold text-white text-[13px]">
+                <div className="font-extrabold text-white text-[15px]">
                   +{row.spinChances}
                 </div>
-                <div className="text-[#b79c8b] font-medium text-[11px]">
+                <div className="text-[#b79c8b] font-medium text-[13px]">
                   00:00-23:59
                 </div>
               </div>
@@ -629,14 +629,14 @@ function ActivityDetailsView({
         {/* Rules Card */}
         <div className="rounded-xl bg-[#221b22] border border-white/10 overflow-hidden shadow-lg relative pt-4 pb-5 px-4 flex flex-col gap-3.5">
           {/* Rules Header Badge */}
-          <div className="w-[140px] h-7 mx-auto rounded-full bg-gradient-to-b from-[#d97706] to-[#b45309] flex items-center justify-center text-white text-[13px] font-black tracking-wide shadow-md">
+          <div className="w-[140px] h-7 mx-auto rounded-full bg-gradient-to-b from-[#d97706] to-[#b45309] flex items-center justify-center text-white text-[15px] font-black tracking-wide shadow-md">
             Rules
           </div>
 
           {/* Rule Items */}
-          <div className="flex flex-col gap-3 text-[12px] text-[#b79c8b] leading-relaxed font-medium">
+          <div className="flex flex-col gap-3 text-[14px] text-[#b79c8b] leading-relaxed font-medium">
             <div className="flex items-start gap-1.5">
-              <span className="text-[#fed358] text-[10px] mt-0.5">◆</span>
+              <span className="text-[#fed358] text-[12px] mt-0.5">◆</span>
               <p>
                 Each successful recharge awards the highest matching tier in the
                 table (Number of spins). Below ₹200 awards 0. One deposit does
@@ -645,7 +645,7 @@ function ActivityDetailsView({
             </div>
 
             <div className="flex items-start gap-1.5">
-              <span className="text-[#fed358] text-[10px] mt-0.5">◆</span>
+              <span className="text-[#fed358] text-[12px] mt-0.5">◆</span>
               <p>
                 Conditions for withdrawal of wheel rewards:{" "}
                 <span className="text-[#f44336] font-bold">
@@ -655,14 +655,14 @@ function ActivityDetailsView({
             </div>
 
             <div className="flex items-start gap-1.5">
-              <span className="text-[#fed358] text-[10px] mt-0.5">◆</span>
+              <span className="text-[#fed358] text-[12px] mt-0.5">◆</span>
               <p>
                 If you receive monetary rewards, there is no need to apply, the system will automatically add them to your member ID (please contact customer service to receive physical rewards)
               </p>
             </div>
 
             <div className="flex items-start gap-1.5">
-              <span className="text-[#fed358] text-[10px] mt-0.5">◆</span>
+              <span className="text-[#fed358] text-[12px] mt-0.5">◆</span>
               <p>
                 The Wheel Spin round starts every morning at{" "}
                 <span className="text-[#f44336] font-bold">00:00</span>. After making your deposit, you need to wait 5 minutes before the draw wheel starts.
@@ -671,7 +671,7 @@ function ActivityDetailsView({
           </div>
 
           {/* For Example Box */}
-          <div className="rounded-lg bg-[#181318] p-3 border border-white/5 text-[11px] text-[#b79c8b] leading-relaxed">
+          <div className="rounded-lg bg-[#181318] p-3 border border-white/5 text-[13px] text-[#b79c8b] leading-relaxed">
             <p className="font-bold text-white mb-1">For example:</p>
             <p>
               A{" "}
@@ -709,39 +709,39 @@ function ActivityRulesView({ onBack }: { onBack: () => void }) {
       <div className="ls-page__scroll flex flex-col gap-6 p-4 pt-6 max-w-[430px] mx-auto w-full pb-10">
         {/* Card 01 */}
         <div className="rounded-xl bg-[#221b22] border border-white/5 relative pt-7 pb-5 px-4 shadow-md">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#2d242c] border border-white/10 text-[#fed358] text-[12px] font-black px-4 py-0.5 rounded-full shadow">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#2d242c] border border-white/10 text-[#fed358] text-[14px] font-black px-4 py-0.5 rounded-full shadow">
             01
           </div>
-          <p className="text-[13px] font-bold text-[#fde4bc] leading-relaxed mb-2">
+          <p className="text-[15px] font-bold text-[#fde4bc] leading-relaxed mb-2">
             The event is effective from now on. The reward can only be claimed once per address, per email address, per phone number and for the same payment method (debit/credit card/bank account) and IP address;
           </p>
-          <p className="text-[12px] text-[#b79c8b] leading-relaxed">
+          <p className="text-[14px] text-[#b79c8b] leading-relaxed">
             If a member applies repeatedly, the company reserves the right to cancel or withdraw member bonuses.
           </p>
         </div>
 
         {/* Card 02 */}
         <div className="rounded-xl bg-[#221b22] border border-white/5 relative pt-7 pb-5 px-4 shadow-md">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#2d242c] border border-white/10 text-[#fed358] text-[12px] font-black px-4 py-0.5 rounded-full shadow">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#2d242c] border border-white/10 text-[#fed358] text-[14px] font-black px-4 py-0.5 rounded-full shadow">
             02
           </div>
-          <p className="text-[13px] font-bold text-[#fde4bc] leading-relaxed mb-2">
+          <p className="text-[15px] font-bold text-[#fde4bc] leading-relaxed mb-2">
             All offers are specially designed for players.
           </p>
-          <p className="text-[12px] text-[#b79c8b] leading-relaxed">
+          <p className="text-[14px] text-[#b79c8b] leading-relaxed">
             If any group or individual is found to be dishonestly withdrawing bonuses or threatening or abusing company offers, the company reserves the right to freeze or cancel the account and account balance of that group or individual.
           </p>
         </div>
 
         {/* Card 03 */}
         <div className="rounded-xl bg-[#221b22] border border-white/5 relative pt-7 pb-5 px-4 shadow-md">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#2d242c] border border-white/10 text-[#fed358] text-[12px] font-black px-4 py-0.5 rounded-full shadow">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#2d242c] border border-white/10 text-[#fed358] text-[14px] font-black px-4 py-0.5 rounded-full shadow">
             03
           </div>
-          <p className="text-[13px] font-bold text-[#fde4bc] leading-relaxed mb-2">
+          <p className="text-[15px] font-bold text-[#fde4bc] leading-relaxed mb-2">
             The platform reserves the right of final outcome of this event;
           </p>
-          <p className="text-[12px] text-[#b79c8b] leading-relaxed">
+          <p className="text-[14px] text-[#b79c8b] leading-relaxed">
             and the right to modify or terminate the campaign without prior notice; these terms apply to all offers.
           </p>
         </div>

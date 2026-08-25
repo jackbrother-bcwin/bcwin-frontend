@@ -531,7 +531,7 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
             key={p}
             type="button"
             onClick={() => setPos(p)}
-            className="shrink-0 px-4 h-9 rounded-full text-[12px] font-bold active:scale-95"
+            className="shrink-0 px-4 h-9 rounded-full text-[14px] font-bold active:scale-95"
             style={{
               background:
                 pos === p
@@ -557,10 +557,10 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
         }}
       >
         <div className="flex items-center justify-between">
-          <p className="text-[11px] font-bold text-white/45 uppercase tracking-wider">
+          <p className="text-[13px] font-bold text-white/45 uppercase tracking-wider">
             {pos === "SUM" ? "Sum bet" : `Position ${pos}`}
           </p>
-          <p className="text-[10px] text-white/30">
+          <p className="text-[12px] text-white/30">
             {pos === "SUM"
               ? "Exact 45x · Side 1.95x"
               : "Exact 9x · Side 1.95x"}
@@ -576,9 +576,9 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
               className="h-11 rounded-[10px] text-white active:scale-95 flex flex-col items-center justify-center"
               style={{ background: b.bg }}
             >
-              <span className="text-[13px] font-black leading-none">{b.l}</span>
+              <span className="text-[15px] font-black leading-none">{b.l}</span>
               {b.sub ? (
-                <span className="text-[9px] font-bold opacity-80 mt-0.5">
+                <span className="text-[11px] font-bold opacity-80 mt-0.5">
                   {b.sub}
                 </span>
               ) : null}
@@ -588,7 +588,7 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
 
         {pos !== "SUM" ? (
           <>
-            <p className="text-[10px] text-white/35 font-bold uppercase tracking-wider">
+            <p className="text-[12px] text-white/35 font-bold uppercase tracking-wider">
               Exact number · 9x
             </p>
             <div className="grid grid-cols-5 gap-y-2 sm:gap-y-3 gap-x-1.5 sm:gap-x-2 justify-items-center">
@@ -607,7 +607,7 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
           </>
         ) : (
           <>
-            <p className="text-[10px] text-white/35 font-bold uppercase tracking-wider">
+            <p className="text-[12px] text-white/35 font-bold uppercase tracking-wider">
               Exact sum · 45x (0–45)
             </p>
             <div className="grid grid-cols-6 gap-1.5 max-h-40 overflow-y-auto no-scrollbar pr-0.5">
@@ -616,7 +616,7 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
                   key={i}
                   type="button"
                   onClick={() => openNum(i)}
-                  className="h-8 rounded-lg text-[11px] font-bold text-white/80 active:scale-95"
+                  className="h-8 rounded-lg text-[13px] font-bold text-white/80 active:scale-95"
                   style={{
                     background: "rgba(255,255,255,0.06)",
                     border: "1px solid rgba(255,255,255,0.06)",
@@ -630,13 +630,13 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
         )}
 
         <div className="flex gap-1.5 flex-wrap items-center pt-1">
-          <span className="text-[10px] text-white/35">Amt</span>
+          <span className="text-[12px] text-white/35">Amt</span>
           {BASE_AMOUNTS.map((a) => (
             <button
               key={a}
               type="button"
               onClick={() => setBaseAmount(a)}
-              className="px-2.5 h-7 rounded text-[11px] font-bold"
+              className="px-2.5 h-7 rounded text-[13px] font-bold"
               style={{
                 background:
                   baseAmount === a
@@ -654,7 +654,7 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
               key={m}
               type="button"
               onClick={() => setMult(m)}
-              className="px-2.5 h-7 rounded text-[11px] font-bold"
+              className="px-2.5 h-7 rounded text-[13px] font-bold"
               style={{
                 background:
                   mult === m
@@ -666,7 +666,7 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
               X{m}
             </button>
           ))}
-          <span className="text-[10px] text-white/30 ml-auto">
+          <span className="text-[12px] text-white/30 ml-auto">
             {formatINR(baseAmount * mult)}
           </span>
         </div>
@@ -699,7 +699,7 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
               {["Period", "Number", "Sum"].map((h) => (
                 <span
                   key={h}
-                  className="text-[11px] font-bold text-[#110D14] text-center"
+                  className="text-[13px] font-bold text-[#110D14] text-center"
                 >
                   {h}
                 </span>
@@ -713,9 +713,9 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
               results.map((r) => (
                 <div
                   key={r.id}
-                  className="grid grid-cols-[1.15fr_1.4fr_0.55fr] gap-1 items-center px-3 py-2.5 border-b border-white/5 text-[11px]"
+                  className="grid grid-cols-[1.15fr_1.4fr_0.55fr] gap-1 items-center px-3 py-2.5 border-b border-white/5 text-[13px]"
                 >
-                  <span className="font-mono text-white/50 truncate text-center text-[10px]">
+                  <span className="font-mono text-white/50 truncate text-center text-[12px]">
                     {r.periodNumber}
                   </span>
                   <span className="flex justify-center">

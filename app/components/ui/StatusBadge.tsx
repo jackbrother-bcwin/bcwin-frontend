@@ -18,7 +18,7 @@ export default function StatusBadge({ status }: { status: string }) {
   const color = STATUS_COLORS[tone];
   return (
     <span
-      className="inline-flex items-center justify-center px-3 py-0.5 rounded-[6px] text-[11px] font-medium tracking-wide"
+      className="inline-flex items-center justify-center px-3 py-0.5 rounded-[6px] text-[13px] font-medium tracking-wide"
       style={{
         color,
         background: `${color}1A`,

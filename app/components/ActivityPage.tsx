@@ -233,8 +233,8 @@ export default function ActivityPage({
           {/* Today / Total */}
           <div className="flex items-start justify-center gap-0 px-4 pt-2 pb-1">
             <div className="flex-1 flex flex-col items-center">
-              <span className="text-[12px] text-white/45">Today&apos;s bonus</span>
-              <span className="text-[22px] font-black text-white tabular-nums mt-0.5">
+              <span className="text-[14px] text-white/45">Today&apos;s bonus</span>
+              <span className="text-[24px] font-black text-white tabular-nums mt-0.5">
                 {formatINR(todayBonus)}
               </span>
             </div>
@@ -243,15 +243,15 @@ export default function ActivityPage({
               style={{ background: "rgba(255,255,255,0.12)" }}
             />
             <div className="flex-1 flex flex-col items-center">
-              <span className="text-[12px] text-white/45">Total bonus</span>
-              <span className="text-[22px] font-black text-white tabular-nums mt-0.5">
+              <span className="text-[14px] text-white/45">Total bonus</span>
+              <span className="text-[24px] font-black text-white tabular-nums mt-0.5">
                 {formatINR(totalBonus)}
               </span>
             </div>
           </div>
 
           {streak && (streak.currentStreak ?? 0) > 0 && (
-            <p className="text-center text-[10px] text-white/40 mb-1">
+            <p className="text-center text-[12px] text-white/40 mb-1">
               Win streak{" "}
               <span className="text-[#FED358] font-bold">{streak.currentStreak}</span>
             </p>
@@ -262,7 +262,7 @@ export default function ActivityPage({
             <button
               type="button"
               onClick={() => onNavigate?.(activityNavigateTarget("bonus-details"))}
-              className="h-9 px-8 rounded-full text-[13px] font-bold text-[#FED358] active:scale-95"
+              className="h-9 px-8 rounded-full text-[15px] font-bold text-[#FED358] active:scale-95"
               style={{
                 border: "1.5px solid rgba(254,211,88,0.65)",
                 background: "transparent",
@@ -287,7 +287,7 @@ export default function ActivityPage({
                 >
                   {item.icon}
                 </div>
-                <span className="text-[10px] text-white/60 text-center leading-tight px-0.5">
+                <span className="text-[12px] text-white/60 text-center leading-tight px-0.5">
                   {item.label}
                 </span>
               </button>
@@ -306,7 +306,7 @@ export default function ActivityPage({
               }}
             >
               <div className="flex items-start justify-between gap-2 w-full">
-                <p className="text-[14px] font-black text-white leading-tight flex-1 min-w-0">
+                <p className="text-[16px] font-black text-white leading-tight flex-1 min-w-0">
                   Gifts
                 </p>
                 <div
@@ -316,7 +316,7 @@ export default function ActivityPage({
                   <IoGiftOutline size={28} className="text-[#FED358]" />
                 </div>
               </div>
-              <p className="text-[10px] text-white/45 mt-2 leading-snug">
+              <p className="text-[12px] text-white/45 mt-2 leading-snug">
                 Enter the redemption code to receive gift rewards
               </p>
             </button>
@@ -331,7 +331,7 @@ export default function ActivityPage({
               }}
             >
               <div className="flex items-start justify-between gap-2 w-full">
-                <p className="text-[13px] font-black text-white leading-tight flex-1 min-w-0">
+                <p className="text-[15px] font-black text-white leading-tight flex-1 min-w-0">
                   Attendance bonus
                 </p>
                 <div
@@ -341,7 +341,7 @@ export default function ActivityPage({
                   <IoCalendarOutline size={26} className="text-white" />
                 </div>
               </div>
-              <p className="text-[10px] text-white/45 mt-2 leading-snug">
+              <p className="text-[12px] text-white/45 mt-2 leading-snug">
                 The more consecutive days you sign in, the higher the reward
               </p>
             </button>
@@ -351,13 +351,13 @@ export default function ActivityPage({
           {claimable.length > 0 && (
             <div className="mx-3 mb-3 rounded-[12px] p-3" style={{ background: "#241E22", border: "1px solid rgba(254,211,88,0.25)" }}>
               <div className="flex items-center justify-between mb-2">
-                <p className="text-[12px] font-bold text-[#FED358]">
+                <p className="text-[14px] font-bold text-[#FED358]">
                   Ready to claim ({claimable.length})
                 </p>
                 <button
                   type="button"
                   onClick={() => onNavigate?.(activityNavigateTarget("bonus-details"))}
-                  className="text-[10px] text-white/50 flex items-center gap-0.5"
+                  className="text-[12px] text-white/50 flex items-center gap-0.5"
                 >
                   All <IoChevronForward size={12} />
                 </button>
@@ -408,12 +408,12 @@ export default function ActivityPage({
                     className="object-cover"
                   />
                 </div>
-                <p className="text-[12px] font-bold text-[#FDE4BC] px-3 py-2.5 leading-snug">
+                <p className="text-[14px] font-bold text-[#FDE4BC] px-3 py-2.5 leading-snug">
                   {banner.title}
                 </p>
               </button>
             ))}
-            <p className="text-center text-white/25 text-[12px] py-2">No more</p>
+            <p className="text-center text-white/25 text-[14px] py-2">No more</p>
           </div>
         </>
       )}
@@ -438,7 +438,7 @@ function ClaimChip({
       className="shrink-0 w-[140px] rounded-xl p-2.5 flex flex-col gap-1.5"
       style={{ background: "rgba(0,0,0,0.25)", border: "1px solid rgba(254,211,88,0.2)" }}
     >
-      <p className="text-[9px] text-white/45 truncate">
+      <p className="text-[11px] text-white/45 truncate">
         {({
           INR_RECHARGE_BONUS: "INR recharge bonus",
           USDT_RECHARGE_BONUS: "USDT recharge bonus",
@@ -448,7 +448,7 @@ function ClaimChip({
         } as Record<string, string>)[bonus.type ?? ""] ??
           (bonus.type ?? "BONUS").replace(/_/g, " ")}
       </p>
-      <p className="text-[13px] font-black text-[#FED358] tabular-nums">
+      <p className="text-[15px] font-black text-[#FED358] tabular-nums">
         {formatINR(bonus.amount)}
       </p>
       <button
@@ -470,7 +470,7 @@ function ClaimChip({
             setBusy(false);
           }
         }}
-        className="h-7 rounded-full text-[10px] font-bold text-[#110D14] disabled:opacity-50"
+        className="h-7 rounded-full text-[12px] font-bold text-[#110D14] disabled:opacity-50"
         style={{ background: "linear-gradient(180deg,#FED358,#E8A84A)" }}
       >
         {busy ? "…" : "Claim"}

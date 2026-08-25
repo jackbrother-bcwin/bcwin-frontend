@@ -69,7 +69,7 @@ export default function GameCategoryTabs({
               </span>
 
               {/* Label */}
-              <span className="text-[11px] leading-none font-medium whitespace-nowrap">
+              <span className="text-[13px] leading-none font-medium whitespace-nowrap">
                 {category.name}
               </span>
 

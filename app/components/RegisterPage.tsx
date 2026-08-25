@@ -304,7 +304,7 @@ export default function RegisterPage({ onBack, onLoginClick, onSuccess }: Regist
 
         <button
           type="button"
-          className="flex h-7 min-h-7 max-h-7 w-auto shrink-0 items-center justify-center rounded-full px-2.5 text-[11px] font-bold text-white"
+          className="flex h-7 min-h-7 max-h-7 w-auto shrink-0 items-center justify-center rounded-full px-2.5 text-[13px] font-bold text-white"
           style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)" }}
           aria-label="Language"
         >
@@ -315,8 +315,8 @@ export default function RegisterPage({ onBack, onLoginClick, onSuccess }: Regist
       <div className="app-page-header-spacer app-page-header-spacer--lg" aria-hidden />
 
       <div className="flex w-full min-w-0 max-w-full flex-1 flex-col px-3.5 pt-4 sm:px-5">
-        <h1 className="mb-1 text-[18px] font-bold tracking-wide text-white sm:text-[20px]">Register</h1>
-        <p className="text-[12px] leading-relaxed text-white/45">
+        <h1 className="mb-1 text-[20px] font-bold tracking-wide text-white sm:text-[22px]">Register</h1>
+        <p className="text-[14px] leading-relaxed text-white/45">
           Register with phone number or email
         </p>
 
@@ -343,7 +343,7 @@ export default function RegisterPage({ onBack, onLoginClick, onSuccess }: Regist
                     setPhone("");
                   }
                 }}
-                className="relative min-w-0 flex-1 pb-2.5 text-center text-[12px] font-bold sm:text-[13px]"
+                className="relative min-w-0 flex-1 pb-2.5 text-center text-[14px] font-bold sm:text-[15px]"
                 style={{ color: active ? "#FED358" : "rgba(255,255,255,0.4)" }}
               >
                 {method === "phone" ? "Phone" : "Email"}
@@ -361,7 +361,7 @@ export default function RegisterPage({ onBack, onLoginClick, onSuccess }: Regist
         <form onSubmit={handleSubmit} className="flex w-full min-w-0 max-w-full flex-col gap-3.5">
           {registerMethod === "email" && (
             <div className="flex min-w-0 flex-col gap-2">
-              <label className="text-[12px] font-bold text-white/70">
+              <label className="text-[14px] font-bold text-white/70">
                 Email address
               </label>
               <input
@@ -370,14 +370,14 @@ export default function RegisterPage({ onBack, onLoginClick, onSuccess }: Regist
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="h-11 w-full min-w-0 rounded-xl px-3 text-[13px] text-white outline-none placeholder:text-white/20 focus:border-[#FED358]"
+                className="h-11 w-full min-w-0 rounded-xl px-3 text-[15px] text-white outline-none placeholder:text-white/20 focus:border-[#FED358]"
                 style={{
                   ...fieldStyle,
                   border: "1px solid rgba(254,211,88,0.18)",
                 }}
                 required
               />
-              <p className="text-[10px] text-white/35">
+              <p className="text-[12px] text-white/35">
                 OTP will be sent to this email
               </p>
             </div>
@@ -385,7 +385,7 @@ export default function RegisterPage({ onBack, onLoginClick, onSuccess }: Regist
 
           {/* Backend always requires mobileNumber on register */}
           <div className="flex min-w-0 flex-col gap-2">
-            <label className="text-[12px] font-bold text-white/70">
+            <label className="text-[14px] font-bold text-white/70">
               Phone number
               {registerMethod === "email" && (
                 <span className="ml-1 font-medium text-white/40">
@@ -416,7 +416,7 @@ export default function RegisterPage({ onBack, onLoginClick, onSuccess }: Regist
                       .slice(0, countryMeta.maxLen)
                   )
                 }
-                className="h-11 min-w-0 flex-1 rounded-xl px-3 text-[13px] text-white outline-none placeholder:text-white/20 focus:border-[#FED358]"
+                className="h-11 min-w-0 flex-1 rounded-xl px-3 text-[15px] text-white outline-none placeholder:text-white/20 focus:border-[#FED358]"
                 style={{
                   ...fieldStyle,
                   border: "1px solid rgba(254,211,88,0.18)",
@@ -424,7 +424,7 @@ export default function RegisterPage({ onBack, onLoginClick, onSuccess }: Regist
                 required
               />
             </div>
-            <p className="text-[10px] text-white/35">
+            <p className="text-[12px] text-white/35">
               {countryMeta.flag} {countryMeta.name} · +{countryMeta.code}
               {registerMethod === "phone"
                 ? " · OTP via SMS"
@@ -433,7 +433,7 @@ export default function RegisterPage({ onBack, onLoginClick, onSuccess }: Regist
           </div>
 
           <div className="flex min-w-0 flex-col gap-2">
-            <label className="text-[12px] font-bold text-white/70">
+            <label className="text-[14px] font-bold text-white/70">
               Verification code
             </label>
             <div className="flex min-w-0 gap-2">
@@ -443,7 +443,7 @@ export default function RegisterPage({ onBack, onLoginClick, onSuccess }: Regist
                 placeholder="6-digit OTP"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                className="h-11 min-w-0 flex-1 rounded-lg px-3 text-[13px] text-white outline-none placeholder:text-white/20 focus:border-[#FED358]"
+                className="h-11 min-w-0 flex-1 rounded-lg px-3 text-[15px] text-white outline-none placeholder:text-white/20 focus:border-[#FED358]"
                 style={fieldStyle}
                 required
               />
@@ -451,7 +451,7 @@ export default function RegisterPage({ onBack, onLoginClick, onSuccess }: Regist
                 type="button"
                 disabled={countdown > 0 || isSendingOtp}
                 onClick={handleSendOtp}
-                className="h-11 shrink-0 rounded-lg px-2.5 text-[11px] font-bold text-[#110D14] disabled:opacity-50 sm:text-[12px]"
+                className="h-11 shrink-0 rounded-lg px-2.5 text-[13px] font-bold text-[#110D14] disabled:opacity-50 sm:text-[14px]"
                 style={{
                   background: "linear-gradient(180deg, #FED358 0%, #FFB472 100%)",
                   minWidth: "4.5rem",
@@ -463,14 +463,14 @@ export default function RegisterPage({ onBack, onLoginClick, onSuccess }: Regist
           </div>
 
           <div className="flex min-w-0 flex-col gap-2">
-            <label className="text-[12px] font-bold text-white/70">Set password</label>
+            <label className="text-[14px] font-bold text-white/70">Set password</label>
             <div className="relative min-w-0">
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Set password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="h-11 w-full min-w-0 rounded-lg pl-3 pr-10 text-[13px] text-white outline-none placeholder:text-white/20 focus:border-[#FED358]"
+                className="h-11 w-full min-w-0 rounded-lg pl-3 pr-10 text-[15px] text-white outline-none placeholder:text-white/20 focus:border-[#FED358]"
                 style={fieldStyle}
                 required
               />
@@ -486,14 +486,14 @@ export default function RegisterPage({ onBack, onLoginClick, onSuccess }: Regist
           </div>
 
           <div className="flex min-w-0 flex-col gap-2">
-            <label className="text-[12px] font-bold text-white/70">Confirm password</label>
+            <label className="text-[14px] font-bold text-white/70">Confirm password</label>
             <div className="relative min-w-0">
               <input
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="h-11 w-full min-w-0 rounded-lg pl-3 pr-10 text-[13px] text-white outline-none placeholder:text-white/20 focus:border-[#FED358]"
+                className="h-11 w-full min-w-0 rounded-lg pl-3 pr-10 text-[15px] text-white outline-none placeholder:text-white/20 focus:border-[#FED358]"
                 style={fieldStyle}
                 required
               />
@@ -509,13 +509,13 @@ export default function RegisterPage({ onBack, onLoginClick, onSuccess }: Regist
           </div>
 
           <div className="flex min-w-0 flex-col gap-2">
-            <label className="text-[12px] font-bold text-white/70">Nickname</label>
+            <label className="text-[14px] font-bold text-white/70">Nickname</label>
             <input
               type="text"
               placeholder="Choose a nickname"
               value={nickname}
               onChange={(e) => setNickname(e.target.value.slice(0, 20))}
-              className="h-11 w-full min-w-0 rounded-lg px-3 text-[13px] text-white outline-none placeholder:text-white/20 focus:border-[#FED358]"
+              className="h-11 w-full min-w-0 rounded-lg px-3 text-[15px] text-white outline-none placeholder:text-white/20 focus:border-[#FED358]"
               style={fieldStyle}
               maxLength={20}
             />
@@ -523,7 +523,7 @@ export default function RegisterPage({ onBack, onLoginClick, onSuccess }: Regist
 
           {/* Password strength hints */}
           {password.length > 0 && (
-            <div className="flex flex-wrap gap-x-3 gap-y-1 text-[10px] px-0.5">
+            <div className="flex flex-wrap gap-x-3 gap-y-1 text-[12px] px-0.5">
               {[
                 { ok: password.length >= 8, label: "8+ chars" },
                 { ok: /[a-z]/.test(password), label: "lowercase" },
@@ -539,7 +539,7 @@ export default function RegisterPage({ onBack, onLoginClick, onSuccess }: Regist
           )}
 
           <div className="flex min-w-0 flex-col gap-2">
-            <label className="text-[12px] font-bold text-white/70">
+            <label className="text-[14px] font-bold text-white/70">
               Invite code <span className="text-[#FED358]">*</span>
             </label>
             <input
@@ -547,13 +547,13 @@ export default function RegisterPage({ onBack, onLoginClick, onSuccess }: Regist
               placeholder="Enter invite code (required)"
               value={inviteCode}
               onChange={(e) => setInviteCode(e.target.value)}
-              className="h-11 w-full min-w-0 rounded-lg px-3 text-[13px] text-white outline-none placeholder:text-white/20 focus:border-[#FED358]"
+              className="h-11 w-full min-w-0 rounded-lg px-3 text-[15px] text-white outline-none placeholder:text-white/20 focus:border-[#FED358]"
               style={fieldStyle}
               required
               autoComplete="off"
               aria-required
             />
-            <p className="text-[10px] text-white/35">
+            <p className="text-[12px] text-white/35">
               You need a valid invite code from an existing member to register
             </p>
           </div>
@@ -571,7 +571,7 @@ export default function RegisterPage({ onBack, onLoginClick, onSuccess }: Regist
               aria-label="Agree to privacy"
             />
             <span
-              className="min-w-0 flex-1 text-[11px] font-medium leading-snug text-white/50 sm:text-[12px]"
+              className="min-w-0 flex-1 text-[13px] font-medium leading-snug text-white/50 sm:text-[14px]"
               onClick={() => setAgree((v) => !v)}
               role="presentation"
             >
@@ -582,7 +582,7 @@ export default function RegisterPage({ onBack, onLoginClick, onSuccess }: Regist
 
           {error && (
             <div
-              className="rounded-lg px-3 py-2.5 text-[12px] font-medium break-words"
+              className="rounded-lg px-3 py-2.5 text-[14px] font-medium break-words"
               style={{
                 background: "rgba(239,68,68,0.12)",
                 border: "1px solid rgba(239,68,68,0.3)",
@@ -595,7 +595,7 @@ export default function RegisterPage({ onBack, onLoginClick, onSuccess }: Regist
 
           {otpSent && !error && (
             <div
-              className="rounded-lg px-3 py-2 text-[12px] font-medium"
+              className="rounded-lg px-3 py-2 text-[14px] font-medium"
               style={{
                 background: "rgba(34,197,94,0.1)",
                 border: "1px solid rgba(34,197,94,0.3)",
@@ -612,7 +612,7 @@ export default function RegisterPage({ onBack, onLoginClick, onSuccess }: Regist
             <button
               type="submit"
               disabled={isLoading}
-              className="h-10 w-full rounded-full text-[14px] font-bold text-[#110D14] disabled:opacity-60"
+              className="h-10 w-full rounded-full text-[16px] font-bold text-[#110D14] disabled:opacity-60"
               style={{
                 background: "linear-gradient(180deg, #FED358 0%, #FFB472 100%)",
                 boxShadow: "0 2px 10px rgba(254,211,88,0.4)",
@@ -623,7 +623,7 @@ export default function RegisterPage({ onBack, onLoginClick, onSuccess }: Regist
             <button
               type="button"
               onClick={onLoginClick}
-              className="h-10 w-full rounded-full text-[14px] font-bold text-[#FED358]"
+              className="h-10 w-full rounded-full text-[16px] font-bold text-[#FED358]"
               style={{ background: "transparent", border: "1.5px solid #FED358" }}
             >
               I have an account · Login
@@ -631,7 +631,7 @@ export default function RegisterPage({ onBack, onLoginClick, onSuccess }: Regist
           </div>
         </form>
 
-        <div className="mt-8 flex flex-wrap justify-center gap-8 text-[11px] font-bold text-white/50 sm:gap-12 sm:text-[12px]">
+        <div className="mt-8 flex flex-wrap justify-center gap-8 text-[13px] font-bold text-white/50 sm:gap-12 sm:text-[14px]">
           <button type="button" className="flex flex-col items-center gap-1.5">
             <span className="home-icon-btn" style={{ background: "rgba(255,255,255,0.05)", borderColor: "rgba(255,255,255,0.1)" }}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FED358" strokeWidth="2.5">

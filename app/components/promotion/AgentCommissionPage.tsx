@@ -88,7 +88,7 @@ function CopyUidButton({ uid }: { uid: string }) {
       title="Copy UID"
     >
       {copied ? (
-        <span className="text-[10px] text-green-400 font-semibold">Copied!</span>
+        <span className="text-[12px] text-green-400 font-semibold">Copied!</span>
       ) : (
         <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-none stroke-current stroke-2">
           <rect x="9" y="9" width="13" height="13" rx="2" />
@@ -716,7 +716,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
               <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-white/10 rounded-full blur-xl pointer-events-none" />
               <div className="relative z-10">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-[10px] font-black tracking-widest uppercase px-2.5 py-0.5 rounded-full bg-black/20 text-amber-200 border border-white/10 backdrop-blur-sm">
+                  <span className="text-[12px] font-black tracking-widest uppercase px-2.5 py-0.5 rounded-full bg-black/20 text-amber-200 border border-white/10 backdrop-blur-sm">
                     Today
                   </span>
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
@@ -728,7 +728,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
                   <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400" />
                   {formatINR(todayCredited)} credited
                 </p>
-                <p className="text-[10px] text-amber-100/70 mt-1">
+                <p className="text-[12px] text-amber-100/70 mt-1">
                   Live today (not in wallet yet). Credits at 24:00 IST. Yesterday matches Transaction history.
                 </p>
               </div>
@@ -746,13 +746,13 @@ export default function AgentCommissionPage({ onBack }: Props) {
             <div className="mx-3 mt-3 p-4 rounded-xl bg-[#1e181c] border border-white/5 flex items-center justify-between shadow-sm">
               <div>
                 <p className="text-2xl font-black text-amber-300 font-mono tracking-tight">{teamSize}</p>
-                <p className="text-[10px] font-bold text-gray-400 tracking-wider uppercase mt-0.5">
+                <p className="text-[12px] font-bold text-gray-400 tracking-wider uppercase mt-0.5">
                   Total Downline (L1–L6)
                 </p>
               </div>
               <div className="text-right">
                 <p className="text-xs font-bold text-white font-mono">{formatINR(teamBetting)}</p>
-                <p className="text-[10px] font-medium text-gray-400 mt-0.5">Today's Bet Volume</p>
+                <p className="text-[12px] font-medium text-gray-400 mt-0.5">Today's Bet Volume</p>
               </div>
             </div>
 
@@ -791,7 +791,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
                   </span>
                 ) : null}
               </p>
-              <p className="text-[10px] text-white/35 mb-2">
+              <p className="text-[12px] text-white/35 mb-2">
                 Lottery team-rebate rates for your rebate tier (not XP VIP)
               </p>
               <div className="comm-rate-grid">
@@ -1098,7 +1098,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
 
                           {open && (
                             <div className="bg-[#140e12]/95 border-t border-white/5 p-3 space-y-2">
-                              <p className="text-[10px] font-bold text-amber-400/70 uppercase tracking-wider mb-1">
+                              <p className="text-[12px] font-bold text-amber-400/70 uppercase tracking-wider mb-1">
                                 Bet details
                                 {personDetails[g.key]?.total != null
                                   ? ` · ${personDetails[g.key]!.total} total`
@@ -1122,20 +1122,20 @@ export default function AgentCommissionPage({ onBack }: Props) {
                                 <div key={r.id} className="flex items-center justify-between gap-2 p-2.5 rounded-lg bg-white/[0.03] border border-white/[0.04]">
                                   <div className="min-w-0 flex-1">
                                     <div className="flex items-center gap-2 flex-wrap">
-                                      <span className="bg-amber-500/10 border border-amber-500/20 text-amber-300 font-semibold px-1.5 py-0.5 rounded text-[10px]">
+                                      <span className="bg-amber-500/10 border border-amber-500/20 text-amber-300 font-semibold px-1.5 py-0.5 rounded text-[12px]">
                                         {r.betType ? String(r.betType) : "Bet"}
                                       </span>
                                       {r.settled === false && (
-                                        <span className="bg-white/10 border border-white/15 text-white/60 font-semibold px-1.5 py-0.5 rounded text-[10px]">
+                                        <span className="bg-white/10 border border-white/15 text-white/60 font-semibold px-1.5 py-0.5 rounded text-[12px]">
                                           Pending
                                         </span>
                                       )}
                                       <span className="text-white font-medium text-xs">{formatINR(Number(r.betAmount ?? 0))}</span>
                                       {r.commissionRate != null && Number(r.commissionRate) > 0 && (
-                                        <span className="text-gray-400 text-[11px]">({Number(r.commissionRate)}%)</span>
+                                        <span className="text-gray-400 text-[13px]">({Number(r.commissionRate)}%)</span>
                                       )}
                                     </div>
-                                    <p className="text-[10px] text-gray-400 mt-1">
+                                    <p className="text-[12px] text-gray-400 mt-1">
                                       {r.createdAt ? formatDateTime(r.createdAt) : "—"}
                                     </p>
                                   </div>
@@ -1154,7 +1154,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
                                     <button
                                       type="button"
                                       disabled={d.page <= 1 || d.loading}
-                                      className="px-3 py-1.5 rounded-lg text-[11px] font-bold bg-white/5 text-gray-300 disabled:opacity-40 border border-white/10"
+                                      className="px-3 py-1.5 rounded-lg text-[13px] font-bold bg-white/5 text-gray-300 disabled:opacity-40 border border-white/10"
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         void loadPersonDetail(g, d.page - 1);
@@ -1162,7 +1162,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
                                     >
                                       Prev
                                     </button>
-                                    <span className="text-[11px] text-gray-400 font-medium tabular-nums">
+                                    <span className="text-[13px] text-gray-400 font-medium tabular-nums">
                                       Page {d.page} / {d.totalPages}
                                     </span>
                                     <button
@@ -1170,7 +1170,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
                                       disabled={
                                         d.page >= d.totalPages || d.loading
                                       }
-                                      className="px-3 py-1.5 rounded-lg text-[11px] font-bold bg-amber-500/15 text-amber-300 disabled:opacity-40 border border-amber-500/30"
+                                      className="px-3 py-1.5 rounded-lg text-[13px] font-bold bg-amber-500/15 text-amber-300 disabled:opacity-40 border border-amber-500/30"
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         void loadPersonDetail(g, d.page + 1);
@@ -1196,7 +1196,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
                 <div className="flex items-center justify-between gap-2 mb-3">
                   <div>
                     <h2 className="dash-card-title">Live Subordinates Today</h2>
-                    <p className="text-[11px] text-gray-400 mt-0.5">
+                    <p className="text-[13px] text-gray-400 mt-0.5">
                       Subordinates with successful deposits today (IST)
                     </p>
                   </div>
@@ -1243,7 +1243,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
                 {filteredDepositors.length > 0 && (
                   <div className="grid grid-cols-2 gap-2 p-2.5 mb-3 bg-[#1e181c] rounded-xl border border-white/5">
                     <div className="flex flex-col">
-                      <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">
+                      <span className="text-[12px] uppercase font-bold text-gray-400 tracking-wider">
                         Today's Depositors
                       </span>
                       <span className="text-sm font-extrabold text-white font-mono mt-0.5">
@@ -1251,7 +1251,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
                       </span>
                     </div>
                     <div className="flex flex-col text-right">
-                      <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">
+                      <span className="text-[12px] uppercase font-bold text-gray-400 tracking-wider">
                         Total Deposit (Today)
                       </span>
                       <span className="text-sm font-extrabold text-amber-300 font-mono mt-0.5">
@@ -1303,13 +1303,13 @@ export default function AgentCommissionPage({ onBack }: Props) {
                           {/* Card Body Details */}
                           <div className="grid grid-cols-2 gap-2 text-xs">
                             <div className="flex items-center justify-between bg-black/20 px-2.5 py-1.5 rounded-lg">
-                              <span className="text-[11px] text-gray-400 font-medium">Level</span>
-                              <span className="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                              <span className="text-[13px] text-gray-400 font-medium">Level</span>
+                              <span className="px-1.5 py-0.5 rounded text-[12px] font-extrabold bg-amber-500/15 text-amber-300 border border-amber-500/30">
                                 L{m.layer}
                               </span>
                             </div>
                             <div className="flex items-center justify-between bg-black/20 px-2.5 py-1.5 rounded-lg">
-                              <span className="text-[11px] text-gray-400 font-medium">Deposit (Today)</span>
+                              <span className="text-[13px] text-gray-400 font-medium">Deposit (Today)</span>
                               <span className="font-extrabold text-amber-300 font-mono">
                                 {formatINR(m.totalDeposit ?? 0)}
                               </span>
@@ -1317,7 +1317,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
                           </div>
 
                           {/* User ID Row */}
-                          <div className="flex items-center justify-between text-[11px] px-1 text-gray-400">
+                          <div className="flex items-center justify-between text-[13px] px-1 text-gray-400">
                             <span className="font-medium text-gray-500">User ID</span>
                             <span className="font-mono text-gray-400 truncate max-w-[70%]" title={m.id}>
                               {m.id}
@@ -1368,7 +1368,7 @@ function StatCard({ label, value, highlight }: { label: string; value: string; h
       <p className={`font-black text-sm sm:text-base tracking-tight font-mono ${highlight ? "text-amber-300" : "text-[#fde4bc]"}`}>
         {value}
       </p>
-      <p className="text-[10px] font-bold text-gray-400 tracking-wider uppercase mt-1">
+      <p className="text-[12px] font-bold text-gray-400 tracking-wider uppercase mt-1">
         {label}
       </p>
     </div>
@@ -1379,18 +1379,18 @@ function SumCell({ label, value, isGreen, isGold }: { label: string; value: stri
   const len = value.length;
   let fontSizeClass = "text-xs sm:text-sm";
   if (len > 16) {
-    fontSizeClass = "text-[7.5px] sm:text-[9px]";
-  } else if (len > 13) {
-    fontSizeClass = "text-[8.5px] sm:text-[10px]";
-  } else if (len > 10) {
     fontSizeClass = "text-[9.5px] sm:text-[11px]";
+  } else if (len > 13) {
+    fontSizeClass = "text-[10.5px] sm:text-[12px]";
+  } else if (len > 10) {
+    fontSizeClass = "text-[11.5px] sm:text-[13px]";
   } else if (len > 7) {
-    fontSizeClass = "text-[11px] sm:text-xs";
+    fontSizeClass = "text-[13px] sm:text-xs";
   }
 
   return (
     <div className="min-w-0 overflow-hidden">
-      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider truncate" title={label}>
+      <p className="text-[12px] font-bold text-gray-400 uppercase tracking-wider truncate" title={label}>
         {label}
       </p>
       <p

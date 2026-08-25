@@ -374,14 +374,14 @@ export default function PuzzleCaptcha({
   return (
     <div className={`w-full min-w-0 ${className}`}>
       <div className="mb-1.5 flex items-center justify-between gap-2">
-        <p className="text-[11px] font-medium text-[#B79C8B]">
+        <p className="text-[13px] font-medium text-[#B79C8B]">
           Security verification
         </p>
         <button
           type="button"
           onClick={() => regenerate({ forceFetch: true })}
           disabled={loadingScene}
-          className="flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-bold text-[#FED358] active:opacity-80 disabled:opacity-50"
+          className="flex items-center gap-1 rounded-md px-2 py-1 text-[13px] font-bold text-[#FED358] active:opacity-80 disabled:opacity-50"
           style={{
             background: "rgba(254,211,88,0.1)",
             border: "1px solid rgba(254,211,88,0.25)",
@@ -436,7 +436,7 @@ export default function PuzzleCaptcha({
               className="h-7 w-7 animate-spin rounded-full border-2 border-[#FED358] border-t-transparent"
               aria-hidden
             />
-            <p className="text-[11px] font-medium text-[#FDE4BC]">
+            <p className="text-[13px] font-medium text-[#FDE4BC]">
               Loading nature scene…
             </p>
           </div>
@@ -532,7 +532,7 @@ export default function PuzzleCaptcha({
         </div>
 
         {status === "ok" && (
-          <div className="absolute right-2 top-2 z-20 flex items-center gap-1 rounded-full bg-black/55 px-2 py-1 text-[10px] font-bold text-[#17B15E]">
+          <div className="absolute right-2 top-2 z-20 flex items-center gap-1 rounded-full bg-black/55 px-2 py-1 text-[12px] font-bold text-[#17B15E]">
             <IoCheckmarkCircle size={14} /> Matched
           </div>
         )}
@@ -562,7 +562,7 @@ export default function PuzzleCaptcha({
                 : "linear-gradient(90deg,rgba(254,211,88,0.1),rgba(254,211,88,0.22))",
           }}
         />
-        <p className="pointer-events-none absolute inset-0 flex items-center justify-center px-12 text-center text-[11px] font-medium text-[#837064] sm:text-[12px]">
+        <p className="pointer-events-none absolute inset-0 flex items-center justify-center px-12 text-center text-[13px] font-medium text-[#837064] sm:text-[14px]">
           {loadingScene
             ? "Loading scene…"
             : status === "ok"
@@ -598,7 +598,7 @@ export default function PuzzleCaptcha({
 
       {message && (
         <p
-          className="mt-1.5 flex items-center gap-1 text-[11px] font-medium"
+          className="mt-1.5 flex items-center gap-1 text-[13px] font-medium"
           style={{ color: status === "ok" ? "#17B15E" : "#FD565C" }}
           role="status"
           aria-live="polite"

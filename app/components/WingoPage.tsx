@@ -637,7 +637,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
                 type="button"
                 disabled={randomSpinning}
                 onClick={() => openBet("COLOR", c.choice, c.label)}
-                className={`h-[44px] rounded-[10px] font-extrabold text-[16px] text-white active:scale-95 transition-all duration-100 ${
+                className={`h-[44px] rounded-[10px] font-extrabold text-[18px] text-white active:scale-95 transition-all duration-100 ${
                   hl ? "scale-105 z-[2]" : ""
                 }`}
                 style={{
@@ -695,7 +695,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
             type="button"
             disabled={randomSpinning || isLocked}
             onClick={pickRandom}
-            className="h-[34px] px-3.5 rounded-[8px] text-[12px] font-extrabold text-[#DA3735] active:scale-95 transition-all disabled:opacity-50"
+            className="h-[34px] px-3.5 rounded-[8px] text-[14px] font-extrabold text-[#DA3735] active:scale-95 transition-all disabled:opacity-50"
             style={{
               border: "1.5px solid #DA3735",
               background: randomSpinning
@@ -718,7 +718,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
                   type="button"
                   disabled={randomSpinning}
                   onClick={() => setSelectedMultiplier(m)}
-                  className="flex-1 min-w-[36px] h-[34px] rounded-[8px] text-[12px] font-extrabold transition-all active:scale-95"
+                  className="flex-1 min-w-[36px] h-[34px] rounded-[8px] text-[14px] font-extrabold transition-all active:scale-95"
                   style={{
                     background: isSelected ? "#17B15E" : "#17141d",
                     color: isSelected ? "#FFFFFF" : "#A195A8",
@@ -740,7 +740,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
             type="button"
             disabled={randomSpinning}
             onClick={() => openBet("SIZE", "BIG", "Big")}
-            className={`flex-1 font-black text-[17px] text-white active:opacity-90 transition-all duration-100 ${
+            className={`flex-1 font-black text-[19px] text-white active:opacity-90 transition-all duration-100 ${
               isRandomHl("SIZE:BIG") ? "scale-[1.03] z-[2] brightness-110" : ""
             }`}
             style={{
@@ -756,7 +756,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
             type="button"
             disabled={randomSpinning}
             onClick={() => openBet("SIZE", "SMALL", "Small")}
-            className={`flex-1 font-black text-[17px] text-white active:opacity-90 transition-all duration-100 ${
+            className={`flex-1 font-black text-[19px] text-white active:opacity-90 transition-all duration-100 ${
               isRandomHl("SIZE:SMALL") ? "scale-[1.03] z-[2] brightness-110" : ""
             }`}
             style={{
@@ -809,14 +809,14 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
                   ).map((h) => (
                     <span
                       key={h}
-                      className="text-[9px] sm:text-[10px] font-bold text-[#110D14] text-center leading-tight"
+                      className="text-[11px] sm:text-[12px] font-bold text-[#110D14] text-center leading-tight"
                     >
                       {h}
                     </span>
                   ))}
                 </div>
                 {results.length === 0 ? (
-                  <p className="text-center text-white/30 text-[12px] py-10">
+                  <p className="text-center text-white/30 text-[14px] py-10">
                     No results yet
                   </p>
                 ) : (
@@ -833,7 +833,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
                         className="grid grid-cols-[1.05fr_1fr_0.85fr_0.85fr_0.85fr] gap-0.5 items-center px-1.5 py-2 sm:px-2.5 border-b border-white/[0.06]"
                       >
                         {/* Period */}
-                        <span className="text-[10px] sm:text-[11px] text-[#f5d78e] text-center font-mono leading-tight tabular-nums">
+                        <span className="text-[12px] sm:text-[13px] text-[#f5d78e] text-center font-mono leading-tight tabular-nums">
                           {maskPeriodMiddle(row.periodNumber)}
                         </span>
 
@@ -843,7 +843,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
                             type="button"
                             onClick={() => openTronBlock(row.blockNumber)}
                             disabled={row.blockNumber == null}
-                            className="flex h-[15px] w-[15px] items-center justify-center rounded-full text-[10px] font-black leading-none text-white disabled:opacity-30 active:scale-90"
+                            className="flex h-[15px] w-[15px] items-center justify-center rounded-full text-[12px] font-black leading-none text-white disabled:opacity-30 active:scale-90"
                             style={{
                               background:
                                 "linear-gradient(180deg,#ff6b6b 0%,#e11d48 100%)",
@@ -862,25 +862,25 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
                           >
                             ?
                           </button>
-                          <span className="text-[10px] sm:text-[11px] text-[#f5d78e] text-center font-mono tabular-nums leading-tight">
+                          <span className="text-[12px] sm:text-[13px] text-[#f5d78e] text-center font-mono tabular-nums leading-tight">
                             {row.blockNumber != null ? row.blockNumber : "—"}
                           </span>
                         </div>
 
                         {/* Block time */}
-                        <span className="text-[10px] sm:text-[11px] text-[#f5d78e] text-center font-mono tabular-nums leading-tight">
+                        <span className="text-[12px] sm:text-[13px] text-[#f5d78e] text-center font-mono tabular-nums leading-tight">
                           {formatBlockTime(row.blockTimestamp ?? row.endTime)}
                         </span>
 
                         {/* Hash value (last 4) */}
-                        <span className="text-[10px] sm:text-[11px] text-[#f5d78e] text-center font-mono leading-tight">
+                        <span className="text-[12px] sm:text-[13px] text-[#f5d78e] text-center font-mono leading-tight">
                           {hashTail}
                         </span>
 
                         {/* Result: colored digit + B/S */}
                         <div className="flex items-center justify-center gap-1 min-w-0">
                           <span
-                            className="inline-flex h-[22px] min-w-[22px] items-center justify-center rounded-full text-[12px] font-black tabular-nums text-white"
+                            className="inline-flex h-[22px] min-w-[22px] items-center justify-center rounded-full text-[14px] font-black tabular-nums text-white"
                             style={{
                               background: numberBackground(n),
                               boxShadow: "0 1px 4px rgba(0,0,0,0.35)",
@@ -889,7 +889,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
                             {n}
                           </span>
                           <span
-                            className="text-[12px] font-black"
+                            className="text-[14px] font-black"
                             style={{ color: size.solid }}
                           >
                             {big ? "B" : "S"}
@@ -907,13 +907,13 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
                   style={{ background: "linear-gradient(90deg,#C8922A,#E8A84A)" }}
                 >
                   {["Period", "Number", "Big Small", "Color"].map((h) => (
-                    <span key={h} className="text-[11px] font-bold text-[#110D14] text-center">
+                    <span key={h} className="text-[13px] font-bold text-[#110D14] text-center">
                       {h}
                     </span>
                   ))}
                 </div>
                 {results.length === 0 ? (
-                  <p className="text-center text-white/30 text-[12px] py-10">No results yet</p>
+                  <p className="text-center text-white/30 text-[14px] py-10">No results yet</p>
                 ) : (
                   results.map((row) => {
                     const big = isBig(row.resultNumber);
@@ -923,17 +923,17 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
                         key={row.id}
                         className="grid grid-cols-[1.5fr_0.7fr_0.8fr_0.7fr] gap-1 items-center px-3 py-2.5 border-b border-white/5"
                       >
-                        <span className="text-[15px] text-[#fde4bc] text-center truncate font-mono">
+                        <span className="text-[17px] text-[#fde4bc] text-center truncate font-mono">
                           {row.periodNumber}
                         </span>
                         <span
-                          className="text-[30px] font-black text-center tabular-nums"
+                          className="text-[32px] font-black text-center tabular-nums"
                           style={{ color: numberPrimaryColor(row.resultNumber) }}
                         >
                           {row.resultNumber}
                         </span>
                         <span
-                          className="text-[13px] font-bold text-center text-[#fde4bc]"
+                          className="text-[15px] font-bold text-center text-[#fde4bc]"
                           // style={{ color: size.solid }}
                         >
                           {big ? "Big" : "Small"}
@@ -963,14 +963,16 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
               className="grid grid-cols-2 gap-1 px-2 py-2 rounded-t-[8px] mb-2"
               style={{ background: "linear-gradient(90deg,#C8922A,#E8A84A)" }}
             >
-              <span className="text-[13px] font-bold text-[#110D14]">Period</span>
-              <span className="text-[13px] font-bold text-[#110D14] text-right">Number</span>
+              <span className="text-[17px] font-bold text-[#110D14]">Period</span>
+              <span className="text-[17px] font-bold text-[#110D14] text-right">Number</span>
             </div>
 
-            <div className="mb-3 space-y-1.5 text-[13px]">
-              <div className="flex justify-between text-white/50 px-1">
-                <span>Statistic</span>
-                <span>(last {chartStats.count || results.length} Periods)</span>
+            <div className="mb-3 space-y-1.5 text-[17px]">
+              <div className="flex justify-between px-1">
+                <span className="font-bold text-[#FED358]">Statistic</span>
+                <span className="text-[#FED358]/70">
+                  (last {chartStats.count || results.length} Periods)
+                </span>
               </div>
 
               <StatRow
@@ -978,7 +980,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
                 values={Array.from({ length: 10 }, (_, i) => i)}
                 render={(n) => (
                   <span
-                    className="mx-auto flex aspect-square w-full max-w-[24px] items-center justify-center rounded-full text-[11px] font-bold text-white sm:text-[12px]"
+                    className="mx-auto flex aspect-square w-full max-w-[26px] items-center justify-center rounded-full text-[15px] font-bold text-white sm:text-[16px]"
                     style={{ background: numberBackground(n) }}
                   >
                     {n}
@@ -992,7 +994,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
             </div>
 
             {/* Trend: red thread connecting winning numbers (measured ball centers) */}
-            <p className="mb-1.5 px-1 text-[12px] font-semibold text-white/40">
+            <p className="mb-1.5 px-1 text-[16px] font-semibold text-[#FED358]/70">
               Trend · red thread links each period&apos;s result
             </p>
             <WingoTrendChart rows={trendRows} />
@@ -1009,7 +1011,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
         {historyTab === "my" && (
           <>
             {myBets.length === 0 ? (
-              <p className="text-center text-white/30 text-[12px] py-10">No bets yet</p>
+              <p className="text-center text-white/30 text-[14px] py-10">No bets yet</p>
             ) : (
               myBets.map((b) => {
                 const matched = results.find(
@@ -1138,7 +1140,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
             onClick={(e) => e.stopPropagation()}
           >
             <p className="text-center font-black text-slate-800 text-base mb-3">Pre-sale rules</p>
-            <ul className="text-[12px] text-slate-600 space-y-2 leading-relaxed">
+            <ul className="text-[14px] text-slate-600 space-y-2 leading-relaxed">
               <li>• After placing a bet you cannot cancel it.</li>
               <li>• Betting closes: last 5s (30sec), last 10s (1/3/5 Min).</li>
               <li>• Odd green · Even red · 0 Violet+Red · 5 Violet+Green.</li>
@@ -1169,7 +1171,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
             onClick={(e) => e.stopPropagation()}
           >
             <p className="text-center text-[#FED358] font-black text-base mb-3">How to play</p>
-            <ul className="text-[12px] text-white/70 space-y-2 leading-relaxed">
+            <ul className="text-[14px] text-white/70 space-y-2 leading-relaxed">
               <li>• Select a duration: 30sec / 1Min / 3Min / 5Min.</li>
               <li>• Bet Green, Violet, Red, a number 0–9, or Big / Small.</li>
               <li>• Odd green (1,3,7,9) · Even red (2,4,6,8) · 0=Violet+Red · 5=Violet+Green.</li>
@@ -1241,7 +1243,9 @@ function StatRow({
 }) {
   return (
     <div className="flex min-w-0 items-center gap-1">
-      <span className="w-[86px] shrink-0 text-[12px] text-white/55 sm:w-[104px]">{label}</span>
+      <span className="w-[102px] shrink-0 text-[16px] font-semibold text-[#FED358] sm:w-[120px]">
+        {label}
+      </span>
       <div className="grid min-w-0 flex-1 grid-cols-10 gap-px">
         {values.map((v, i) =>
           render ? (
@@ -1251,7 +1255,7 @@ function StatRow({
           ) : (
             <span
               key={i}
-              className="min-w-0 text-center text-[11px] tabular-nums text-white/70 sm:text-[12px]"
+              className="min-w-0 text-center text-[15px] font-bold tabular-nums text-white sm:text-[16px]"
             >
               {v}
             </span>

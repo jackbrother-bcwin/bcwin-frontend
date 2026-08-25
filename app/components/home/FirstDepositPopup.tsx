@@ -91,12 +91,12 @@ export default function FirstDepositPopup({
 
           <div className="promo-fd-scroll">
             {loading && (
-              <p className="py-8 text-center text-[12px] text-white/40">
+              <p className="py-8 text-center text-[14px] text-white/40">
                 Loading bonuses…
               </p>
             )}
             {!loading && tiers.length === 0 && (
-              <p className="py-8 text-center text-[12px] text-white/40">
+              <p className="py-8 text-center text-[14px] text-white/40">
                 No tiers available
               </p>
             )}

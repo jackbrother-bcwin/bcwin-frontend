@@ -74,7 +74,7 @@ export default function Loading() {
           }}
           aria-hidden
         />
-        <span className="text-[12px] font-semibold tracking-wide text-[#FDE4BC]">
+        <span className="text-[14px] font-semibold tracking-wide text-[#FDE4BC]">
           Loading…
         </span>
       </div>

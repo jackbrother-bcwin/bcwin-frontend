@@ -67,7 +67,7 @@ function CopyUidButton({ uid }: { uid: string }) {
       title="Copy UID"
     >
       {copied ? (
-        <span className="text-[10px] text-green-400 font-semibold">Copied!</span>
+        <span className="text-[12px] text-green-400 font-semibold">Copied!</span>
       ) : (
         <svg viewBox="0 0 24 24" className="w-4 h-4 fill-none stroke-current stroke-2">
           <rect x="9" y="9" width="13" height="13" rx="2" />
@@ -122,7 +122,7 @@ export default function NewSubordinatesPage({ onBack }: Props) {
                 key={p.id}
                 type="button"
                 onClick={() => setPeriod(p.id)}
-                className={`h-10 rounded-[10px] text-[13px] transition-all duration-200 flex items-center justify-center px-2 cursor-pointer select-none ${
+                className={`h-10 rounded-[10px] text-[15px] transition-all duration-200 flex items-center justify-center px-2 cursor-pointer select-none ${
                   on
                     ? "bg-gradient-to-b from-[#FFE9A8] via-[#FED358] to-[#E8A84A] text-[#5c3a08] font-bold shadow-md shadow-[#FED358]/20 border border-[#FED358]/50"
                     : "bg-[#241E22] text-[#B79C8B] font-medium border border-[#3D363A]/60 hover:bg-[#2c2429] hover:text-[#FDE4BC]"
@@ -142,7 +142,7 @@ export default function NewSubordinatesPage({ onBack }: Props) {
           </div>
         ) : (
           <div className="flex flex-col gap-3 mt-3">
-            <div className="px-1 pb-1 text-[11px] text-[#837064]">
+            <div className="px-1 pb-1 text-[13px] text-[#837064]">
               {list.length} {list.length === 1 ? "direct subordinate" : "direct subordinates"} registered{" "}
               {period === "today"
                 ? "today"

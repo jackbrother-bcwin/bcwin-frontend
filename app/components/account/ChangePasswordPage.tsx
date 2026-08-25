@@ -134,7 +134,7 @@ export default function ChangePasswordPage({ onBack, onNavigate }: Props) {
         <button
           type="button"
           onClick={() => onNavigate?.("forgot")}
-          className="inline-flex items-center gap-0.5 text-[12px] font-semibold text-[#c9a227] active:opacity-80"
+          className="inline-flex items-center gap-0.5 text-[14px] font-semibold text-[#c9a227] active:opacity-80"
         >
           Forgot original login password
           <IoChevronForward size={14} />
@@ -143,7 +143,7 @@ export default function ChangePasswordPage({ onBack, onNavigate }: Props) {
 
       {error && (
         <div
-          className="mx-3 mt-3 px-3 py-2 rounded-lg text-[11px] text-[#FD565C]"
+          className="mx-3 mt-3 px-3 py-2 rounded-lg text-[13px] text-[#FD565C]"
           style={{ background: "rgba(229,56,59,0.12)" }}
         >
           {error}
@@ -155,7 +155,7 @@ export default function ChangePasswordPage({ onBack, onNavigate }: Props) {
           type="button"
           disabled={!canSave}
           onClick={handleSave}
-          className="w-full h-12 rounded-full font-bold text-[15px] tracking-wide disabled:opacity-50 active:scale-[0.99]"
+          className="w-full h-12 rounded-full font-bold text-[17px] tracking-wide disabled:opacity-50 active:scale-[0.99]"
           style={{
             background: canSave
               ? "linear-gradient(180deg,#FED358 0%,#E8A84A 100%)"
@@ -190,7 +190,7 @@ function PwField({
 }) {
   return (
     <div>
-      <div className="flex items-center gap-1.5 mb-2 text-[13px] font-bold text-[#FED358]">
+      <div className="flex items-center gap-1.5 mb-2 text-[15px] font-bold text-[#FED358]">
         <IoLockClosed size={16} />
         {label}
       </div>
@@ -207,7 +207,7 @@ function PwField({
           placeholder={placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="flex-1 min-w-0 bg-transparent outline-none text-[13px] text-white placeholder:text-white/30"
+          className="flex-1 min-w-0 bg-transparent outline-none text-[15px] text-white placeholder:text-white/30"
         />
         <button
           type="button"

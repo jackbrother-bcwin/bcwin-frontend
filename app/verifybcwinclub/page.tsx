@@ -124,7 +124,7 @@ export default function VerifyBcwinClubPage() {
                   </svg>
                   <span className="font-semibold">Official BCWIN CLUB domain verified!</span>
                 </div>
-                <span className="text-[11px] bg-[#164e33] px-2 py-0.5 rounded text-white font-mono">{verifiedDomain}</span>
+                <span className="text-[13px] bg-[#164e33] px-2 py-0.5 rounded text-white font-mono">{verifiedDomain}</span>
               </div>
             )}
 
@@ -283,7 +283,7 @@ export default function VerifyBcwinClubPage() {
 
               {/* Join Now Subtle Watermark */}
               <div className="w-full flex justify-center my-1">
-                <span className="text-[11px] font-black tracking-widest text-[#ffc832]/60 border border-[#ffc832]/40 rounded-full px-5 py-1 uppercase bg-[#ffc832]/5">
+                <span className="text-[13px] font-black tracking-widest text-[#ffc832]/60 border border-[#ffc832]/40 rounded-full px-5 py-1 uppercase bg-[#ffc832]/5">
                   JOIN NOW
                 </span>
               </div>
@@ -308,7 +308,7 @@ export default function VerifyBcwinClubPage() {
                   )}
                 </button>
                 {/* Time Display */}
-                <span className="font-mono text-[11px] text-gray-300">0:18 / 0:20</span>
+                <span className="font-mono text-[13px] text-gray-300">0:18 / 0:20</span>
               </div>
 
               <div className="flex items-center gap-3">
@@ -379,7 +379,7 @@ export default function VerifyBcwinClubPage() {
               {/* KoolBet */}
               <div className="flex flex-col items-center justify-center">
                 <span className="font-black text-lg text-gray-300 tracking-tighter italic">KCOLBET</span>
-                <span className="text-[8px] text-gray-400 tracking-widest uppercase">COMPETITION GAMES SOFT</span>
+                <span className="text-[10px] text-gray-400 tracking-widest uppercase">COMPETITION GAMES SOFT</span>
               </div>
 
               {/* JILI */}
@@ -402,7 +402,7 @@ export default function VerifyBcwinClubPage() {
               {/* JDB */}
               <div className="flex flex-col items-center justify-center">
                 <span className="font-black text-xl text-gray-200 tracking-widest">JDB</span>
-                <span className="text-[8px] text-gray-400 tracking-tight">JUST DO THE BEST</span>
+                <span className="text-[10px] text-gray-400 tracking-tight">JUST DO THE BEST</span>
               </div>
 
               {/* SPRIBE */}

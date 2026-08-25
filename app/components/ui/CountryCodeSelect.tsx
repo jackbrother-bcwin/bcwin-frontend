@@ -108,10 +108,10 @@ export default function CountryCodeSelect({
             : "0 2px 8px rgba(0,0,0,0.25)",
         }}
       >
-        <span className="text-[16px] leading-none" aria-hidden>
+        <span className="text-[18px] leading-none" aria-hidden>
           {selected.flag}
         </span>
-        <span className="text-[12px] font-extrabold tracking-wide text-[#FED358]">
+        <span className="text-[14px] font-extrabold tracking-wide text-[#FED358]">
           +{selected.code}
         </span>
         <svg
@@ -147,7 +147,7 @@ export default function CountryCodeSelect({
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search country or code…"
-                className="h-9 w-full rounded-lg px-3 text-[12px] text-white outline-none placeholder:text-white/30"
+                className="h-9 w-full rounded-lg px-3 text-[14px] text-white outline-none placeholder:text-white/30"
                 style={{
                   background: "rgba(0,0,0,0.35)",
                   border: "1px solid rgba(254,211,88,0.15)",
@@ -163,7 +163,7 @@ export default function CountryCodeSelect({
             className="max-h-[240px] overflow-y-auto py-1"
           >
             {filtered.length === 0 && (
-              <li className="px-3 py-3 text-center text-[11px] text-white/40">
+              <li className="px-3 py-3 text-center text-[13px] text-white/40">
                 No matches
               </li>
             )}
@@ -181,18 +181,18 @@ export default function CountryCodeSelect({
                         : "transparent",
                     }}
                   >
-                    <span className="text-[18px] leading-none">{c.flag}</span>
+                    <span className="text-[20px] leading-none">{c.flag}</span>
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-[12px] font-bold text-white">
+                      <span className="block truncate text-[14px] font-bold text-white">
                         {c.name}
                       </span>
-                      <span className="block text-[10px] text-white/40">
+                      <span className="block text-[12px] text-white/40">
                         {c.iso}
                         {c.smsOtp ? " · SMS OTP" : " · phone only"}
                       </span>
                     </span>
                     <span
-                      className="shrink-0 text-[12px] font-extrabold tabular-nums"
+                      className="shrink-0 text-[14px] font-extrabold tabular-nums"
                       style={{
                         color: active ? "#FED358" : "rgba(255,255,255,0.55)",
                       }}

@@ -70,7 +70,7 @@ export function BetPanel({ target, onTarget, locked, onBet }: BetPanelProps) {
         />
         <div className="flex items-center justify-between relative z-[1]">
           <h3
-            className="text-[16px] font-black text-white"
+            className="text-[18px] font-black text-white"
             style={{ letterSpacing: "0.02em" }}
           >
             Betting Area
@@ -115,7 +115,7 @@ export function BetPanel({ target, onTarget, locked, onBet }: BetPanelProps) {
               key={tab.id}
               type="button"
               onClick={() => onTarget(tab.id)}
-              className="text-[13px] font-bold pb-1 transition-colors"
+              className="text-[15px] font-bold pb-1 transition-colors"
               style={{
                 color: active ? "#FED358" : "rgba(255,255,255,0.4)",
                 borderBottom: active
@@ -129,7 +129,7 @@ export function BetPanel({ target, onTarget, locked, onBet }: BetPanelProps) {
         })}
       </div>
 
-      <p className="px-4 text-[11px] text-white/30 mb-2">
+      <p className="px-4 text-[13px] text-white/30 mb-2">
         Select {targetLabel} number{" "}
         <span className="text-[#FED358]/70">(Odds {ODDS_POSITION})</span>
       </p>
@@ -189,8 +189,8 @@ export function BetPanel({ target, onTarget, locked, onBet }: BetPanelProps) {
 
       {/* Odd / Even — per podium place (backend: choice odd|even + targetPosition) */}
       <div className="px-4 pt-3 pb-1">
-        <h4 className="text-[14px] font-bold text-[#FED358] mb-0.5">Odd or Even</h4>
-        <p className="text-[11px] text-white/30 mb-2.5">
+        <h4 className="text-[16px] font-bold text-[#FED358] mb-0.5">Odd or Even</h4>
+        <p className="text-[13px] text-white/30 mb-2.5">
           Select the rank number as odd or even
         </p>
 
@@ -198,7 +198,7 @@ export function BetPanel({ target, onTarget, locked, onBet }: BetPanelProps) {
           const pl = posShort(pos);
           return (
             <div key={pos} className="flex items-center gap-2 mb-2">
-              <span className="text-[12px] font-bold text-white/60 w-8 shrink-0">
+              <span className="text-[14px] font-bold text-white/60 w-8 shrink-0">
                 {pl}
               </span>
               <div className="flex-1 grid grid-cols-2 gap-2">
@@ -219,8 +219,8 @@ export function BetPanel({ target, onTarget, locked, onBet }: BetPanelProps) {
                     border: "1px solid rgba(23,177,94,0.35)",
                   }}
                 >
-                  <span className="text-[13px] font-bold text-white/90">Odd</span>
-                  <span className="text-[10px] text-white/35">{ODDS_OE_BS}</span>
+                  <span className="text-[15px] font-bold text-white/90">Odd</span>
+                  <span className="text-[12px] text-white/35">{ODDS_OE_BS}</span>
                 </button>
                 <button
                   type="button"
@@ -239,8 +239,8 @@ export function BetPanel({ target, onTarget, locked, onBet }: BetPanelProps) {
                     border: "1px solid rgba(80,136,211,0.35)",
                   }}
                 >
-                  <span className="text-[13px] font-bold text-white/90">Even</span>
-                  <span className="text-[10px] text-white/35">{ODDS_OE_BS}</span>
+                  <span className="text-[15px] font-bold text-white/90">Even</span>
+                  <span className="text-[12px] text-white/35">{ODDS_OE_BS}</span>
                 </button>
               </div>
             </div>
@@ -252,8 +252,8 @@ export function BetPanel({ target, onTarget, locked, onBet }: BetPanelProps) {
 
       {/* Big / Small — backend: big = 6–10, small = 1–5 */}
       <div className="px-4 pt-3 pb-4">
-        <h4 className="text-[14px] font-bold text-[#FED358] mb-0.5">Big or Small</h4>
-        <p className="text-[11px] text-white/30 mb-2.5">
+        <h4 className="text-[16px] font-bold text-[#FED358] mb-0.5">Big or Small</h4>
+        <p className="text-[13px] text-white/30 mb-2.5">
           Big (6&amp;over) or Small (under 6)
         </p>
 
@@ -261,7 +261,7 @@ export function BetPanel({ target, onTarget, locked, onBet }: BetPanelProps) {
           const pl = posShort(pos);
           return (
             <div key={pos} className="flex items-center gap-2 mb-2">
-              <span className="text-[12px] font-bold text-white/60 w-8 shrink-0">
+              <span className="text-[14px] font-bold text-white/60 w-8 shrink-0">
                 {pl}
               </span>
               <div className="flex-1 grid grid-cols-2 gap-2">
@@ -282,8 +282,8 @@ export function BetPanel({ target, onTarget, locked, onBet }: BetPanelProps) {
                     border: "1px solid rgba(221,145,56,0.35)",
                   }}
                 >
-                  <span className="text-[13px] font-bold text-white/90">Big</span>
-                  <span className="text-[10px] text-white/35">{ODDS_OE_BS}</span>
+                  <span className="text-[15px] font-bold text-white/90">Big</span>
+                  <span className="text-[12px] text-white/35">{ODDS_OE_BS}</span>
                 </button>
                 <button
                   type="button"
@@ -302,8 +302,8 @@ export function BetPanel({ target, onTarget, locked, onBet }: BetPanelProps) {
                     border: "1px solid rgba(155,72,219,0.35)",
                   }}
                 >
-                  <span className="text-[13px] font-bold text-white/90">Small</span>
-                  <span className="text-[10px] text-white/35">{ODDS_OE_BS}</span>
+                  <span className="text-[15px] font-bold text-white/90">Small</span>
+                  <span className="text-[12px] text-white/35">{ODDS_OE_BS}</span>
                 </button>
               </div>
             </div>

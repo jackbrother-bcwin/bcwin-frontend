@@ -43,7 +43,7 @@ export class EffectsEngine {
     this.cdText = new pixi.Text({
       text: "",
       style: {
-        fontSize: 64,
+        fontSize: 66,
         fontWeight: "900",
         fill: 0xfed358,
         fontFamily: "system-ui, sans-serif",

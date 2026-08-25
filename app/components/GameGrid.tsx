@@ -107,20 +107,20 @@ function SectionHeader({
     <div className="flex items-center justify-between px-[12px] py-[10px]">
       <div className="flex items-center gap-[7px]">
         {icon ? (
-          <span className="text-[16px]">{icon}</span>
+          <span className="text-[18px]">{icon}</span>
         ) : (
           <span
             className="w-[3px] h-[14px] rounded-full"
             style={{ background: "linear-gradient(180deg, #FED358 0%, #FFB472 100%)" }}
           />
         )}
-        <span className="text-[14px] font-bold text-white">{title}</span>
+        <span className="text-[16px] font-bold text-white">{title}</span>
       </div>
       {action && (
         <div className="flex items-center gap-[8px]">
           <button
             onClick={onAction}
-            className="text-[11px] text-white/60 px-[10px] py-[3px] rounded-full"
+            className="text-[13px] text-white/60 px-[10px] py-[3px] rounded-full"
             style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)" }}
           >
             {action}
@@ -168,7 +168,7 @@ function GameCardGrid({
           />
           {/* Game name overlay */}
           <div
-            className="absolute bottom-0 left-0 right-0 px-[6px] py-[4px] text-[10px] font-semibold text-white text-center truncate"
+            className="absolute bottom-0 left-0 right-0 px-[6px] py-[4px] text-[12px] font-semibold text-white text-center truncate"
             style={{ background: "linear-gradient(0deg, rgba(0,0,0,0.75) 0%, transparent 100%)" }}
           >
             {item.name}
@@ -206,7 +206,7 @@ function RecommendedGrid({
           >
             <Image src={featured.image} alt={featured.name} fill sizes="160px" className="object-cover" />
             <div
-              className="absolute bottom-0 left-0 right-0 px-2 py-1.5 text-[11px] font-bold text-white text-center"
+              className="absolute bottom-0 left-0 right-0 px-2 py-1.5 text-[13px] font-bold text-white text-center"
               style={{ background: "linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%)" }}
             >
               {featured.name.toUpperCase()}
@@ -224,7 +224,7 @@ function RecommendedGrid({
             >
               <Image src={item.image} alt={item.name} fill sizes="120px" className="object-cover" />
               <div
-                className="absolute bottom-0 left-0 right-0 px-2 py-1 text-[10px] font-bold text-white text-center"
+                className="absolute bottom-0 left-0 right-0 px-2 py-1 text-[12px] font-bold text-white text-center"
                 style={{ background: "linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%)" }}
               >
                 {item.name.toUpperCase()}
@@ -245,7 +245,7 @@ function RecommendedGrid({
           >
             <Image src={item.image} alt={item.name} fill sizes="100px" className="object-cover" />
             <div
-              className="absolute bottom-0 left-0 right-0 px-1 py-1 text-[9px] font-semibold text-white text-center"
+              className="absolute bottom-0 left-0 right-0 px-1 py-1 text-[11px] font-semibold text-white text-center"
               style={{ background: "linear-gradient(0deg, rgba(0,0,0,0.75) 0%, transparent 100%)" }}
             >
               {item.name.toUpperCase()}
@@ -278,7 +278,7 @@ function WinningInfo() {
                 className="object-cover"
               />
               <div
-                className="absolute top-[4px] left-[4px] text-[9px] font-bold text-white px-[5px] py-[2px] rounded-[4px]"
+                className="absolute top-[4px] left-[4px] text-[11px] font-bold text-white px-[5px] py-[2px] rounded-[4px]"
                 style={{ background: "rgba(0,0,0,0.65)" }}
               >
                 {winner.game}
@@ -286,8 +286,8 @@ function WinningInfo() {
             </div>
             {/* Winner info */}
             <div className="px-[7px] py-[6px]">
-              <p className="text-[10px] text-white/60 truncate">{winner.name}</p>
-              <p className="text-[11px] font-bold text-[#FED358] mt-[1px]">{winner.amount}</p>
+              <p className="text-[12px] text-white/60 truncate">{winner.name}</p>
+              <p className="text-[13px] font-bold text-[#FED358] mt-[1px]">{winner.amount}</p>
             </div>
           </div>
         ))}
@@ -316,13 +316,13 @@ function EarningsChart() {
               <Image src={player.avatar} alt="" fill sizes="44px" className="object-cover" />
             </div>
             <div
-              className="mt-[4px] rounded-full px-[6px] py-[2px] text-[9px] font-bold"
+              className="mt-[4px] rounded-full px-[6px] py-[2px] text-[11px] font-bold"
               style={{ background: "rgba(0,0,0,0.4)", color: "#FED358" }}
             >
               {player.amount}
             </div>
             <div
-              className="mt-[6px] w-full rounded-t-[8px] flex items-center justify-center text-[22px] font-black"
+              className="mt-[6px] w-full rounded-t-[8px] flex items-center justify-center text-[24px] font-black"
               style={{
                 height: player.height,
                 background:

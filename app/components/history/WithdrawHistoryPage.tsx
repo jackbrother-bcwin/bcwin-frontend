@@ -317,11 +317,11 @@ export default function WithdrawHistoryPage({ onBack }: Props) {
                   borderBottom: "1px solid rgba(255,255,255,0.04)",
                 }}
               >
-                <span className="text-[14px] font-bold text-[#FED358]">
+                <span className="text-[16px] font-bold text-[#FED358]">
                   Withdraw
                 </span>
                 <span
-                  className="text-[12px] font-bold"
+                  className="text-[14px] font-bold"
                   style={{ color: statusColor(w.status) }}
                 >
                   {statusLabel(w.status)}
@@ -343,7 +343,7 @@ export default function WithdrawHistoryPage({ onBack }: Props) {
                     type="button"
                     disabled={cancelling === w.orderId}
                     onClick={() => setCancelTarget(w)}
-                    className="w-full h-9 rounded-full text-[12px] font-bold text-[#DA3735] active:opacity-70"
+                    className="w-full h-9 rounded-full text-[14px] font-bold text-[#DA3735] active:opacity-70"
                     style={{
                       border: "1px solid rgba(218,55,53,0.45)",
                       background: "rgba(218,55,53,0.08)",
@@ -393,7 +393,7 @@ export default function WithdrawHistoryPage({ onBack }: Props) {
                 key={s.id}
                 type="button"
                 onClick={() => setDraftStatus(s.id)}
-                className="w-full py-3.5 text-center text-[15px] font-semibold"
+                className="w-full py-3.5 text-center text-[17px] font-semibold"
                 style={{
                   color:
                     draftStatus === s.id
@@ -439,7 +439,7 @@ export default function WithdrawHistoryPage({ onBack }: Props) {
                   key={p.id}
                   type="button"
                   onClick={() => setDraftPreset(p.id)}
-                  className="h-10 rounded-[10px] text-[13px] font-bold"
+                  className="h-10 rounded-[10px] text-[15px] font-bold"
                   style={{
                     background: on
                       ? "rgba(254,211,88,0.18)"
@@ -457,7 +457,7 @@ export default function WithdrawHistoryPage({ onBack }: Props) {
           </div>
           {draftPreset === "custom" && (
             <>
-              <p className="px-4 pt-1 pb-1 text-[11px] text-white/35 font-semibold uppercase tracking-wider">
+              <p className="px-4 pt-1 pb-1 text-[13px] text-white/35 font-semibold uppercase tracking-wider">
                 Pick a day
               </p>
               <DateOdometer
@@ -505,7 +505,7 @@ function FilterBtn({
     <button
       type="button"
       onClick={onClick}
-      className="flex-1 min-w-0 h-10 rounded-[10px] px-2.5 sm:px-3 flex items-center justify-between text-[12px] sm:text-[13px] font-semibold"
+      className="flex-1 min-w-0 h-10 rounded-[10px] px-2.5 sm:px-3 flex items-center justify-between text-[14px] sm:text-[15px] font-semibold"
       style={{
         background: "#241E22",
         border: "1px solid rgba(255,255,255,0.06)",
@@ -527,8 +527,8 @@ function AmountRow({ w, rate }: { w: Withdrawal; rate: number }) {
   if (completed && usdt != null) {
     return (
       <div className="flex items-center justify-between py-2.5 border-b border-white/[0.04] gap-3">
-        <span className="text-[13px] text-white/45 shrink-0">Amount</span>
-        <span className="text-[13px] text-right font-bold tabular-nums">
+        <span className="text-[15px] text-white/45 shrink-0">Amount</span>
+        <span className="text-[15px] text-right font-bold tabular-nums">
           <span style={{ color: "#FED358" }}>{formatINR(w.amount)}</span>
           <span className="text-white/35"> (</span>
           <span style={{ color: "#17B15E" }}>{usdt.toFixed(2)} USDT</span>
@@ -559,8 +559,8 @@ function TypeRow({
   const chain = String(cryptoChain ?? "").toUpperCase();
   return (
     <div className="flex items-center justify-between py-2.5 border-b border-white/[0.04] gap-3">
-      <span className="text-[13px] text-white/45 shrink-0">Type</span>
-      <span className="flex min-w-0 items-center justify-end gap-1 text-[13px] text-white/55">
+      <span className="text-[15px] text-white/45 shrink-0">Type</span>
+      <span className="flex min-w-0 items-center justify-end gap-1 text-[15px] text-white/55">
         {usdt && <UsdtTypeIcons chain={chain} size={16} />}
         <span className="truncate">{methodLabel(method, cryptoChain)}</span>
       </span>
@@ -585,15 +585,15 @@ function Row({
 }) {
   return (
     <div className="flex items-center justify-between py-2.5 border-b border-white/[0.04] last:border-0 gap-3">
-      <span className="text-[13px] text-white/45 shrink-0">{label}</span>
+      <span className="text-[15px] text-white/45 shrink-0">{label}</span>
       <span
-        className={`text-[13px] text-right break-all ${
+        className={`text-[15px] text-right break-all ${
           strong
             ? "text-white font-bold"
             : muted
               ? "text-white/55"
               : "text-white/85"
-        } ${mono ? "font-mono text-[11px]" : ""}`}
+        } ${mono ? "font-mono text-[13px]" : ""}`}
         style={valueColor ? { color: valueColor } : undefined}
       >
         {value}
@@ -631,17 +631,17 @@ function Sheet({
           <button
             type="button"
             onClick={onCancel}
-            className="text-[14px] font-semibold text-white/55 min-w-[64px] text-left"
+            className="text-[16px] font-semibold text-white/55 min-w-[64px] text-left"
           >
             Cancel
           </button>
-          <span className="text-[15px] font-bold text-[#FED358]">
+          <span className="text-[17px] font-bold text-[#FED358]">
             {title ?? ""}
           </span>
           <button
             type="button"
             onClick={onConfirm}
-            className="text-[14px] font-bold text-[#FED358] min-w-[64px] text-right"
+            className="text-[16px] font-bold text-[#FED358] min-w-[64px] text-right"
           >
             Confirm
           </button>

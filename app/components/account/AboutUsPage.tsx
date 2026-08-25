@@ -420,7 +420,7 @@ function LegalDoc({
             return (
               <h2
                 key={i}
-                className="pt-1 text-[13.5px] sm:text-[14px] font-bold text-[#FDE4BC] leading-snug"
+                className="pt-1 text-[15.5px] sm:text-[16px] font-bold text-[#FDE4BC] leading-snug"
               >
                 {b.text}
               </h2>
@@ -430,7 +430,7 @@ function LegalDoc({
             return (
               <p
                 key={i}
-                className="pl-3 text-[12.5px] sm:text-[13px] leading-[1.65] text-white/65 font-medium"
+                className="pl-3 text-[14.5px] sm:text-[15px] leading-[1.65] text-white/65 font-medium"
               >
                 • {b.text}
               </p>
@@ -439,7 +439,7 @@ function LegalDoc({
           return (
             <p
               key={i}
-              className="text-[12.5px] sm:text-[13px] leading-[1.65] text-white/65 font-medium"
+              className="text-[14.5px] sm:text-[15px] leading-[1.65] text-white/65 font-medium"
             >
               {b.text}
             </p>
@@ -468,7 +468,7 @@ function AboutRow({
       <span className="shrink-0 w-7 h-7 flex items-center justify-center" aria-hidden>
         {icon}
       </span>
-      <span className="flex-1 text-left text-[14px] font-semibold text-[#FDE4BC] truncate">
+      <span className="flex-1 text-left text-[16px] font-semibold text-[#FDE4BC] truncate">
         {label}
       </span>
       <IoChevronForward size={18} className="text-[#FED358] shrink-0 opacity-90" />

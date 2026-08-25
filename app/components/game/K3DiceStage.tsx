@@ -253,9 +253,9 @@ export default function K3DiceStage({
       {(sum != null || metaLine) && (
         <div className="relative -mt-1 px-3 pb-3 text-center">
           {sum != null && (
-            <p className="text-[13px] text-white/55">
+            <p className="text-[15px] text-white/55">
               Sum{" "}
-              <span className="text-[15px] font-black text-[#FED358]">{sum}</span>
+              <span className="text-[17px] font-black text-[#FED358]">{sum}</span>
             </p>
           )}
           {metaLine}
@@ -263,7 +263,7 @@ export default function K3DiceStage({
       )}
 
       {rolling && (
-        <p className="absolute bottom-2 left-0 right-0 z-20 text-center text-[11px] font-bold uppercase tracking-widest text-[#FED358] animate-pulse">
+        <p className="absolute bottom-2 left-0 right-0 z-20 text-center text-[13px] font-bold uppercase tracking-widest text-[#FED358] animate-pulse">
           Rolling…
         </p>
       )}

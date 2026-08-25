@@ -631,7 +631,7 @@ export default function TransactionHistoryPage({ onBack }: Props) {
         <button
           type="button"
           onClick={openType}
-          className="flex-1 min-w-0 h-10 rounded-[10px] px-2.5 sm:px-3 flex items-center justify-between text-[12px] sm:text-[13px] font-semibold"
+          className="flex-1 min-w-0 h-10 rounded-[10px] px-2.5 sm:px-3 flex items-center justify-between text-[14px] sm:text-[15px] font-semibold"
           style={{
             background: "#241E22",
             border: "1px solid rgba(255,255,255,0.06)",
@@ -644,7 +644,7 @@ export default function TransactionHistoryPage({ onBack }: Props) {
         <button
           type="button"
           onClick={openDate}
-          className="flex-1 min-w-0 h-10 rounded-[10px] px-2.5 sm:px-3 flex items-center justify-between text-[12px] sm:text-[13px] font-semibold"
+          className="flex-1 min-w-0 h-10 rounded-[10px] px-2.5 sm:px-3 flex items-center justify-between text-[14px] sm:text-[15px] font-semibold"
           style={{
             background: "#241E22",
             border: "1px solid rgba(255,255,255,0.06)",
@@ -683,7 +683,7 @@ export default function TransactionHistoryPage({ onBack }: Props) {
             >
               {/* Title strip */}
               <div
-                className="px-3.5 py-2.5 text-[14px] font-bold"
+                className="px-3.5 py-2.5 text-[16px] font-bold"
                 style={{
                   color: "rgba(254,211,88,0.92)",
                   background: "rgba(0,0,0,0.18)",
@@ -714,7 +714,7 @@ export default function TransactionHistoryPage({ onBack }: Props) {
                 {it.amountUnit === "usdt" &&
                 it.amountHintInr != null &&
                 Number.isFinite(it.amountHintInr) ? (
-                  <div className="flex justify-between py-1.5 text-[11px] text-white/35">
+                  <div className="flex justify-between py-1.5 text-[13px] text-white/35">
                     <span />
                     <span className="tabular-nums">
                       ≈ {formatINR(it.amountHintInr)}
@@ -733,7 +733,7 @@ export default function TransactionHistoryPage({ onBack }: Props) {
 
           {totalPages > 1 && (
             <div className="pt-1 pb-4">
-              <p className="text-center text-[10px] text-white/35 mb-1 tabular-nums">
+              <p className="text-center text-[12px] text-white/35 mb-1 tabular-nums">
                 {filtered.length} total · page {pageSafe}/{totalPages}
               </p>
               <Pagination
@@ -776,7 +776,7 @@ export default function TransactionHistoryPage({ onBack }: Props) {
                   key={f.id}
                   type="button"
                   onClick={() => setDraftType(f.id)}
-                  className="w-full py-3.5 text-center text-[15px] font-semibold active:opacity-80"
+                  className="w-full py-3.5 text-center text-[17px] font-semibold active:opacity-80"
                   style={{
                     color: on ? "#FED358" : "rgba(255,255,255,0.55)",
                   }}
@@ -816,7 +816,7 @@ export default function TransactionHistoryPage({ onBack }: Props) {
                   key={p.id}
                   type="button"
                   onClick={() => setDraftPreset(p.id)}
-                  className="h-10 rounded-[10px] text-[13px] font-bold active:scale-[0.98]"
+                  className="h-10 rounded-[10px] text-[15px] font-bold active:scale-[0.98]"
                   style={{
                     background: on
                       ? "rgba(254,211,88,0.18)"
@@ -836,7 +836,7 @@ export default function TransactionHistoryPage({ onBack }: Props) {
           {/* Global odometer when Custom date is active */}
           {draftPreset === "custom" && (
             <>
-              <p className="px-4 pt-1 pb-1 text-[11px] text-white/35 font-semibold uppercase tracking-wider">
+              <p className="px-4 pt-1 pb-1 text-[13px] text-white/35 font-semibold uppercase tracking-wider">
                 Pick a day
               </p>
               <DateOdometer
@@ -854,7 +854,7 @@ export default function TransactionHistoryPage({ onBack }: Props) {
           )}
 
           {draftPreset !== "custom" && (
-            <p className="px-4 py-6 text-center text-[12px] text-white/35">
+            <p className="px-4 py-6 text-center text-[14px] text-white/35">
               {draftPreset === "all" && "Show transactions from any date"}
               {draftPreset === "yesterday" &&
                 `Only ${yesterdayKey().replace(/-/g, "/")}`}
@@ -884,9 +884,9 @@ function Row({
 }) {
   return (
     <div className="flex items-center justify-between py-2.5 border-b border-white/[0.04] last:border-0">
-      <span className="text-[13px] text-white/45">{label}</span>
+      <span className="text-[15px] text-white/45">{label}</span>
       <span
-        className={`text-[13px] text-right ${
+        className={`text-[15px] text-right ${
           valueClass ?? (muted ? "text-white/55" : "text-white/85")
         }`}
       >
@@ -938,17 +938,17 @@ function Sheet({
           <button
             type="button"
             onClick={onCancel}
-            className="text-[14px] font-semibold text-white/55 min-w-[64px] text-left"
+            className="text-[16px] font-semibold text-white/55 min-w-[64px] text-left"
           >
             {cancelLabel}
           </button>
-          <span className="text-[15px] font-bold text-[#FED358]">
+          <span className="text-[17px] font-bold text-[#FED358]">
             {title ?? ""}
           </span>
           <button
             type="button"
             onClick={onConfirm}
-            className="text-[14px] font-bold text-[#FED358] min-w-[64px] text-right"
+            className="text-[16px] font-bold text-[#FED358] min-w-[64px] text-right"
           >
             Confirm
           </button>

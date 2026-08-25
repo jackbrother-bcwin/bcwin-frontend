@@ -48,8 +48,8 @@ export function WinningInfoSection({ section }: { section: HomeSectionDef }) {
                     <Image src={w.avatar} alt="" fill sizes="20px" className="object-cover" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[9px] leading-tight text-white/55">{w.name}</p>
-                    <p className="text-[11px] font-extrabold leading-tight tabular-nums text-[#FED358]">
+                    <p className="truncate text-[11px] leading-tight text-white/55">{w.name}</p>
+                    <p className="text-[13px] font-extrabold leading-tight tabular-nums text-[#FED358]">
                       {w.amount}
                     </p>
                   </div>
@@ -122,13 +122,13 @@ export function GameGridSection({
           icon={section.icon}
         >
           <div className="rounded-xl border border-white/10 bg-[#1A1519] px-3 py-4 text-center">
-            <p className="text-[12px] text-[#837064]">
+            <p className="text-[14px] text-[#837064]">
               Games couldn&apos;t load
             </p>
             <button
               type="button"
               onClick={() => void refresh()}
-              className="mt-2 rounded-full px-4 py-1.5 text-[12px] font-bold text-[#110D14]"
+              className="mt-2 rounded-full px-4 py-1.5 text-[14px] font-bold text-[#110D14]"
               style={{
                 background: "linear-gradient(180deg,#FED358 0%,#E8A84A 100%)",
               }}
@@ -233,8 +233,8 @@ export function PromoRowSection({ onSpin, onVip }: { onSpin?: () => void; onVip?
     <section className="grid grid-cols-2 gap-2.5">
       <button type="button" onClick={onSpin} className="home-promo-card group">
         <div className="flex-1 text-left">
-          <p className="text-[13px] font-extrabold text-[#FDE4BC] leading-tight">Daily</p>
-          <p className="text-[13px] font-extrabold text-[#FDE4BC] leading-tight">Spin</p>
+          <p className="text-[15px] font-extrabold text-[#FDE4BC] leading-tight">Daily</p>
+          <p className="text-[15px] font-extrabold text-[#FDE4BC] leading-tight">Spin</p>
         </div>
         <div className="relative w-12 h-12 shrink-0">
           <Image
@@ -249,8 +249,8 @@ export function PromoRowSection({ onSpin, onVip }: { onSpin?: () => void; onVip?
       </button>
       <button type="button" onClick={onVip} className="home-promo-card group">
         <div className="flex-1 text-left">
-          <p className="text-[13px] font-extrabold text-[#FDE4BC] leading-tight">VIP</p>
-          <p className="text-[13px] font-extrabold text-[#FDE4BC] leading-tight">privileges</p>
+          <p className="text-[15px] font-extrabold text-[#FDE4BC] leading-tight">VIP</p>
+          <p className="text-[15px] font-extrabold text-[#FDE4BC] leading-tight">privileges</p>
         </div>
         <div className="relative w-11 h-11 shrink-0">
           <Image
@@ -271,7 +271,7 @@ export function PromoRowSection({ onSpin, onVip }: { onSpin?: () => void; onVip?
 export function SuperJackpotSection({ section }: { section: HomeSectionDef }) {
   return (
     <SectionShell title={section.title} icon={section.icon} id={section.id}>
-      <p className="text-[11px] text-[#837064] leading-relaxed mb-2.5 px-0.5">
+      <p className="text-[13px] text-[#837064] leading-relaxed mb-2.5 px-0.5">
         When you win a super jackpot, you will receive additional rewards. Maximum bonus{" "}
         <span className="text-[#FED358] font-bold">₹500.00</span>
       </p>
@@ -282,8 +282,8 @@ export function SuperJackpotSection({ section }: { section: HomeSectionDef }) {
             <div className="relative w-full aspect-square rounded-[8px] overflow-hidden mb-1.5">
               <Image src={item.image} alt={item.name} fill sizes="100px" className="object-cover" />
             </div>
-            <p className="text-[10px] font-bold text-white/80 truncate text-center">{item.name}</p>
-            <p className="text-[11px] font-extrabold text-[#FED358] text-center tabular-nums">
+            <p className="text-[12px] font-bold text-white/80 truncate text-center">{item.name}</p>
+            <p className="text-[13px] font-extrabold text-[#FED358] text-center tabular-nums">
               {item.amount}
             </p>
           </div>
@@ -337,8 +337,8 @@ export function EarningsSection({ section }: { section: HomeSectionDef }) {
                   className="mb-0.5 -mt-1"
                 />
               )}
-              <p className="text-[10px] text-white/70 truncate max-w-full font-medium">{p.name}</p>
-              <p className="text-[10px] font-extrabold text-[#FED358] tabular-nums mb-1.5 truncate max-w-full">
+              <p className="text-[12px] text-white/70 truncate max-w-full font-medium">{p.name}</p>
+              <p className="text-[12px] font-extrabold text-[#FED358] tabular-nums mb-1.5 truncate max-w-full">
                 {p.amount}
               </p>
               <div
@@ -382,16 +382,16 @@ export function EarningsSection({ section }: { section: HomeSectionDef }) {
                 className="home-earnings-row flex items-center gap-2.5 px-3"
                 style={{ height: 45, minHeight: 45, flexShrink: 0 }}
               >
-                <span className="w-5 text-[12px] font-bold text-[#837064] tabular-nums">
+                <span className="w-5 text-[14px] font-bold text-[#837064] tabular-nums">
                   {(i % showcase.length) + 4}
                 </span>
                 <div className="relative w-8 h-8 rounded-full overflow-hidden ring-1 ring-white/10 shrink-0">
                   <Image src={row.avatar} alt="" fill sizes="32px" className="object-cover" />
                 </div>
-                <span className="flex-1 text-[12px] text-[#B79C8B] font-medium truncate">
+                <span className="flex-1 text-[14px] text-[#B79C8B] font-medium truncate">
                   {row.name}
                 </span>
-                <span className="text-[12px] font-extrabold text-[#FED358] tabular-nums shrink-0">
+                <span className="text-[14px] font-extrabold text-[#FED358] tabular-nums shrink-0">
                   {row.amount}
                 </span>
               </div>
@@ -410,7 +410,7 @@ export function FooterLegalSection() {
       <div className="flex items-center justify-center gap-6 mb-3">
         <div className="flex flex-col items-center gap-1">
           <span
-            className="flex h-11 w-11 items-center justify-center rounded-full text-[13px] font-black text-[#110D14] shadow-[0_0_12px_rgba(254,211,88,0.45)]"
+            className="flex h-11 w-11 items-center justify-center rounded-full text-[15px] font-black text-[#110D14] shadow-[0_0_12px_rgba(254,211,88,0.45)]"
             style={{
               background: "linear-gradient(160deg,#FED358 0%,#E8A84A 55%,#CF7C10 100%)",
             }}
@@ -430,7 +430,7 @@ export function FooterLegalSection() {
           </svg>
         </a>
       </div>
-      <ul className="space-y-1.5 text-[10px] text-[#6B5C52] leading-relaxed px-1">
+      <ul className="space-y-1.5 text-[12px] text-[#6B5C52] leading-relaxed px-1">
         <li className="flex gap-1.5">
           <span className="text-[#FED358] shrink-0">✦</span>
           <span>

@@ -97,12 +97,12 @@ export default function EditNicknameSheet({ open, onClose }: Props) {
         <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-white/15" />
         <h2
           id="edit-nick-title"
-          className="text-center text-[16px] font-bold text-[#FDE4BC] mb-4"
+          className="text-center text-[18px] font-bold text-[#FDE4BC] mb-4"
         >
           {t("settings.editNickname", { defaultValue: "Edit nickname" })}
         </h2>
 
-        <label className="block text-[12px] text-white/45 mb-1.5">
+        <label className="block text-[14px] text-white/45 mb-1.5">
           {t("settings.nickname")}
         </label>
         <input
@@ -119,15 +119,15 @@ export default function EditNicknameSheet({ open, onClose }: Props) {
           onKeyDown={(e) => {
             if (e.key === "Enter") void onSave();
           }}
-          className="w-full h-12 rounded-xl px-3.5 text-[15px] font-semibold text-white outline-none border border-white/10 focus:border-[#FED358]/55"
+          className="w-full h-12 rounded-xl px-3.5 text-[17px] font-semibold text-white outline-none border border-white/10 focus:border-[#FED358]/55"
           style={{ background: "#1a1518" }}
           placeholder="3–20 letters, numbers, _"
         />
-        <p className="mt-1.5 text-[11px] text-white/35">
+        <p className="mt-1.5 text-[13px] text-white/35">
           3–20 characters · letters, numbers, underscore only
         </p>
         {error ? (
-          <p className="mt-2 text-[12px] text-red-400 font-medium">{error}</p>
+          <p className="mt-2 text-[14px] text-red-400 font-medium">{error}</p>
         ) : null}
 
         <div className="mt-5 grid grid-cols-2 gap-3">
@@ -135,7 +135,7 @@ export default function EditNicknameSheet({ open, onClose }: Props) {
             type="button"
             onClick={onClose}
             disabled={saving}
-            className="h-11 rounded-full text-[14px] font-semibold text-white/70 active:opacity-80"
+            className="h-11 rounded-full text-[16px] font-semibold text-white/70 active:opacity-80"
             style={{ background: "#1a1518", border: "1px solid rgba(255,255,255,0.08)" }}
           >
             {t("profile.cancel", { defaultValue: "Cancel" })}
@@ -144,7 +144,7 @@ export default function EditNicknameSheet({ open, onClose }: Props) {
             type="button"
             onClick={() => void onSave()}
             disabled={saving}
-            className="h-11 rounded-full text-[14px] font-bold text-[#5c3a08] active:scale-[0.98] disabled:opacity-60"
+            className="h-11 rounded-full text-[16px] font-bold text-[#5c3a08] active:scale-[0.98] disabled:opacity-60"
             style={{
               background:
                 "linear-gradient(180deg, #FFE9A8 0%, #FED358 50%, #E8A84A 100%)",

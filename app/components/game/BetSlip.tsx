@@ -313,7 +313,7 @@ export default function BetSlip({
               opacity: 0.35,
             }}
           />
-          <p className="text-[15px] font-extrabold tracking-wide drop-shadow-sm">
+          <p className="text-[17px] font-extrabold tracking-wide drop-shadow-sm">
             ◆ {paint.gameTitle} ◆
           </p>
         </div>
@@ -343,7 +343,7 @@ export default function BetSlip({
                   aria-hidden
                 />
                 <span
-                  className="relative z-[1] text-[30px] font-black tabular-nums text-white"
+                  className="relative z-[1] text-[32px] font-black tabular-nums text-white"
                   style={{ textShadow: "0 1px 2px rgba(0,0,0,0.45)" }}
                 >
                   {paint.ballNumber}
@@ -351,17 +351,17 @@ export default function BetSlip({
               </div>
             ) : (
               <div
-                className="mb-2 px-5 py-2 rounded-xl text-[16px] font-extrabold text-white shadow-md"
+                className="mb-2 px-5 py-2 rounded-xl text-[18px] font-extrabold text-white shadow-md"
                 style={{ background: t.btn }}
               >
                 {paint.choiceLabel}
               </div>
             )}
             {paint.ballNumber == null && (
-              <p className="text-[13px] font-bold text-slate-500">{paint.choiceLabel}</p>
+              <p className="text-[15px] font-bold text-slate-500">{paint.choiceLabel}</p>
             )}
             {periodNumber && (
-              <p className="text-[10px] text-slate-400 font-mono mt-1">
+              <p className="text-[12px] text-slate-400 font-mono mt-1">
                 Period {periodNumber}
               </p>
             )}
@@ -369,8 +369,8 @@ export default function BetSlip({
 
           {/* Currency */}
           <div className="flex items-center justify-between mb-3.5">
-            <span className="text-[13px] font-semibold text-slate-600">Currency</span>
-            <div className="flex items-center gap-4 text-[13px] font-bold">
+            <span className="text-[15px] font-semibold text-slate-600">Currency</span>
+            <div className="flex items-center gap-4 text-[15px] font-bold">
               <span className="flex items-center gap-1.5" style={{ color: t.accent }}>
                 <span
                   className="w-4 h-4 rounded-full border-2 flex items-center justify-center"
@@ -389,7 +389,7 @@ export default function BetSlip({
 
           {/* Amount chips */}
           <div className="flex items-center gap-2 mb-3.5">
-            <span className="text-[13px] font-semibold text-slate-600 w-14 shrink-0">Amount</span>
+            <span className="text-[15px] font-semibold text-slate-600 w-14 shrink-0">Amount</span>
             <div className="flex flex-1 gap-1.5 overflow-x-auto no-scrollbar">
               {AMOUNTS.map((a) => {
                 const on = base === a;
@@ -398,7 +398,7 @@ export default function BetSlip({
                     key={a}
                     type="button"
                     onClick={() => setBase(a)}
-                    className="shrink-0 min-w-[40px] h-8 px-2.5 rounded-full text-[12px] font-bold transition-all active:scale-95"
+                    className="shrink-0 min-w-[40px] h-8 px-2.5 rounded-full text-[14px] font-bold transition-all active:scale-95"
                     style={{
                       background: on ? t.chip : "#f1f5f9",
                       color: on ? "#fff" : "#64748b",
@@ -414,7 +414,7 @@ export default function BetSlip({
 
           {/* Quantity — source of truth for unit count */}
           <div className="flex items-center justify-between mb-3.5">
-            <span className="text-[13px] font-semibold text-slate-600">Quantity</span>
+            <span className="text-[15px] font-semibold text-slate-600">Quantity</span>
             <div className="flex items-center gap-0 rounded-full overflow-hidden border border-slate-200">
               <button
                 type="button"
@@ -451,7 +451,7 @@ export default function BetSlip({
                     return clampQty(num);
                   });
                 }}
-                className="w-16 sm:w-20 h-9 text-center text-[14px] font-bold text-slate-900 outline-none bg-white border-x border-slate-200 tabular-nums px-1"
+                className="w-16 sm:w-20 h-9 text-center text-[16px] font-bold text-slate-900 outline-none bg-white border-x border-slate-200 tabular-nums px-1"
               />
               <button
                 type="button"
@@ -479,7 +479,7 @@ export default function BetSlip({
                   key={preset}
                   type="button"
                   onClick={() => setQty(preset)}
-                  className="shrink-0 h-8 min-w-[42px] px-2 rounded-md text-[12px] font-bold transition-all active:scale-95"
+                  className="shrink-0 h-8 min-w-[42px] px-2 rounded-md text-[14px] font-bold transition-all active:scale-95"
                   style={{
                     background: on ? t.chip : "#f1f5f9",
                     color: on ? "#fff" : "#94a3b8",
@@ -511,17 +511,17 @@ export default function BetSlip({
                 </svg>
               )}
             </button>
-            <span className="text-[12px] text-slate-600 font-medium">I agree</span>
+            <span className="text-[14px] text-slate-600 font-medium">I agree</span>
             <button
               type="button"
               onClick={onRules}
-              className="text-[12px] font-bold ml-1"
+              className="text-[14px] font-bold ml-1"
               style={{ color: t.accent }}
             >
               Pre-sale rules
             </button>
             {balance != null && (
-              <span className="ml-auto text-[10px] text-slate-400 tabular-nums">
+              <span className="ml-auto text-[12px] text-slate-400 tabular-nums">
                 Bal {formatINR(balance)}
               </span>
             )}
@@ -533,7 +533,7 @@ export default function BetSlip({
               type="button"
               disabled={betting}
               onClick={onCancel}
-              className="flex-1 h-[50px] text-[15px] font-bold text-slate-500 bg-slate-100 active:bg-slate-200"
+              className="flex-1 h-[50px] text-[17px] font-bold text-slate-500 bg-slate-100 active:bg-slate-200"
             >
               Cancel
             </button>
@@ -550,7 +550,7 @@ export default function BetSlip({
                   total: base * finalQty,
                 });
               }}
-              className="flex-[1.35] h-[50px] text-[15px] font-extrabold text-white disabled:opacity-50 active:opacity-90"
+              className="flex-[1.35] h-[50px] text-[17px] font-extrabold text-white disabled:opacity-50 active:opacity-90"
               style={{ background: t.btn }}
             >
               {betting ? "Placing…" : `Total amount ${total.toLocaleString("en-IN")}`}

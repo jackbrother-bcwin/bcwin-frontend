@@ -382,7 +382,7 @@ export default function ResultPopup({
             style={{ top: "34%", height: "9%" }}
           >
             <span
-              className="text-[10px] font-semibold whitespace-nowrap leading-none w-full text-center mb-0.5"
+              className="text-[12px] font-semibold whitespace-nowrap leading-none w-full text-center mb-0.5"
               style={{ color: resultsLabel }}
             >
               {heading}
@@ -390,7 +390,7 @@ export default function ResultPopup({
             {displayChips.map((chip, i) => (
               <span
                 key={`${chip.text}-${i}`}
-                className="px-1.5 py-[3px] rounded-[4px] text-[10px] font-bold text-white leading-none max-w-[48%] truncate"
+                className="px-1.5 py-[3px] rounded-[4px] text-[12px] font-bold text-white leading-none max-w-[48%] truncate"
                 style={{
                   background: chip.bg ?? "rgba(0,0,0,0.4)",
                   boxShadow: "0 1px 2px rgba(0,0,0,0.2)",
@@ -415,13 +415,13 @@ export default function ResultPopup({
             {isWin ? (
               <>
                 <p
-                  className="text-[12px] font-bold leading-none"
+                  className="text-[14px] font-bold leading-none"
                   style={{ color: ticketBonus }}
                 >
                   Bonus
                 </p>
                 <p
-                  className="mt-1 text-[22px] font-black tabular-nums leading-none"
+                  className="mt-1 text-[24px] font-black tabular-nums leading-none"
                   style={{ color: ticketAmount }}
                 >
                   {formatINR(winAmount)}
@@ -429,21 +429,21 @@ export default function ResultPopup({
               </>
             ) : (
               <p
-                className="text-[26px] font-black tracking-wide leading-none"
+                className="text-[28px] font-black tracking-wide leading-none"
                 style={{ color: "#94A3B8" }}
               >
                 Lose
               </p>
             )}
             <p
-              className="mt-1.5 text-[10px] font-medium leading-snug"
+              className="mt-1.5 text-[12px] font-medium leading-snug"
               style={{ color: ticketPeriod }}
             >
               {periodDisplay}
               {periodNumber ? (
                 <>
                   <br />
-                  <span className="font-mono text-[10px] tracking-tight">
+                  <span className="font-mono text-[12px] tracking-tight">
                     {periodNumber}
                   </span>
                 </>
@@ -475,7 +475,7 @@ export default function ResultPopup({
               </svg>
             </span>
             <span
-              className="text-[12px] font-semibold tabular-nums leading-none"
+              className="text-[14px] font-semibold tabular-nums leading-none"
               style={{ color: footerText }}
             >
               {left} seconds auto close

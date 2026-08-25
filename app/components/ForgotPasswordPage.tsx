@@ -144,10 +144,10 @@ export default function ForgotPasswordPage({ onBack, onLoginClick }: Props) {
       <div className="app-page-header-spacer app-page-header-spacer--lg" aria-hidden />
 
       <form onSubmit={handleSubmit} className="px-5 pt-5 flex flex-col flex-1">
-        <h1 className="text-[20px] font-bold text-white mb-1">Reset password</h1>
-        <p className="text-[12px] text-white/45 mb-5">Verify OTP and set a new password</p>
+        <h1 className="text-[22px] font-bold text-white mb-1">Reset password</h1>
+        <p className="text-[14px] text-white/45 mb-5">Verify OTP and set a new password</p>
 
-        <label className="text-[11px] text-white/50 mb-1">Mobile number</label>
+        <label className="text-[13px] text-white/50 mb-1">Mobile number</label>
         <div className="flex gap-2 mb-3">
           <CountryCodeSelect
             value={countryCode}
@@ -175,14 +175,14 @@ export default function ForgotPasswordPage({ onBack, onLoginClick }: Props) {
             type="button"
             disabled={sending || countdown > 0}
             onClick={sendOtp}
-            className="px-3 h-11 rounded-xl text-[11px] font-bold text-[#110D14] disabled:opacity-50"
+            className="px-3 h-11 rounded-xl text-[13px] font-bold text-[#110D14] disabled:opacity-50"
             style={{ background: "linear-gradient(180deg, #FED358 0%, #FFB472 100%)" }}
           >
             {countdown > 0 ? `${countdown}s` : sending ? "…" : "OTP"}
           </button>
         </div>
 
-        <label className="text-[11px] text-white/50 mb-1">OTP</label>
+        <label className="text-[13px] text-white/50 mb-1">OTP</label>
         <input
           value={otp}
           onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
@@ -191,7 +191,7 @@ export default function ForgotPasswordPage({ onBack, onLoginClick }: Props) {
           style={{ background: "#382E35", border: "1px solid rgba(255,255,255,0.08)" }}
         />
 
-        <label className="text-[11px] text-white/50 mb-1">New password</label>
+        <label className="text-[13px] text-white/50 mb-1">New password</label>
         <div className="relative mb-3">
           <input
             type={showPw ? "text" : "password"}
@@ -202,12 +202,12 @@ export default function ForgotPasswordPage({ onBack, onLoginClick }: Props) {
             style={{ background: "#382E35", border: "1px solid rgba(255,255,255,0.08)" }}
           />
           <button type="button" onClick={() => setShowPw(!showPw)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 text-[11px]">
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 text-[13px]">
             {showPw ? "Hide" : "Show"}
           </button>
         </div>
 
-        <label className="text-[11px] text-white/50 mb-1">Confirm password</label>
+        <label className="text-[13px] text-white/50 mb-1">Confirm password</label>
         <input
           type={showPw ? "text" : "password"}
           value={confirm}
@@ -219,7 +219,7 @@ export default function ForgotPasswordPage({ onBack, onLoginClick }: Props) {
 
         {/* Password strength hints */}
         {password.length > 0 && (
-          <div className="flex flex-wrap gap-x-3 gap-y-1 text-[10px] px-0.5 mb-3">
+          <div className="flex flex-wrap gap-x-3 gap-y-1 text-[12px] px-0.5 mb-3">
             {[
               { ok: password.length >= 8, label: "8+ chars" },
               { ok: /[a-z]/.test(password), label: "lowercase" },
@@ -235,7 +235,7 @@ export default function ForgotPasswordPage({ onBack, onLoginClick }: Props) {
         )}
 
         {error && (
-          <div className="mb-3 px-3 py-2 rounded-lg text-[11px] text-[#FD565C]"
+          <div className="mb-3 px-3 py-2 rounded-lg text-[13px] text-[#FD565C]"
             style={{ background: "rgba(229,56,59,0.12)" }}>
             {error}
           </div>
@@ -250,7 +250,7 @@ export default function ForgotPasswordPage({ onBack, onLoginClick }: Props) {
           {loading ? "Resetting…" : "Reset password"}
         </button>
 
-        <button type="button" onClick={onLoginClick} className="mt-4 text-center text-[12px] text-[#FED358]">
+        <button type="button" onClick={onLoginClick} className="mt-4 text-center text-[14px] text-[#FED358]">
           Back to login
         </button>
       </form>

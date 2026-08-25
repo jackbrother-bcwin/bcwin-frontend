@@ -403,7 +403,7 @@ export default function FiveDStage({
               <div className="flex flex-col items-center gap-1">
                 <OdometerReel value={val} />
                 <span
-                  className="text-[10px] font-black tracking-widest"
+                  className="text-[12px] font-black tracking-widest"
                   style={{ color: "rgba(232,220,196,0.45)" }}
                 >
                   {LABELS[i]}
@@ -415,7 +415,7 @@ export default function FiveDStage({
 
         {/* Tiny odometer brand plate */}
         <p
-          className="mt-2 text-center text-[9px] font-bold uppercase tracking-[0.28em]"
+          className="mt-2 text-center text-[11px] font-bold uppercase tracking-[0.28em]"
           style={{ color: "rgba(254,211,88,0.35)" }}
         >
           5D · Totalizer
@@ -423,28 +423,28 @@ export default function FiveDStage({
       </div>
 
       {sumDisplay != null && !spinning && (
-        <p className="relative mt-3 text-center text-[13px] text-white/55">
+        <p className="relative mt-3 text-center text-[15px] text-white/55">
           Sum{" "}
-          <span className="text-[16px] font-black text-[#FED358] tabular-nums">
+          <span className="text-[18px] font-black text-[#FED358] tabular-nums">
             {sumDisplay}
           </span>
           {sumDisplay >= 23 ? (
-            <span className="ml-2 text-[11px] font-bold text-[#DD9138]">
+            <span className="ml-2 text-[13px] font-bold text-[#DD9138]">
               High
             </span>
           ) : (
-            <span className="ml-2 text-[11px] font-bold text-[#5088D3]">
+            <span className="ml-2 text-[13px] font-bold text-[#5088D3]">
               Low
             </span>
           )}
-          <span className="ml-1.5 text-[11px] font-bold text-white/40">
+          <span className="ml-1.5 text-[13px] font-bold text-white/40">
             · {sumDisplay % 2 === 0 ? "Even" : "Odd"}
           </span>
         </p>
       )}
 
       {spinning && (
-        <p className="relative mt-3 text-center text-[11px] font-bold uppercase tracking-widest text-[#FED358]/animate-pulse">
+        <p className="relative mt-3 text-center text-[13px] font-bold uppercase tracking-widest text-[#FED358]/animate-pulse">
           Rolling…
         </p>
       )}
@@ -475,7 +475,7 @@ export function FiveDMiniDigits({
       style={{
         background: "#0c0a08",
         color: "#e8dcc4",
-        fontSize: 12,
+        fontSize: 14,
         boxShadow: "inset 0 1px 2px rgba(0,0,0,0.6)",
       }}
     >

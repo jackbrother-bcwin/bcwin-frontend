@@ -298,7 +298,7 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
           <button
             type="button"
             onClick={() => onNavigate?.("withdraw-history")}
-            className="text-[10px] sm:text-[11px] text-[#FED358] font-bold leading-tight text-right max-w-[4.5rem] sm:max-w-none"
+            className="text-[12px] sm:text-[13px] text-[#FED358] font-bold leading-tight text-right max-w-[4.5rem] sm:max-w-none"
           >
             History
           </button>
@@ -315,7 +315,7 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
       >
         <div className="flex items-start justify-between gap-2 min-w-0">
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5 text-[11px] sm:text-[12px] font-semibold text-[#0f3d38]/opacity-90">
+            <div className="flex items-center gap-1.5 text-[13px] sm:text-[14px] font-semibold text-[#0f3d38]/opacity-90">
               <IoWalletOutline size={14} className="shrink-0" />
               Available balance
             </div>
@@ -334,7 +334,7 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
               </button>
             </div>
           </div>
-          <div className="text-right text-[11px] font-bold text-[#0a2e2a]/opacity-50 tracking-widest">
+          <div className="text-right text-[13px] font-bold text-[#0a2e2a]/opacity-50 tracking-widest">
             **** ****
           </div>
         </div>
@@ -349,16 +349,16 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
         }}
       >
         <div
-          className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 font-black text-[#110D14] text-[13px]"
+          className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 font-black text-[#110D14] text-[15px]"
           style={{ background: "linear-gradient(135deg,#FED358,#E8A84A)" }}
         >
           ₹
         </div>
         <div className="min-w-0">
-          <p className="text-[13px] font-bold text-white">
+          <p className="text-[15px] font-bold text-white">
             {isUsdt ? "USDT" : "Bank card"}
           </p>
-          <p className="text-[10px] text-white/45 leading-snug">
+          <p className="text-[12px] text-white/45 leading-snug">
             {isUsdt
               ? "Enter amount in ₹ — paid out as USDT to your wallet address"
               : "Withdraw to your linked bank account"}
@@ -402,7 +402,7 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
                 {m.icon}
               </span>
               <span
-                className="text-[9px] sm:text-[10px] font-black tracking-wide truncate max-w-full px-0.5"
+                className="text-[11px] sm:text-[12px] font-black tracking-wide truncate max-w-full px-0.5"
                 style={{ color: on ? "#110D14" : "rgba(255,255,255,0.55)" }}
               >
                 {m.label}
@@ -422,7 +422,7 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
                 key={chain}
                 type="button"
                 onClick={() => setCryptoChain(chain)}
-                className="rounded-[10px] py-2 text-[11px] font-bold active:scale-[0.98]"
+                className="rounded-[10px] py-2 text-[13px] font-bold active:scale-[0.98]"
                 style={{
                   background: on
                     ? "linear-gradient(180deg,#FED358,#E8A84A)"
@@ -434,7 +434,7 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
                 }}
               >
                 {chain}
-                <span className="block text-[9px] font-semibold opacity-80 mt-0.5">
+                <span className="block text-[11px] font-semibold opacity-80 mt-0.5">
                   Min {chain === "BEP20" ? MIN_USDT_BEP20 : MIN_USDT_TRC20} USDT
                 </span>
               </button>
@@ -462,14 +462,14 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
               <IoCardOutline size={20} className="text-[#FED358]" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-[13px] font-bold text-white truncate">
+              <p className="text-[15px] font-bold text-white truncate">
                 {beneficiaryLabel.title}
               </p>
-              <p className="text-[11px] text-white/45 truncate">
+              <p className="text-[13px] text-white/45 truncate">
                 {beneficiaryLabel.sub}
               </p>
             </div>
-            <span className="text-[11px] font-bold text-[#FED358]">Edit</span>
+            <span className="text-[13px] font-bold text-[#FED358]">Edit</span>
           </button>
         ) : (
           <button
@@ -486,7 +486,7 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
             >
               <IoAdd size={28} className="text-white/40" />
             </div>
-            <p className="text-[13px] font-semibold text-white/70">
+            <p className="text-[15px] font-semibold text-white/70">
               {tab === "BANK" && "Add a bank account number"}
               {tab === "UPI" && "Add UPI ID"}
               {tab === "USDT" && "Add USDT address"}
@@ -495,7 +495,7 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
         )}
 
         {!beneficiaryReady && (
-          <p className="text-center text-[12px] font-semibold text-[#DA3735] mt-2 px-2">
+          <p className="text-center text-[14px] font-semibold text-[#DA3735] mt-2 px-2">
             Need to add beneficiary information to be able to withdraw money
           </p>
         )}
@@ -510,7 +510,7 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
             border: "1px solid rgba(255,255,255,0.08)",
           }}
         >
-          <span className="text-[#FED358] font-black text-[16px]">₹</span>
+          <span className="text-[#FED358] font-black text-[18px]">₹</span>
           <input
             type="number"
             inputMode="numeric"
@@ -521,12 +521,12 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
             }
             value={amountStr}
             onChange={(e) => setAmountStr(e.target.value)}
-            className="flex-1 bg-transparent outline-none text-[14px] text-white placeholder:text-white/30 font-semibold"
+            className="flex-1 bg-transparent outline-none text-[16px] text-white placeholder:text-white/30 font-semibold"
           />
         </div>
 
         <div className="mt-2.5 flex flex-col xs:flex-row items-stretch sm:items-center justify-between gap-2">
-          <div className="text-[10px] sm:text-[11px] text-white/45 space-y-0.5 min-w-0 flex-1">
+          <div className="text-[12px] sm:text-[13px] text-white/45 space-y-0.5 min-w-0 flex-1">
             <p className="break-words">
               Withdrawable balance{" "}
               <span className="text-white/70 font-bold tabular-nums">
@@ -550,7 +550,7 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
             onClick={() =>
               setAmountStr(String(Math.floor(withdrawable ?? 0)))
             }
-            className="shrink-0 self-end sm:self-auto h-8 min-w-[3.25rem] px-4 rounded-full text-[12px] font-bold text-[#110D14]"
+            className="shrink-0 self-end sm:self-auto h-8 min-w-[3.25rem] px-4 rounded-full text-[14px] font-bold text-[#110D14]"
             style={{
               background: "linear-gradient(180deg,#FED358,#E8A84A)",
             }}
@@ -562,7 +562,7 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
 
       {/* Login password required to authorize withdraw */}
       <div className="mx-3 mt-4">
-        <label className="block text-[12px] font-semibold text-white/55 mb-1.5 px-1">
+        <label className="block text-[14px] font-semibold text-white/55 mb-1.5 px-1">
           Login password
         </label>
         <div
@@ -578,14 +578,14 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
             placeholder="Enter account password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="flex-1 bg-transparent outline-none text-[14px] text-white placeholder:text-white/30 font-semibold"
+            className="flex-1 bg-transparent outline-none text-[16px] text-white placeholder:text-white/30 font-semibold"
           />
         </div>
       </div>
 
       {error && (
         <div
-          className="mx-3 mt-3 px-3 py-2 rounded-lg text-[11px] text-[#FD565C]"
+          className="mx-3 mt-3 px-3 py-2 rounded-lg text-[13px] text-[#FD565C]"
           style={{ background: "rgba(229,56,59,0.12)" }}
         >
           {error}
@@ -597,7 +597,7 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
           type="button"
           disabled={loading}
           onClick={handleWithdraw}
-          className="w-full h-12 rounded-full font-bold text-[15px] text-[#110D14] disabled:opacity-50 active:scale-[0.99]"
+          className="w-full h-12 rounded-full font-bold text-[17px] text-[#110D14] disabled:opacity-50 active:scale-[0.99]"
           style={{
             background: "linear-gradient(180deg,#c4b5a0 0%,#a89b8a 100%)",
             boxShadow: "0 2px 10px rgba(0,0,0,0.25)",
@@ -608,7 +608,7 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
       </div>
 
       {/* Rules / instructions */}
-      <ul className="mx-3 mt-5 space-y-2 text-[11px] text-[#c9a227]/80 leading-relaxed pb-4">
+      <ul className="mx-3 mt-5 space-y-2 text-[13px] text-[#c9a227]/80 leading-relaxed pb-4">
         <li className="flex gap-2">
           <span className="text-[#FED358]">◆</span>
           <span>
@@ -622,7 +622,7 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
           </span>
         </li>
         {depositWagerNeeded > 0 && (
-          <li className="flex gap-2 pl-4 text-[10px]">
+          <li className="flex gap-2 pl-4 text-[12px]">
             <span className="text-white/40">↳</span>
             <span>
               Deposit Wager: <strong className="text-white/85">{formatINR(depositWagerNeeded)}</strong>
@@ -630,7 +630,7 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
           </li>
         )}
         {rewardWagerNeeded > 0 && (
-          <li className="flex gap-2 pl-4 text-[10px]">
+          <li className="flex gap-2 pl-4 text-[12px]">
             <span className="text-white/40">↳</span>
             <span>
               Reward Wager: <strong className="text-white/85">{formatINR(rewardWagerNeeded)}</strong>

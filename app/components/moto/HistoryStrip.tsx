@@ -43,7 +43,7 @@ export function HistoryStrip({ items }: { items: MotoPeriod[] }) {
         style={{ scrollBehavior: "smooth" }}
       >
         {resolved.length === 0 ? (
-          <span className="text-[10px] text-white/25 italic px-1">
+          <span className="text-[12px] text-white/25 italic px-1">
             No results yet
           </span>
         ) : (
@@ -59,7 +59,7 @@ export function HistoryStrip({ items }: { items: MotoPeriod[] }) {
                   return (
                     <span
                       key={`${p.id}-${i}`}
-                      className="inline-flex items-center justify-center rounded-[4px] text-[10px] font-black leading-none tabular-nums shrink-0"
+                      className="inline-flex items-center justify-center rounded-[4px] text-[12px] font-black leading-none tabular-nums shrink-0"
                       style={{
                         width: 22,
                         height: 22,
@@ -81,7 +81,7 @@ export function HistoryStrip({ items }: { items: MotoPeriod[] }) {
 
       {/* "1st" label */}
       <span
-        className="text-[11px] font-black text-white/70 shrink-0 ml-1"
+        className="text-[13px] font-black text-white/70 shrink-0 ml-1"
         style={{ letterSpacing: "0.02em" }}
       >
         1st

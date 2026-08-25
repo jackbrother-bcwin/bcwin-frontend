@@ -29,11 +29,11 @@ export default function MenuRow({
       </span>
       <div className="agency-menu-content flex flex-col items-start justify-center min-w-0 flex-1 gap-0.5">
         <div className="agency-menu-title-row flex items-center gap-2">
-          <span className="agency-menu-label text-[14px] font-semibold text-[#FDE4BC] leading-tight">{label}</span>
+          <span className="agency-menu-label text-[16px] font-semibold text-[#FDE4BC] leading-tight">{label}</span>
           {isNew ? <span className="agency-menu-new">NEW</span> : null}
         </div>
         {subtitle ? (
-          <div className="agency-menu-sublabel text-[11px] text-[#8c7e75] font-normal leading-tight mt-0.5">
+          <div className="agency-menu-sublabel text-[13px] text-[#8c7e75] font-normal leading-tight mt-0.5">
             {subtitle}
           </div>
         ) : null}

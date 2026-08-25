@@ -243,7 +243,7 @@ export default function LoginPage({
             void i18n.changeLanguage(next);
             persistLocale(next);
           }}
-          className="flex h-7 min-h-7 max-h-7 shrink-0 items-center gap-1 rounded-full px-2 text-[11px] font-bold text-[#FDE4BC]"
+          className="flex h-7 min-h-7 max-h-7 shrink-0 items-center gap-1 rounded-full px-2 text-[13px] font-bold text-[#FDE4BC]"
           style={{
             background: "rgba(254,211,88,0.1)",
             border: "1px solid rgba(254,211,88,0.25)",
@@ -258,10 +258,10 @@ export default function LoginPage({
       <div className="app-page-header-spacer app-page-header-spacer--lg" aria-hidden />
 
       <div className="flex w-full min-w-0 max-w-full flex-1 flex-col px-3.5 pt-5 sm:px-5">
-        <h1 className="text-[22px] font-bold text-[#FDE4BC] mb-1.5 tracking-wide">
+        <h1 className="text-[24px] font-bold text-[#FDE4BC] mb-1.5 tracking-wide">
           {t("login.title")}
         </h1>
-        <p className="text-[12px] text-[#B79C8B] leading-relaxed whitespace-pre-line">
+        <p className="text-[14px] text-[#B79C8B] leading-relaxed whitespace-pre-line">
           {t("login.subtitle")}
         </p>
 
@@ -282,7 +282,7 @@ export default function LoginPage({
                 key={m.id}
                 type="button"
                 onClick={() => setLoginMethod(m.id)}
-                className="relative flex min-w-0 flex-1 items-center justify-center gap-1 pb-2.5 text-[12px] font-bold transition-colors sm:text-[13px]"
+                className="relative flex min-w-0 flex-1 items-center justify-center gap-1 pb-2.5 text-[14px] font-bold transition-colors sm:text-[15px]"
                 style={{ color: active ? "#FED358" : "#837064" }}
               >
                 <m.Icon size={14} className="shrink-0" />
@@ -301,7 +301,7 @@ export default function LoginPage({
         <form onSubmit={handleSubmit} className="flex w-full min-w-0 max-w-full flex-col gap-3.5">
           {loginMethod === "phone" ? (
             <div>
-              <label className="text-[11px] text-[#B79C8B] mb-1.5 flex items-center gap-1.5">
+              <label className="text-[13px] text-[#B79C8B] mb-1.5 flex items-center gap-1.5">
                 <IoPhonePortraitOutline size={12} color="#FED358" />
                 {t("login.phoneNumber")}
               </label>
@@ -336,7 +336,7 @@ export default function LoginPage({
             </div>
           ) : (
             <div>
-              <label className="text-[11px] text-[#B79C8B] mb-1.5 flex items-center gap-1.5">
+              <label className="text-[13px] text-[#B79C8B] mb-1.5 flex items-center gap-1.5">
                 <IoMailOutline size={12} color="#FED358" />
                 {t("login.email")}
               </label>
@@ -354,7 +354,7 @@ export default function LoginPage({
           )}
 
           <div>
-            <label className="text-[11px] text-[#B79C8B] mb-1.5 flex items-center gap-1.5">
+            <label className="text-[13px] text-[#B79C8B] mb-1.5 flex items-center gap-1.5">
               <IoLockClosedOutline size={12} color="#FED358" />
               {t("login.password")}
             </label>
@@ -397,7 +397,7 @@ export default function LoginPage({
               )}
             </button>
             <span
-              className="text-[12px] text-[#B79C8B] font-medium select-none"
+              className="text-[14px] text-[#B79C8B] font-medium select-none"
               onClick={() => setRememberPassword(!rememberPassword)}
             >
               {t("login.remember")}
@@ -406,7 +406,7 @@ export default function LoginPage({
 
           {error && (
             <div
-              className="px-3 py-2.5 rounded-lg text-[12px] font-medium"
+              className="px-3 py-2.5 rounded-lg text-[14px] font-medium"
               style={{
                 background: "rgba(218,55,53,0.12)",
                 border: "1px solid rgba(218,55,53,0.35)",
@@ -421,14 +421,14 @@ export default function LoginPage({
             <button
               type="submit"
               disabled={isLoading}
-              className="ts-btn-gold w-full h-[44px] text-[14px] disabled:opacity-60"
+              className="ts-btn-gold w-full h-[44px] text-[16px] disabled:opacity-60"
             >
               {isLoading ? t("login.loggingIn") : t("login.submit")}
             </button>
             <button
               type="button"
               onClick={onRegisterClick}
-              className="ts-btn-outline w-full h-[44px] text-[14px]"
+              className="ts-btn-outline w-full h-[44px] text-[16px]"
             >
               {t("login.register")}
             </button>
@@ -439,7 +439,7 @@ export default function LoginPage({
           <button
             type="button"
             onClick={() => onForgotClick?.()}
-            className="flex flex-col items-center gap-1.5 text-[12px] text-[#B79C8B] font-bold active:text-[#FED358]"
+            className="flex flex-col items-center gap-1.5 text-[14px] text-[#B79C8B] font-bold active:text-[#FED358]"
           >
             <div
               className="w-10 h-10 rounded-full flex items-center justify-center"
@@ -455,7 +455,7 @@ export default function LoginPage({
           <button
             type="button"
             onClick={() => openSafeUrl(OFFICIAL_TELEGRAM_URL)}
-            className="flex flex-col items-center gap-1.5 text-[12px] text-[#B79C8B] font-bold active:text-[#FED358]"
+            className="flex flex-col items-center gap-1.5 text-[14px] text-[#B79C8B] font-bold active:text-[#FED358]"
           >
             <div
               className="w-10 h-10 rounded-full flex items-center justify-center"
@@ -497,11 +497,11 @@ export default function LoginPage({
               <div>
                 <h2
                   id="captcha-dialog-title"
-                  className="text-[15px] font-bold text-[#FDE4BC]"
+                  className="text-[17px] font-bold text-[#FDE4BC]"
                 >
                   Security check
                 </h2>
-                <p className="mt-0.5 text-[11px] text-[#B79C8B]">
+                <p className="mt-0.5 text-[13px] text-[#B79C8B]">
                   Slide the puzzle piece to finish signing in
                 </p>
               </div>
@@ -525,7 +525,7 @@ export default function LoginPage({
             />
 
             {!isLoading && (
-              <p className="mt-3 text-center text-[11px] text-[#B79C8B]">
+              <p className="mt-3 text-center text-[13px] text-[#B79C8B]">
                 Complete the puzzle to sign in
               </p>
             )}

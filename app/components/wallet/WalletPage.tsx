@@ -19,9 +19,9 @@ export default function WalletPage({ onBack, onNavigate }: Props) {
 
       <div className="mx-3 mt-4 rounded-[12px] p-5 text-center"
         style={{ background: "linear-gradient(160deg, #382E35 0%, #241E22 100%)", border: "1px solid rgba(254,211,88,0.22)" }}>
-        <p className="text-[11px] text-white/50 mb-1">Total balance</p>
+        <p className="text-[13px] text-white/50 mb-1">Total balance</p>
         <div className="flex items-center justify-center gap-2">
-          <span className="text-[28px] font-black text-white">{formatINR(user?.balance)}</span>
+          <span className="text-[30px] font-black text-white">{formatINR(user?.balance)}</span>
           <button onClick={() => refreshUser()} className="p-1.5 text-white/50 active:text-brand-gold">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <polyline points="23 4 23 10 17 10" />
@@ -50,8 +50,8 @@ export default function WalletPage({ onBack, onNavigate }: Props) {
               style={{ background: `${item.color}22`, border: `1px solid ${item.color}44` }}>
               <span className="w-2 h-2 rounded-full" style={{ background: item.color }} />
             </div>
-            <p className="text-[12px] font-bold text-white">{item.label}</p>
-            <p className="text-[10px] text-white/40 mt-0.5">{item.desc}</p>
+            <p className="text-[14px] font-bold text-white">{item.label}</p>
+            <p className="text-[12px] text-white/40 mt-0.5">{item.desc}</p>
           </button>
         ))}
       </div>

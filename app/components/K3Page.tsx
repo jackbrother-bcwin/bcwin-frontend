@@ -445,7 +445,7 @@ export default function K3Page({ onBack, onNavigate }: Props) {
         sum={last?.sum}
         metaLine={
           last ? (
-            <p className="text-center text-[12px] text-white/50">
+            <p className="text-center text-[14px] text-white/50">
               <span
                 style={{
                   color: last.isBig
@@ -507,7 +507,7 @@ export default function K3Page({ onBack, onNavigate }: Props) {
               key={b.t}
               type="button"
               onClick={() => open(b.t, b.c, b.l)}
-              className="h-11 rounded-[10px] font-black text-white text-[14px] active:scale-95"
+              className="h-11 rounded-[10px] font-black text-white text-[16px] active:scale-95"
               style={{ background: b.bg }}
             >
               {b.l}
@@ -515,7 +515,7 @@ export default function K3Page({ onBack, onNavigate }: Props) {
           ))}
         </div>
 
-        <p className="text-[10px] text-white/35 font-bold uppercase tracking-wider pt-1">
+        <p className="text-[12px] text-white/35 font-bold uppercase tracking-wider pt-1">
           Sum
         </p>
         <div className="grid grid-cols-4 gap-1.5">
@@ -525,7 +525,7 @@ export default function K3Page({ onBack, onNavigate }: Props) {
                 key={s}
                 type="button"
                 onClick={() => open("SUM", String(s), `Sum ${s}`)}
-                className="h-9 rounded-lg text-[12px] font-bold text-white/80 active:scale-95"
+                className="h-9 rounded-lg text-[14px] font-bold text-white/80 active:scale-95"
                 style={{
                   background: "rgba(255,255,255,0.06)",
                   border: "1px solid rgba(255,255,255,0.06)",
@@ -538,13 +538,13 @@ export default function K3Page({ onBack, onNavigate }: Props) {
         </div>
 
         <div className="flex gap-1.5 flex-wrap items-center pt-1">
-          <span className="text-[10px] text-white/35">Amt</span>
+          <span className="text-[12px] text-white/35">Amt</span>
           {BASE_AMOUNTS.map((a) => (
             <button
               key={a}
               type="button"
               onClick={() => setBaseAmount(a)}
-              className="px-2.5 h-7 rounded text-[11px] font-bold"
+              className="px-2.5 h-7 rounded text-[13px] font-bold"
               style={{
                 background:
                   baseAmount === a
@@ -562,7 +562,7 @@ export default function K3Page({ onBack, onNavigate }: Props) {
               key={m}
               type="button"
               onClick={() => setMult(m)}
-              className="px-2.5 h-7 rounded text-[11px] font-bold"
+              className="px-2.5 h-7 rounded text-[13px] font-bold"
               style={{
                 background:
                   mult === m
@@ -574,7 +574,7 @@ export default function K3Page({ onBack, onNavigate }: Props) {
               X{m}
             </button>
           ))}
-          <span className="text-[10px] text-white/30 ml-auto">
+          <span className="text-[12px] text-white/30 ml-auto">
             {formatINR(baseAmount * mult)}
           </span>
         </div>
@@ -607,7 +607,7 @@ export default function K3Page({ onBack, onNavigate }: Props) {
               {["Period", "Dice", "Sum", "B/S"].map((h) => (
                 <span
                   key={h}
-                  className="text-[11px] font-bold text-[#110D14] text-center"
+                  className="text-[13px] font-bold text-[#110D14] text-center"
                 >
                   {h}
                 </span>
@@ -621,9 +621,9 @@ export default function K3Page({ onBack, onNavigate }: Props) {
               results.map((r) => (
                 <div
                   key={r.id}
-                  className="grid grid-cols-[1.3fr_1.1fr_0.55fr_0.7fr] gap-1 items-center px-3 py-2.5 border-b border-white/5 text-[11px]"
+                  className="grid grid-cols-[1.3fr_1.1fr_0.55fr_0.7fr] gap-1 items-center px-3 py-2.5 border-b border-white/5 text-[13px]"
                 >
-                  <span className="font-mono text-white/55 truncate text-center text-[10px]">
+                  <span className="font-mono text-white/55 truncate text-center text-[12px]">
                     {r.periodNumber}
                   </span>
                   <span className="flex justify-center">
@@ -637,7 +637,7 @@ export default function K3Page({ onBack, onNavigate }: Props) {
                   <span className="text-[#FED358] font-bold text-center">
                     {r.sum}
                   </span>
-                  <span className="text-center text-[10px] font-bold">
+                  <span className="text-center text-[12px] font-bold">
                     <span
                       style={{
                         color: r.isBig

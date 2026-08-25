@@ -53,7 +53,7 @@ export default function BonusDetailsPage({ onBack }: { onBack: () => void }) {
       {loading ? (
         <LoadingSpinner />
       ) : rows.length === 0 ? (
-        <p className="text-center text-white/35 text-[13px] py-16">No more</p>
+        <p className="text-center text-white/35 text-[15px] py-16">No more</p>
       ) : (
         <div className="px-3 space-y-2">
           {rows.map((b) => (
@@ -66,14 +66,14 @@ export default function BonusDetailsPage({ onBack }: { onBack: () => void }) {
               }}
             >
               <div className="min-w-0">
-                <p className="text-[12px] font-bold text-white truncate">
+                <p className="text-[14px] font-bold text-white truncate">
                   {bonusTypeLabel(b.type)}
                 </p>
-                <p className="text-[14px] font-black text-[#FED358] tabular-nums">
+                <p className="text-[16px] font-black text-[#FED358] tabular-nums">
                   {formatINR(b.amount)}
                 </p>
                 {b.createdAt && (
-                  <p className="text-[10px] text-white/30 mt-0.5">
+                  <p className="text-[12px] text-white/30 mt-0.5">
                     {formatDateTime(b.createdAt)}
                   </p>
                 )}

@@ -347,23 +347,23 @@ export default function DatePickerSheet({
           <button
             type="button"
             onClick={onCancel}
-            className="text-[14px] font-semibold text-white/55 min-w-[64px] text-left"
+            className="text-[16px] font-semibold text-white/55 min-w-[64px] text-left"
           >
             Cancel
           </button>
-          <span className="text-[15px] font-bold text-[#FED358]">{title}</span>
+          <span className="text-[17px] font-bold text-[#FED358]">{title}</span>
           <button
             type="button"
             onClick={() => {
               const picked = ymdFromParts(y, m, d);
               onConfirm(maxYmd && picked > maxYmd ? maxYmd : picked);
             }}
-            className="text-[14px] font-bold text-[#FED358] min-w-[64px] text-right"
+            className="text-[16px] font-bold text-[#FED358] min-w-[64px] text-right"
           >
             Confirm
           </button>
         </div>
-        <p className="px-4 pt-3 pb-1 text-[11px] text-white/35 font-semibold uppercase tracking-wider">
+        <p className="px-4 pt-3 pb-1 text-[13px] text-white/35 font-semibold uppercase tracking-wider">
           Pick a day
         </p>
         <DateOdometer

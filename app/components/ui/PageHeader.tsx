@@ -70,7 +70,7 @@ function HeaderInner({
           </button>
         )}
       </div>
-      <h1 className="text-[13px] sm:text-[15px] font-bold text-[#FDE4BC] tracking-wide truncate px-1 sm:px-2 min-w-0 flex-1 text-center">
+      <h1 className="text-[15px] sm:text-[17px] font-bold text-[#FDE4BC] tracking-wide truncate px-1 sm:px-2 min-w-0 flex-1 text-center">
         {title}
       </h1>
       <div className="min-w-10 max-w-[38%] flex items-center justify-end text-[#FED358] shrink-0">

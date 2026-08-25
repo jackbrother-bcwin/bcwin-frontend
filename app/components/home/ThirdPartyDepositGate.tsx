@@ -75,7 +75,7 @@ export default function ThirdPartyDepositGate({
       >
         <div className="mb-4 flex justify-center">
           <div
-            className="flex h-[52px] w-[52px] items-center justify-center rounded-full text-[22px]"
+            className="flex h-[52px] w-[52px] items-center justify-center rounded-full text-[24px]"
             style={{
               background: "linear-gradient(145deg,#3a2e12,#1a1408)",
               border: "1.5px solid rgba(254,211,88,0.45)",
@@ -89,12 +89,12 @@ export default function ThirdPartyDepositGate({
 
         <h2
           id="inout-gate-title"
-          className="mb-2 text-center text-[16px] font-bold leading-snug"
+          className="mb-2 text-center text-[18px] font-bold leading-snug"
           style={{ color: "#FFE8D6" }}
         >
           Recharge required
         </h2>
-        <p className="mb-1 text-center text-[12px] leading-relaxed text-white/55">
+        <p className="mb-1 text-center text-[14px] leading-relaxed text-white/55">
           {gameName ? (
             <>
               {intent === "bet" ? "To place a bet on" : "To play"}{" "}
@@ -112,7 +112,7 @@ export default function ThirdPartyDepositGate({
             </>
           )}
         </p>
-        <p className="mb-5 text-center text-[11px] text-white/40">
+        <p className="mb-5 text-center text-[13px] text-white/40">
           Your total:{" "}
           <span className="font-semibold text-white/70">
             {formatINR(totalDeposit, 0)}
@@ -133,7 +133,7 @@ export default function ThirdPartyDepositGate({
           <button
             type="button"
             onClick={onDeposit}
-            className="h-[46px] w-full rounded-full text-[15px] font-bold active:scale-[0.98] transition-transform"
+            className="h-[46px] w-full rounded-full text-[17px] font-bold active:scale-[0.98] transition-transform"
             style={{
               background: "linear-gradient(180deg, #FFD166 0%, #FFA03D 100%)",
               color: "#1A1A1A",
@@ -145,7 +145,7 @@ export default function ThirdPartyDepositGate({
           <button
             type="button"
             onClick={onClose}
-            className="h-[46px] w-full rounded-full text-[15px] font-bold active:scale-[0.98] transition-transform"
+            className="h-[46px] w-full rounded-full text-[17px] font-bold active:scale-[0.98] transition-transform"
             style={{
               background: "transparent",
               color: "#FFC107",

@@ -452,7 +452,7 @@ export default function MotoPage({
         onBack={onBack}
         right={
           <span
-            className={`text-[13px] font-black tabular-nums ${
+            className={`text-[15px] font-black tabular-nums ${
               countdown <= lockAt
                 ? "text-[#DA3735] animate-countdown"
                 : "text-[#FED358]"
@@ -515,10 +515,10 @@ export default function MotoPage({
             backdropFilter: "blur(6px)",
           }}
         >
-          <p className="text-[8px] text-[#837064] uppercase tracking-wider">
+          <p className="text-[10px] text-[#837064] uppercase tracking-wider">
             Period
           </p>
-          <p className="text-[11px] font-mono font-bold text-[#FDE4BC]">
+          <p className="text-[13px] font-mono font-bold text-[#FDE4BC]">
             {period?.periodNumber ?? "—"}
           </p>
         </div>
@@ -547,11 +547,11 @@ export default function MotoPage({
                 key={label}
                 className="flex flex-col items-center min-w-[28px]"
               >
-                <span className="text-[7px] text-white/40 font-bold">
+                <span className="text-[9px] text-white/40 font-bold">
                   {label}
                 </span>
                 <span
-                  className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black${
+                  className={`w-6 h-6 rounded-full flex items-center justify-center text-[12px] font-black${
                     c ? " moto-podium-live" : ""
                   }`}
                   style={{
@@ -572,7 +572,7 @@ export default function MotoPage({
         {(racing || inRaceWindow) && (
           <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10">
             <span
-              className="text-[10px] font-black tracking-[0.2em] text-[#FED358] px-3 py-1 rounded-full"
+              className="text-[12px] font-black tracking-[0.2em] text-[#FED358] px-3 py-1 rounded-full"
               style={{
                 background: "rgba(17,13,20,0.85)",
                 border: "1px solid rgba(254,211,88,0.5)",
@@ -590,7 +590,7 @@ export default function MotoPage({
 
         {isMotoBettingLocked(countdown, duration) && countdown > 0 && (
           <div className="absolute bottom-2 right-2 z-10">
-            <span className="text-[9px] font-bold text-[#DA3735]/90 bg-black/50 px-2 py-0.5 rounded">
+            <span className="text-[11px] font-bold text-[#DA3735]/90 bg-black/50 px-2 py-0.5 rounded">
               Betting closed
             </span>
           </div>
@@ -633,17 +633,17 @@ export default function MotoPage({
                   background: "linear-gradient(90deg,#C8922A,#E8A84A)",
                 }}
               >
-                <span className="text-[11px] font-bold text-[#110D14] text-center">
+                <span className="text-[13px] font-bold text-[#110D14] text-center">
                   Period
                 </span>
-                <span className="text-[11px] font-bold text-[#110D14] text-center">
+                <span className="text-[13px] font-bold text-[#110D14] text-center">
                   Podium
                 </span>
               </div>
               {resolved.map((p) => (
                 <div
                   key={p.id}
-                  className="flex justify-between items-center px-3 py-2.5 border-b border-white/5 text-[11px]"
+                  className="flex justify-between items-center px-3 py-2.5 border-b border-white/5 text-[13px]"
                 >
                   <span className="font-mono text-white/50 truncate max-w-[42%]">
                     {p.periodNumber}
@@ -655,7 +655,7 @@ export default function MotoPage({
                         return (
                           <span
                             key={i}
-                            className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black text-[#110D14]"
+                            className="w-6 h-6 rounded-full flex items-center justify-center text-[12px] font-black text-[#110D14]"
                             style={{
                               background: `linear-gradient(160deg,${c.glow},${c.primary})`,
                             }}

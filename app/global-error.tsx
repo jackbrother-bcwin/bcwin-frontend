@@ -40,8 +40,8 @@ export default function GlobalError({
             textAlign: "center",
           }}
         >
-          <h1 style={{ fontSize: 18, margin: 0 }}>Application error</h1>
-          <p style={{ fontSize: 12, color: "#B79C8B", margin: 0 }}>
+          <h1 style={{ fontSize: 20, margin: 0 }}>Application error</h1>
+          <p style={{ fontSize: 14, color: "#B79C8B", margin: 0 }}>
             {error.message || "A critical error occurred."}
           </p>
           <button

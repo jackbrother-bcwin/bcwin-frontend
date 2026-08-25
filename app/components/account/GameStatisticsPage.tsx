@@ -432,7 +432,7 @@ export default function GameStatisticsPage({ onBack }: Props) {
 
       {/* Game categories — same as home grids */}
       <div className="px-3 pt-3">
-        <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-white/35">
+        <p className="mb-2 text-[12px] font-bold uppercase tracking-wider text-white/35">
           {t("profile.statsCategory", "Category")}
         </p>
         <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
@@ -443,7 +443,7 @@ export default function GameStatisticsPage({ onBack }: Props) {
                 key={c.id}
                 type="button"
                 onClick={() => setCategory(c.id)}
-                className="shrink-0 px-3 h-8 rounded-full text-[11px] font-bold transition-all"
+                className="shrink-0 px-3 h-8 rounded-full text-[13px] font-bold transition-all"
                 style={{
                   background: active
                     ? "linear-gradient(180deg, #FED358 0%, #FFB472 100%)"
@@ -468,7 +468,7 @@ export default function GameStatisticsPage({ onBack }: Props) {
             key={r.id}
             type="button"
             onClick={() => setRange(r.id)}
-            className="shrink-0 px-3 h-7 rounded-full text-[10px] font-bold"
+            className="shrink-0 px-3 h-7 rounded-full text-[12px] font-bold"
             style={{
               background:
                 range === r.id
@@ -541,7 +541,7 @@ export default function GameStatisticsPage({ onBack }: Props) {
               }}
             >
               <div className="px-3.5 py-3 border-b border-white/5">
-                <p className="text-[12px] font-bold text-white">
+                <p className="text-[14px] font-bold text-white">
                   {t("profile.statsByCategory", "By category")}
                 </p>
               </div>
@@ -554,17 +554,17 @@ export default function GameStatisticsPage({ onBack }: Props) {
                     className="w-full flex items-center justify-between gap-3 px-3.5 py-3 text-left active:bg-white/5"
                   >
                     <div className="min-w-0">
-                      <p className="text-[12px] font-bold text-white truncate">
+                      <p className="text-[14px] font-bold text-white truncate">
                         {row.label}
                       </p>
-                      <p className="text-[10px] text-white/45 mt-0.5">
+                      <p className="text-[12px] text-white/45 mt-0.5">
                         {row.bets} {t("profile.statsBets", "Bets").toLowerCase()}{" "}
                         · {formatINR(row.totalBet)}
                       </p>
                     </div>
                     <div className="text-right shrink-0">
                       <p
-                        className="text-[11px] font-bold tabular-nums"
+                        className="text-[13px] font-bold tabular-nums"
                         style={{
                           color: row.profit >= 0 ? "#4ADE80" : "#FF6B6B",
                         }}
@@ -572,7 +572,7 @@ export default function GameStatisticsPage({ onBack }: Props) {
                         {row.profit >= 0 ? "+" : ""}
                         {formatINR(row.profit)}
                       </p>
-                      <p className="text-[9px] text-[#FED358] mt-0.5">
+                      <p className="text-[11px] text-[#FED358] mt-0.5">
                         {t("profile.statsView", "View")} ›
                       </p>
                     </div>
@@ -591,16 +591,16 @@ export default function GameStatisticsPage({ onBack }: Props) {
             }}
           >
             <div className="px-3.5 py-3 border-b border-white/5 flex items-center justify-between gap-2">
-              <p className="text-[12px] font-bold text-white">
+              <p className="text-[14px] font-bold text-white">
                 {t("profile.statsByGame", "By game")}
               </p>
-              <span className="text-[10px] text-white/35 font-medium">
+              <span className="text-[12px] text-white/35 font-medium">
                 {categoryLabel(category)} ·{" "}
                 {t("profile.statsTapDetail", "Tap for details")}
               </span>
             </div>
             {stats.rows.length === 0 ? (
-              <p className="px-3.5 py-8 text-center text-[12px] text-white/40">
+              <p className="px-3.5 py-8 text-center text-[14px] text-white/40">
                 {t("profile.statsEmpty", "No bets in this period")}
               </p>
             ) : (
@@ -642,10 +642,10 @@ export default function GameStatisticsPage({ onBack }: Props) {
                             />
                           </span>
                           <div className="min-w-0">
-                            <p className="text-[12px] font-bold text-white truncate">
+                            <p className="text-[14px] font-bold text-white truncate">
                               {g.label}
                             </p>
-                            <p className="text-[10px] text-white/45 mt-0.5">
+                            <p className="text-[12px] text-white/45 mt-0.5">
                               {category === "all" && (
                                 <span className="text-[#FED358]/80">
                                   {CATEGORIES.find((c) => c.id === g.category)
@@ -660,11 +660,11 @@ export default function GameStatisticsPage({ onBack }: Props) {
                           </div>
                         </div>
                         <div className="text-right shrink-0">
-                          <p className="text-[11px] font-bold text-white/80 tabular-nums">
+                          <p className="text-[13px] font-bold text-white/80 tabular-nums">
                             {formatINR(g.totalWin)}
                           </p>
                           <p
-                            className="text-[10px] font-bold tabular-nums mt-0.5"
+                            className="text-[12px] font-bold tabular-nums mt-0.5"
                             style={{
                               color: g.profit >= 0 ? "#4ADE80" : "#FF6B6B",
                             }}
@@ -682,17 +682,17 @@ export default function GameStatisticsPage({ onBack }: Props) {
                           style={{ background: "rgba(0,0,0,0.22)" }}
                         >
                           <div className="px-3 pt-2.5 pb-1 flex items-center justify-between">
-                            <p className="text-[11px] font-bold text-white/55">
+                            <p className="text-[13px] font-bold text-white/55">
                               {t("profile.statsBetHistory", "Bet history")} ·{" "}
                               {g.label}
                             </p>
-                            <span className="text-[10px] text-white/30">
+                            <span className="text-[12px] text-white/30">
                               {betList.length}{" "}
                               {t("profile.statsBets", "Bets").toLowerCase()}
                             </span>
                           </div>
                           {betList.length === 0 ? (
-                            <p className="px-3 py-4 text-center text-[11px] text-white/35">
+                            <p className="px-3 py-4 text-center text-[13px] text-white/35">
                               {t("profile.statsEmpty", "No bets in this period")}
                             </p>
                           ) : (
@@ -714,7 +714,7 @@ export default function GameStatisticsPage({ onBack }: Props) {
             )}
           </div>
 
-          <p className="px-1 text-[10px] text-white/30 leading-relaxed">
+          <p className="px-1 text-[12px] text-white/30 leading-relaxed">
             {t(
               "profile.statsNote",
               "Tap a game to open bet details (same as WinGo history). Third-party games show available fields only."
@@ -743,9 +743,9 @@ function StatCard({
         border: "1px solid rgba(254,211,88,0.12)",
       }}
     >
-      <p className="text-[10px] text-white/45 font-medium">{label}</p>
+      <p className="text-[12px] text-white/45 font-medium">{label}</p>
       <p
-        className="mt-1 text-[15px] font-extrabold tabular-nums truncate"
+        className="mt-1 text-[17px] font-extrabold tabular-nums truncate"
         style={{ color: accent ?? "#FFE8D6" }}
       >
         {value}
@@ -766,12 +766,12 @@ function MiniStat({
   return (
     <div className="text-center">
       <p
-        className="text-[16px] font-extrabold tabular-nums"
+        className="text-[18px] font-extrabold tabular-nums"
         style={{ color: color ?? "#FFE8D6" }}
       >
         {value}
       </p>
-      <p className="text-[9px] text-white/40 mt-0.5 font-medium">{label}</p>
+      <p className="text-[11px] text-white/40 mt-0.5 font-medium">{label}</p>
     </div>
   );
 }

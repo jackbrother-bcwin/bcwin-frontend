@@ -133,7 +133,7 @@ export default function SelfRebatePage({ onBack }: Props) {
               }
             >
               <div className="mb-1">{t.icon}</div>
-              <span className="text-[11px] font-bold tracking-wide">
+              <span className="text-[13px] font-bold tracking-wide">
                 {t.label}
               </span>
             </button>
@@ -155,11 +155,11 @@ export default function SelfRebatePage({ onBack }: Props) {
           >
             {/* Title & Real-time badge */}
             <div className="flex items-center justify-between">
-              <span className="text-[14px] font-bold text-white/90">
+              <span className="text-[16px] font-bold text-white/90">
                 All-Total betting rebate
               </span>
               <div
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold text-[#FED358]"
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[13px] font-semibold text-[#FED358]"
                 style={{
                   background: "rgba(254,211,88,0.12)",
                   border: "1px solid rgba(254,211,88,0.3)",
@@ -172,17 +172,17 @@ export default function SelfRebatePage({ onBack }: Props) {
 
             {/* Large Amount */}
             <div className="flex items-center gap-2 mt-1">
-              <div className="w-8 h-8 rounded-full bg-[#FED358]/20 flex items-center justify-center text-[#FED358] font-bold text-[18px]">
+              <div className="w-8 h-8 rounded-full bg-[#FED358]/20 flex items-center justify-center text-[#FED358] font-bold text-[20px]">
                 ₹
               </div>
-              <span className="text-[28px] font-black text-white tracking-tight tabular-nums">
+              <span className="text-[30px] font-black text-white tracking-tight tabular-nums">
                 {todayRebateVal.toFixed(2)}
               </span>
             </div>
 
             {/* VIP upgrade hint */}
             <div
-              className="rounded-lg px-3 py-2 text-[11px] text-white/60"
+              className="rounded-lg px-3 py-2 text-[13px] text-white/60"
               style={{ background: "#201B26" }}
             >
               {summary
@@ -196,8 +196,8 @@ export default function SelfRebatePage({ onBack }: Props) {
                 className="rounded-xl p-3 flex flex-col"
                 style={{ background: "#201B26" }}
               >
-                <span className="text-[11px] text-white/50">Today rebate</span>
-                <span className="text-[18px] font-black text-[#FED358] mt-0.5 tabular-nums">
+                <span className="text-[13px] text-white/50">Today rebate</span>
+                <span className="text-[20px] font-black text-[#FED358] mt-0.5 tabular-nums">
                   {todayRebateVal.toFixed(2)}
                 </span>
               </div>
@@ -205,15 +205,15 @@ export default function SelfRebatePage({ onBack }: Props) {
                 className="rounded-xl p-3 flex flex-col"
                 style={{ background: "#201B26" }}
               >
-                <span className="text-[11px] text-white/50">Total rebate</span>
-                <span className="text-[18px] font-black text-[#FED358] mt-0.5 tabular-nums">
+                <span className="text-[13px] text-white/50">Total rebate</span>
+                <span className="text-[20px] font-black text-[#FED358] mt-0.5 tabular-nums">
                   {totalRebateVal.toFixed(2)}
                 </span>
               </div>
             </div>
 
             {/* Automatic washing notice */}
-            <p className="text-[11px] text-white/40 text-center mt-1">
+            <p className="text-[13px] text-white/40 text-center mt-1">
               Automatic code washing at 01:00:00 every morning
             </p>
 
@@ -222,7 +222,7 @@ export default function SelfRebatePage({ onBack }: Props) {
               type="button"
               disabled={claiming || todayRebateVal <= 0}
               onClick={handleClaim}
-              className="w-full h-11 rounded-full text-[14px] font-bold transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed mt-1"
+              className="w-full h-11 rounded-full text-[16px] font-bold transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed mt-1"
               style={
                 todayRebateVal > 0
                   ? {
@@ -243,7 +243,7 @@ export default function SelfRebatePage({ onBack }: Props) {
           {/* Section Header: Rebate History */}
           <div className="flex items-center gap-2 pt-2">
             <div className="w-1 h-4 bg-[#FED358] rounded-full" />
-            <h2 className="text-[16px] font-bold text-white">Rebate history</h2>
+            <h2 className="text-[18px] font-bold text-white">Rebate history</h2>
           </div>
 
           {/* History List */}
@@ -252,7 +252,7 @@ export default function SelfRebatePage({ onBack }: Props) {
               className="rounded-xl p-8 text-center"
               style={{ background: "#2A2530" }}
             >
-              <p className="text-[13px] text-white/40">No rebate records found</p>
+              <p className="text-[15px] text-white/40">No rebate records found</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -267,11 +267,11 @@ export default function SelfRebatePage({ onBack }: Props) {
                 >
                   {/* Category & Status */}
                   <div className="flex items-center justify-between pb-2 border-b border-white/5">
-                    <span className="text-[15px] font-bold text-white">
+                    <span className="text-[17px] font-bold text-white">
                       {item.title}
                     </span>
                     <span
-                      className={`text-[12px] font-bold ${
+                      className={`text-[14px] font-bold ${
                         item.status === "Completed"
                           ? "text-[#10B981]"
                           : item.status === "Pending"
@@ -283,7 +283,7 @@ export default function SelfRebatePage({ onBack }: Props) {
                     </span>
                   </div>
 
-                  <p className="text-[11px] text-white/40 -mt-1">
+                  <p className="text-[13px] text-white/40 -mt-1">
                     {item.date} 01:00:00
                   </p>
 
@@ -292,11 +292,11 @@ export default function SelfRebatePage({ onBack }: Props) {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full border-2 border-[#10B981]" />
-                        <span className="text-[12px] text-white/60">
+                        <span className="text-[14px] text-white/60">
                           Betting rebate
                         </span>
                       </div>
-                      <span className="text-[13px] font-bold text-white tabular-nums">
+                      <span className="text-[15px] font-bold text-white tabular-nums">
                         {item.betAmount.toFixed(0)}
                       </span>
                     </div>
@@ -304,11 +304,11 @@ export default function SelfRebatePage({ onBack }: Props) {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full border-2 border-[#10B981]" />
-                        <span className="text-[12px] text-white/60">
+                        <span className="text-[14px] text-white/60">
                           Rebate rate
                         </span>
                       </div>
-                      <span className="text-[13px] font-bold text-[#EF4444] tabular-nums">
+                      <span className="text-[15px] font-bold text-[#EF4444] tabular-nums">
                         {item.rate}%
                       </span>
                     </div>
@@ -316,11 +316,11 @@ export default function SelfRebatePage({ onBack }: Props) {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full border-2 border-[#10B981]" />
-                        <span className="text-[12px] text-white/60">
+                        <span className="text-[14px] text-white/60">
                           Rebate amount
                         </span>
                       </div>
-                      <span className="text-[13px] font-bold text-[#FED358] tabular-nums">
+                      <span className="text-[15px] font-bold text-[#FED358] tabular-nums">
                         {item.rebateAmount.toFixed(2)}
                       </span>
                     </div>

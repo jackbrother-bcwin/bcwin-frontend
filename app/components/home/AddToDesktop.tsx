@@ -181,7 +181,7 @@ export default function AddToDesktop() {
 
           {hint && (
             <p
-              className="absolute left-1/2 top-full z-10 mt-1.5 w-[min(280px,88vw)] -translate-x-1/2 rounded-lg px-2.5 py-1.5 text-center text-[10px] font-medium leading-snug text-[#FDE4BC]"
+              className="absolute left-1/2 top-full z-10 mt-1.5 w-[min(280px,88vw)] -translate-x-1/2 rounded-lg px-2.5 py-1.5 text-center text-[12px] font-medium leading-snug text-[#FDE4BC]"
               style={{
                 background: "rgba(36,30,34,0.96)",
                 border: "1px solid rgba(254,211,88,0.28)",
@@ -220,10 +220,10 @@ export default function AddToDesktop() {
             >
               ×
             </button>
-            <p className="mb-2 text-center text-[14px] font-black text-[#FED358]">
+            <p className="mb-2 text-center text-[16px] font-black text-[#FED358]">
               Add BCWin to Home Screen
             </p>
-            <ol className="space-y-2 text-[12px] leading-relaxed text-white/70">
+            <ol className="space-y-2 text-[14px] leading-relaxed text-white/70">
               <li>
                 1. Tap <strong className="text-white">Share</strong> in Safari.
               </li>
@@ -240,7 +240,7 @@ export default function AddToDesktop() {
                 setIosTip(false);
                 dismiss();
               }}
-              className="mt-4 h-10 w-full rounded-full text-[13px] font-bold text-[#110D14]"
+              className="mt-4 h-10 w-full rounded-full text-[15px] font-bold text-[#110D14]"
               style={{ background: "linear-gradient(180deg,#FED358,#FFB472)" }}
             >
               Got it

@@ -398,7 +398,7 @@ export default function VipPage({ onBack }: Props) {
                 />
               </div>
             </div>
-            <p className="truncate text-[15px] font-semibold text-white/90">
+            <p className="truncate text-[17px] font-semibold text-white/90">
               {displayName}
             </p>
           </div>
@@ -422,7 +422,7 @@ export default function VipPage({ onBack }: Props) {
         </div>
 
         <div
-          className="mt-3 rounded-lg px-3 py-2 text-center text-[11px] leading-snug text-[#B79C8B]"
+          className="mt-3 rounded-lg px-3 py-2 text-center text-[13px] leading-snug text-[#B79C8B]"
           style={{ background: "#1A1519", border: "1px solid #2E282C" }}
         >
           {SETTLEMENT_NOTE}
@@ -488,7 +488,7 @@ export default function VipPage({ onBack }: Props) {
                 key={t.id}
                 type="button"
                 onClick={() => setSubTab(t.id)}
-                className="relative px-2 pb-2.5 text-[15px] font-bold transition-colors"
+                className="relative px-2 pb-2.5 text-[17px] font-bold transition-colors"
                 style={{ color: on ? "#FED358" : "#6B5E58" }}
               >
                 {t.label}
@@ -511,7 +511,7 @@ export default function VipPage({ onBack }: Props) {
             <ClaimedIconBar items={claims} loading={claimsLoading} />
 
             {/* EXP history list (as before) */}
-            <p className="mb-2 mt-4 text-[12px] font-bold text-[#837064]">
+            <p className="mb-2 mt-4 text-[14px] font-bold text-[#837064]">
               Experience history
             </p>
             <ExpHistoryList
@@ -536,10 +536,10 @@ function StatTile({ value, label }: { value: string; label: string }) {
       className="rounded-xl px-3 py-3 text-center"
       style={{ background: "#241E22", border: "1px solid #3D363A" }}
     >
-      <p className="text-[16px] font-black tabular-nums text-[#F5D78E]">
+      <p className="text-[18px] font-black tabular-nums text-[#F5D78E]">
         {value}
       </p>
-      <p className="mt-0.5 text-[11px] text-[#837064]">{label}</p>
+      <p className="mt-0.5 text-[13px] text-[#837064]">{label}</p>
     </div>
   );
 }
@@ -597,14 +597,14 @@ function VipLevelCard({
             />
           </div>
           <span
-            className="text-[20px] font-black tracking-wide"
+            className="text-[22px] font-black tracking-wide"
             style={{ color: cfg.text }}
           >
             VIP{cfg.level}
           </span>
           {!opened ? (
             <span
-              className="inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-[10px] font-bold text-white"
+              className="inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-[12px] font-bold text-white"
               style={{ background: "#E53935" }}
             >
               <IoLockClosed size={10} />
@@ -612,7 +612,7 @@ function VipLevelCard({
             </span>
           ) : (
             <span
-              className="inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-[10px] font-bold text-white"
+              className="inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-[12px] font-bold text-white"
               style={{ background: "#17B15E" }}
             >
               Opened
@@ -621,7 +621,7 @@ function VipLevelCard({
         </div>
 
         <p
-          className="mt-1 text-[12px] font-semibold leading-snug"
+          className="mt-1 text-[14px] font-semibold leading-snug"
           style={{ color: cfg.textMuted }}
         >
           {opened ? (
@@ -648,7 +648,7 @@ function VipLevelCard({
         </p>
 
         <div
-          className="mt-2.5 inline-flex w-fit items-center rounded-md px-2 py-1 text-[11px] font-bold"
+          className="mt-2.5 inline-flex w-fit items-center rounded-md px-2 py-1 text-[13px] font-bold"
           style={{ background: cfg.chipBg, color: cfg.text }}
         >
           Bet ₹1=1EXP
@@ -657,14 +657,14 @@ function VipLevelCard({
         <div className="mt-auto pt-3">
           <div className="mb-1 flex items-center justify-between gap-2">
             <span
-              className="text-[10px] font-semibold tabular-nums"
+              className="text-[12px] font-semibold tabular-nums"
               style={{ color: cfg.textMuted }}
             >
               {formatExp(Math.min(myExp, need || myExp))}/
               {formatExp(need || 0)}
             </span>
             <span
-              className="text-[10px] font-semibold"
+              className="text-[12px] font-semibold"
               style={{ color: cfg.textMuted }}
             >
               {formatExp(need)} EXP can be leveled up
@@ -684,7 +684,7 @@ function VipLevelCard({
             />
           </div>
           <p
-            className="mt-1.5 text-right text-[11px] font-bold tracking-wide opacity-70"
+            className="mt-1.5 text-right text-[13px] font-bold tracking-wide opacity-70"
             style={{ color: cfg.text }}
           >
             VIP{cfg.level}
@@ -740,7 +740,7 @@ function BenefitsPanel({
             }}
           />
         </div>
-        <p className="text-[15px] font-bold text-[#E8C36A]">
+        <p className="text-[17px] font-bold text-[#E8C36A]">
           VIP{cfg.level} Benefits level
         </p>
       </div>
@@ -788,7 +788,7 @@ function BenefitsPanel({
       />
 
       {!eligible && (
-        <p className="mt-3 text-center text-[11px] text-[#837064]">
+        <p className="mt-3 text-center text-[13px] text-[#837064]">
           Reach VIP{cfg.level} to claim these rewards
         </p>
       )}
@@ -829,14 +829,14 @@ function BenefitRow({
         <Image src={icon} alt="" fill sizes="40px" className="object-contain" />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-[13px] font-bold text-[#F5D78E]">{title}</p>
-        <p className="text-[11px] leading-snug text-[#837064]">{desc}</p>
+        <p className="text-[15px] font-bold text-[#F5D78E]">{title}</p>
+        <p className="text-[13px] leading-snug text-[#837064]">{desc}</p>
         {claimable && onClaim && (
           <button
             type="button"
             disabled={claiming}
             onClick={onClaim}
-            className="mt-1.5 rounded-full px-3 py-1 text-[11px] font-black text-[#1a1208] active:opacity-90 disabled:opacity-50"
+            className="mt-1.5 rounded-full px-3 py-1 text-[13px] font-black text-[#1a1208] active:opacity-90 disabled:opacity-50"
             style={{
               background: "linear-gradient(180deg, #FED358 0%, #E8A84A 100%)",
             }}
@@ -845,19 +845,19 @@ function BenefitRow({
           </button>
         )}
         {claimed && !isRate && (
-          <p className="mt-1 text-[10px] font-semibold text-[#17B15E]">
+          <p className="mt-1 text-[12px] font-semibold text-[#17B15E]">
             Claimed
           </p>
         )}
         {locked && !isRate && !claimed && (
-          <p className="mt-1 text-[10px] font-semibold text-[#837064]">
+          <p className="mt-1 text-[12px] font-semibold text-[#837064]">
             Locked
           </p>
         )}
       </div>
       <div className="flex shrink-0 flex-col items-end gap-1">
         <span
-          className="inline-flex min-w-[64px] items-center justify-center gap-1 rounded-md px-2 py-1 text-[12px] font-bold tabular-nums"
+          className="inline-flex min-w-[64px] items-center justify-center gap-1 rounded-md px-2 py-1 text-[14px] font-bold tabular-nums"
           style={{
             border: "1px solid rgba(232,168,74,0.55)",
             color: "#E8C36A",
@@ -869,7 +869,7 @@ function BenefitRow({
         </span>
         {showSafe && secondary != null && (
           <span
-            className="inline-flex min-w-[64px] items-center justify-center gap-1 rounded-md px-2 py-1 text-[12px] font-bold tabular-nums"
+            className="inline-flex min-w-[64px] items-center justify-center gap-1 rounded-md px-2 py-1 text-[14px] font-bold tabular-nums"
             style={{
               border: "1px solid rgba(232,168,74,0.55)",
               color: "#E8C36A",
@@ -954,10 +954,10 @@ function CoinsMini() {
 function RulesPanel() {
   return (
     <div className="mt-4 pb-6">
-      <p className="text-center text-[16px] font-bold text-[#E8C36A]">
+      <p className="text-center text-[18px] font-bold text-[#E8C36A]">
         VIP privileges
       </p>
-      <p className="mt-0.5 text-center text-[12px] text-[#837064]">
+      <p className="mt-0.5 text-center text-[14px] text-[#837064]">
         VIP rule description
       </p>
       <div className="mt-4 space-y-3">
@@ -968,14 +968,14 @@ function RulesPanel() {
             style={{ background: "#1A1519", border: "1px solid #2E282C" }}
           >
             <div
-              className="mx-auto w-[72%] rounded-b-xl px-3 py-1.5 text-center text-[13px] font-bold text-[#1a1208]"
+              className="mx-auto w-[72%] rounded-b-xl px-3 py-1.5 text-center text-[15px] font-bold text-[#1a1208]"
               style={{
                 background: "linear-gradient(180deg, #FED358 0%, #E8A84A 100%)",
               }}
             >
               {r.title}
             </div>
-            <p className="px-3.5 py-3 text-[12px] leading-relaxed text-[#B79C8B]">
+            <p className="px-3.5 py-3 text-[14px] leading-relaxed text-[#B79C8B]">
               {r.body}
             </p>
           </div>
@@ -999,14 +999,14 @@ function ClaimedIconBar({
       style={{ background: "#1A1519", border: "1px solid #2E282C" }}
     >
       <div className="mb-2 flex items-center justify-between px-0.5">
-        <p className="text-[12px] font-bold text-[#E8C36A]">Claimed rewards</p>
-        <p className="text-[10px] text-[#837064]">
+        <p className="text-[14px] font-bold text-[#E8C36A]">Claimed rewards</p>
+        <p className="text-[12px] text-[#837064]">
           {loading ? "…" : `${items.length} claim${items.length === 1 ? "" : "s"}`}
         </p>
       </div>
 
       {items.length === 0 ? (
-        <p className="px-0.5 py-2 text-[11px] text-[#6B5E58]">
+        <p className="px-0.5 py-2 text-[13px] text-[#6B5E58]">
           No claims yet — claim level-up / monthly rewards above
         </p>
       ) : (
@@ -1038,13 +1038,13 @@ function ClaimedIconBar({
                     className="object-contain"
                   />
                 </div>
-                <p className="text-[10px] font-bold text-[#F5D78E]">
+                <p className="text-[12px] font-bold text-[#F5D78E]">
                   VIP{c.level}
                 </p>
-                <p className="text-[9px] text-[#837064]">
+                <p className="text-[11px] text-[#837064]">
                   {isMonthly ? "Monthly" : "Level up"}
                 </p>
-                <p className="mt-0.5 text-[11px] font-black tabular-nums text-[#17B15E]">
+                <p className="mt-0.5 text-[13px] font-black tabular-nums text-[#17B15E]">
                   +{formatINR(c.amount)}
                 </p>
               </div>
@@ -1072,15 +1072,15 @@ function ExpHistoryList({
 }) {
   if (loading && items.length === 0) {
     return (
-      <p className="py-8 text-center text-[12px] text-[#837064]">Loading…</p>
+      <p className="py-8 text-center text-[14px] text-[#837064]">Loading…</p>
     );
   }
 
   if (items.length === 0) {
     return (
       <div className="py-8 text-center">
-        <p className="text-[13px] text-[#837064]">No experience records yet</p>
-        <p className="mt-1 text-[11px] text-white/25">
+        <p className="text-[15px] text-[#837064]">No experience records yet</p>
+        <p className="mt-1 text-[13px] text-white/25">
           Place bets to earn EXP (₹1 = 1 EXP)
         </p>
       </div>
@@ -1095,13 +1095,13 @@ function ExpHistoryList({
           className="flex items-center justify-between gap-3 border-b border-white/5 py-3"
         >
           <div className="min-w-0">
-            <p className="text-[13px] font-semibold text-[#4A8CFF]">
+            <p className="text-[15px] font-semibold text-[#4A8CFF]">
               {item.title}
             </p>
-            <p className="text-[12px] text-[#B79C8B]">{item.subtitle}</p>
-            <p className="text-[11px] text-[#6B5E58]">{item.time}</p>
+            <p className="text-[14px] text-[#B79C8B]">{item.subtitle}</p>
+            <p className="text-[13px] text-[#6B5E58]">{item.time}</p>
           </div>
-          <p className="shrink-0 text-[13px] font-bold tabular-nums text-[#17B15E]">
+          <p className="shrink-0 text-[15px] font-bold tabular-nums text-[#17B15E]">
             {item.exp} EXP
           </p>
         </div>

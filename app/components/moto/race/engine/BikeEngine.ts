@@ -193,7 +193,7 @@ export class BikeEngine {
       const label = new this.pixi.Text({
         text: String(num),
         style: {
-          fontSize: 9,
+          fontSize: 11,
           fontWeight: "900",
           fill: 0xffffff,
           fontFamily: "system-ui,sans-serif",
@@ -329,7 +329,7 @@ export class BikeEngine {
           const badge = new this.pixi.Text({
             text: s.label,
             style: {
-              fontSize: 14,
+              fontSize: 16,
               fontWeight: "900",
               fill: s.color,
               fontFamily: "system-ui,sans-serif",

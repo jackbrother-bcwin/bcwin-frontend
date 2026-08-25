@@ -471,7 +471,7 @@ export default function DragonAssistant({ showFloatingButton = true }: DragonAss
                 <button
                   type="button"
                   onClick={closeDragon}
-                  className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full text-[20px] font-bold text-white active:scale-95"
+                  className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full text-[22px] font-bold text-white active:scale-95"
                   style={{
                     background: "rgba(0,0,0,0.45)",
                     boxShadow: "0 2px 10px rgba(0,0,0,0.35)",
@@ -482,7 +482,7 @@ export default function DragonAssistant({ showFloatingButton = true }: DragonAss
                   ✕
                 </button>
               </div>
-              <p className="px-3 pt-2.5 pb-1 text-center text-[11px] text-white/45">
+              <p className="px-3 pt-2.5 pb-1 text-center text-[13px] text-white/45">
                 5 consecutive strikes with the same result · quick bets
               </p>
             </div>
@@ -501,7 +501,7 @@ export default function DragonAssistant({ showFloatingButton = true }: DragonAss
                     key={t.id}
                     type="button"
                     onClick={() => setTab(t.id)}
-                    className="flex-1 h-9 rounded-[10px] text-[12px] font-bold transition-all active:scale-[0.98]"
+                    className="flex-1 h-9 rounded-[10px] text-[14px] font-bold transition-all active:scale-[0.98]"
                     style={{
                       background: active
                         ? "linear-gradient(180deg, #FED358 0%, #E8A84A 100%)"
@@ -523,11 +523,11 @@ export default function DragonAssistant({ showFloatingButton = true }: DragonAss
               {tab === "lottery" && (
                 <>
                   {loadingStreaks && streaks.length === 0 ? (
-                    <p className="py-16 text-center text-[12px] text-white/35">
+                    <p className="py-16 text-center text-[14px] text-white/35">
                       Scanning streaks…
                     </p>
                   ) : streaks.length === 0 ? (
-                    <p className="py-16 text-center text-[12px] text-white/35">
+                    <p className="py-16 text-center text-[14px] text-white/35">
                       No hot streaks right now (need 5+ consecutive)
                     </p>
                   ) : (
@@ -550,7 +550,7 @@ export default function DragonAssistant({ showFloatingButton = true }: DragonAss
                             <div className="mb-1.5 flex items-start justify-between gap-2">
                               <div className="min-w-0 flex-1">
                                 <div className="flex items-center justify-between gap-2">
-                                  <p className="truncate text-[12px] font-bold text-[#FDE4BC]">
+                                  <p className="truncate text-[14px] font-bold text-[#FDE4BC]">
                                     {s.gameLabel}{" "}
                                     <span className="text-white/45 font-semibold">
                                       {s.durationLabel}
@@ -566,7 +566,7 @@ export default function DragonAssistant({ showFloatingButton = true }: DragonAss
                                     }
                                   >
                                     <span
-                                      className="font-mono text-[13px] font-black tabular-nums leading-none tracking-wide"
+                                      className="font-mono text-[15px] font-black tabular-nums leading-none tracking-wide"
                                       style={{
                                         color: locked
                                           ? "rgba(255,255,255,0.35)"
@@ -577,12 +577,12 @@ export default function DragonAssistant({ showFloatingButton = true }: DragonAss
                                     >
                                       {locked ? "00:00" : formatCountdown(left)}
                                     </span>
-                                    <span className="mt-0.5 text-[9px] text-white/35 leading-none">
+                                    <span className="mt-0.5 text-[11px] text-white/35 leading-none">
                                       {locked ? "settling…" : "time left"}
                                     </span>
                                   </div>
                                 </div>
-                                <p className="mt-1 text-[11px] text-white/55">
+                                <p className="mt-1 text-[13px] text-white/55">
                                   <span
                                     className="font-bold"
                                     style={{
@@ -620,7 +620,7 @@ export default function DragonAssistant({ showFloatingButton = true }: DragonAss
                               {s.trail.slice(0, 8).map((t, i) => (
                                 <span
                                   key={i}
-                                  className="flex h-[18px] w-[18px] items-center justify-center rounded-full text-[9px] font-black text-white"
+                                  className="flex h-[18px] w-[18px] items-center justify-center rounded-full text-[11px] font-black text-white"
                                   style={{ background: THEME_BG[s.theme] }}
                                 >
                                   {t}
@@ -633,7 +633,7 @@ export default function DragonAssistant({ showFloatingButton = true }: DragonAss
                                 type="button"
                                 disabled={locked}
                                 onClick={() => openBet(s, "same")}
-                                className="flex-1 h-9 rounded-[8px] text-[12px] font-black text-white active:scale-[0.98] disabled:opacity-40 disabled:active:scale-100"
+                                className="flex-1 h-9 rounded-[8px] text-[14px] font-black text-white active:scale-[0.98] disabled:opacity-40 disabled:active:scale-100"
                                 style={{ background: THEME_BG[s.theme] }}
                               >
                                 {s.marketLabel}
@@ -642,7 +642,7 @@ export default function DragonAssistant({ showFloatingButton = true }: DragonAss
                                 type="button"
                                 disabled={locked}
                                 onClick={() => openBet(s, "opposite")}
-                                className="flex-1 h-9 rounded-[8px] text-[12px] font-black text-white active:scale-[0.98] disabled:opacity-40 disabled:active:scale-100"
+                                className="flex-1 h-9 rounded-[8px] text-[14px] font-black text-white active:scale-[0.98] disabled:opacity-40 disabled:active:scale-100"
                                 style={{
                                   background: THEME_BG[s.oppositeTheme],
                                 }}
@@ -661,15 +661,15 @@ export default function DragonAssistant({ showFloatingButton = true }: DragonAss
               {tab === "history" && (
                 <>
                   {!isLoggedIn ? (
-                    <p className="py-16 text-center text-[12px] text-white/35">
+                    <p className="py-16 text-center text-[14px] text-white/35">
                       Log in to see bet history
                     </p>
                   ) : loadingHistory && history.length === 0 ? (
-                    <p className="py-16 text-center text-[12px] text-white/35">
+                    <p className="py-16 text-center text-[14px] text-white/35">
                       Loading history…
                     </p>
                   ) : history.length === 0 ? (
-                    <p className="py-16 text-center text-[12px] text-white/35">
+                    <p className="py-16 text-center text-[14px] text-white/35">
                       No bets yet
                     </p>
                   ) : (

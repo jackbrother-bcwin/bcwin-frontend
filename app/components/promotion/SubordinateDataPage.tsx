@@ -41,7 +41,7 @@ function CopyUidButton({ uid }: { uid: string }) {
       title="Copy UID"
     >
       {copied ? (
-        <span className="text-[10px] text-green-400 font-semibold">Copied!</span>
+        <span className="text-[12px] text-green-400 font-semibold">Copied!</span>
       ) : (
         <svg viewBox="0 0 24 24" className="w-4 h-4 fill-none stroke-current stroke-2">
           <rect x="9" y="9" width="13" height="13" rx="2" />
@@ -133,7 +133,7 @@ export default function SubordinateDataPage({ onBack }: Props) {
               onClick={() => setTierOpen(true)}
             >
               <span>{tierLabel}</span>
-              <span className="text-[#837064] text-[10px]">▼</span>
+              <span className="text-[#837064] text-[12px]">▼</span>
             </button>
             <button
               type="button"
@@ -141,7 +141,7 @@ export default function SubordinateDataPage({ onBack }: Props) {
               onClick={() => setDateOpen(true)}
             >
               <span className="truncate">{dateLabel}</span>
-              <span className="text-[#837064] text-[10px]">▼</span>
+              <span className="text-[#837064] text-[12px]">▼</span>
             </button>
           </div>
         </div>
@@ -153,13 +153,13 @@ export default function SubordinateDataPage({ onBack }: Props) {
             <span className="text-base font-bold text-[#FDE4BC] tabular-nums">
               {summary?.depositCount ?? summary?.depositors ?? 0}
             </span>
-            <span className="text-[11px] text-[#837064] mt-0.5">Deposit number</span>
+            <span className="text-[13px] text-[#837064] mt-0.5">Deposit number</span>
           </div>
           <div className="flex flex-col items-center justify-center">
             <span className="text-base font-bold text-[#FDE4BC] tabular-nums">
               {formatINR(summary?.totalDeposit ?? 0)}
             </span>
-            <span className="text-[11px] text-[#837064] mt-0.5">Deposit amount</span>
+            <span className="text-[13px] text-[#837064] mt-0.5">Deposit amount</span>
           </div>
 
           {/* Row 2: Number of bettors | Total bet */}
@@ -167,13 +167,13 @@ export default function SubordinateDataPage({ onBack }: Props) {
             <span className="text-base font-bold text-[#FDE4BC] tabular-nums">
               {summary?.bettors ?? 0}
             </span>
-            <span className="text-[11px] text-[#837064] mt-0.5">Number of bettors</span>
+            <span className="text-[13px] text-[#837064] mt-0.5">Number of bettors</span>
           </div>
           <div className="flex flex-col items-center justify-center">
             <span className="text-base font-bold text-[#FDE4BC] tabular-nums">
               {formatINR(summary?.totalBetting ?? 0)}
             </span>
-            <span className="text-[11px] text-[#837064] mt-0.5">Total bet</span>
+            <span className="text-[13px] text-[#837064] mt-0.5">Total bet</span>
           </div>
 
           {/* Row 3: Number of people making first deposit | First deposit amount */}
@@ -181,7 +181,7 @@ export default function SubordinateDataPage({ onBack }: Props) {
             <span className="text-base font-bold text-[#FDE4BC] tabular-nums">
               {summary?.firstDepositUsers ?? 0}
             </span>
-            <span className="text-[11px] text-[#837064] mt-0.5">
+            <span className="text-[13px] text-[#837064] mt-0.5">
               Number of people making first deposit
             </span>
           </div>
@@ -189,7 +189,7 @@ export default function SubordinateDataPage({ onBack }: Props) {
             <span className="text-base font-bold text-[#FDE4BC] tabular-nums">
               {formatINR(summary?.firstDepositAmount ?? 0)}
             </span>
-            <span className="text-[11px] text-[#837064] mt-0.5">First deposit amount</span>
+            <span className="text-[13px] text-[#837064] mt-0.5">First deposit amount</span>
           </div>
         </div>
 

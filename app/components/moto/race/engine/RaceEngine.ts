@@ -116,7 +116,7 @@ export class RaceEngine {
     const title = new this.pixi.Text({
       text: "WINNERS",
       style: {
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: "900",
         fill: 0xfed358,
         fontFamily: "system-ui,sans-serif",

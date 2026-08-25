@@ -104,7 +104,7 @@ export default function GameTile({
         />
       ) : (
         <div className="absolute inset-0 z-[1] flex items-center justify-center bg-black/30 px-1">
-          <span className="line-clamp-3 text-center text-[11px] font-extrabold text-white/90">
+          <span className="line-clamp-3 text-center text-[13px] font-extrabold text-white/90">
             {game.name}
           </span>
         </div>
@@ -112,7 +112,7 @@ export default function GameTile({
       <div className="home-tile-shine pointer-events-none absolute inset-0 z-[2]" />
       {!hideLabel && !imgFailed && (
         <div className="home-tile-label absolute inset-x-0 bottom-0 z-[3] px-1.5 pb-1.5 pt-6">
-          <span className="block truncate text-center text-[10px] font-extrabold tracking-wide text-white drop-shadow">
+          <span className="block truncate text-center text-[12px] font-extrabold tracking-wide text-white drop-shadow">
             {game.name}
           </span>
         </div>

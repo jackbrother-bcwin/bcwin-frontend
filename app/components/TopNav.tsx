@@ -61,7 +61,7 @@ export default function TopNav({
             aria-label="Open wallet"
             title="Wallet"
           >
-            <span className="opacity-70 text-[10px]">₹</span>
+            <span className="opacity-70 text-[12px]">₹</span>
             <span className="max-w-[5.5rem] truncate tabular-nums sm:max-w-none">
               {formatINR(user?.balance).replace("₹", "")}
             </span>

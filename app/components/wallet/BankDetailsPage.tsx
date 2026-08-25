@@ -36,7 +36,7 @@ interface Props {
 }
 
 const inputCls =
-  "w-full h-11 rounded-[10px] px-3.5 text-[13px] text-white outline-none placeholder:text-white/30";
+  "w-full h-11 rounded-[10px] px-3.5 text-[15px] text-white outline-none placeholder:text-white/30";
 const inputStyle = {
   background: "#2a2428",
   border: "1px solid rgba(255,255,255,0.08)",
@@ -404,11 +404,11 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
               value={bankQuery}
               onChange={(e) => setBankQuery(e.target.value)}
               placeholder="Search bank"
-              className="flex-1 min-w-0 bg-transparent outline-none text-[13px] text-white placeholder:text-white/35"
+              className="flex-1 min-w-0 bg-transparent outline-none text-[15px] text-white placeholder:text-white/35"
             />
           </div>
         </div>
-        <p className="px-4 text-[12px] text-white/40 font-semibold mb-1">
+        <p className="px-4 text-[14px] text-white/40 font-semibold mb-1">
           Choose a bank
         </p>
         <div
@@ -428,7 +428,7 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
                   setPickBank(false);
                   setBankQuery("");
                 }}
-                className="w-full text-left px-4 py-3.5 text-[12px] font-semibold border-b border-white/[0.04] active:bg-white/5"
+                className="w-full text-left px-4 py-3.5 text-[14px] font-semibold border-b border-white/[0.04] active:bg-white/5"
                 style={{
                   color:
                     bankName === b
@@ -469,7 +469,7 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
           className="text-[#f87171] shrink-0 mt-0.5"
           size={16}
         />
-        <p className="text-[11px] text-[#f87171] font-semibold leading-snug">
+        <p className="text-[13px] text-[#f87171] font-semibold leading-snug">
           {mode === "usdt"
             ? "To ensure the safety of your funds, please link your wallet"
             : "To ensure the safety of your funds, please bind your bank account"}
@@ -483,7 +483,7 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
             <button
               type="button"
               onClick={() => setPickBank(true)}
-              className="w-full h-11 rounded-[10px] px-3.5 flex items-center justify-between text-[13px] font-bold active:opacity-90"
+              className="w-full h-11 rounded-[10px] px-3.5 flex items-center justify-between text-[15px] font-bold active:opacity-90"
               style={{
                 background: bankName
                   ? "#2a2428"
@@ -576,13 +576,13 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
             <button
               type="button"
               onClick={() => setNetSheet(true)}
-              className="w-full h-11 rounded-[10px] px-3.5 flex items-center justify-between text-[13px] font-bold text-white"
+              className="w-full h-11 rounded-[10px] px-3.5 flex items-center justify-between text-[15px] font-bold text-white"
               style={inputStyle}
             >
               <span>{network}</span>
               <span className="text-white/40 text-lg leading-none">▾</span>
             </button>
-            <p className="text-[10px] text-white/40 -mt-2 px-0.5">
+            <p className="text-[12px] text-white/40 -mt-2 px-0.5">
               {network === "TRC20"
                 ? "Tron (TRC20) · address starts with T"
                 : "BNB Smart Chain (BEP20) · address starts with 0x"}
@@ -624,7 +624,7 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
             icon={<IoShieldCheckmarkOutline />}
             text="Verify with OTP"
           />
-          <p className="text-[11px] text-white/45 leading-snug">
+          <p className="text-[13px] text-white/45 leading-snug">
             {otpViaEmail ? (
               <>
                 OTP will be sent to your registered email{" "}
@@ -669,7 +669,7 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
               type="button"
               disabled={!otpTargetReady || otpSending || otpCountdown > 0}
               onClick={() => void sendOtp()}
-              className="shrink-0 h-11 px-3.5 rounded-[10px] text-[12px] font-bold disabled:opacity-45"
+              className="shrink-0 h-11 px-3.5 rounded-[10px] text-[14px] font-bold disabled:opacity-45"
               style={{
                 background:
                   otpCountdown > 0
@@ -690,7 +690,7 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
         </div>
 
         {modeAlreadySet && !canUpdate && (
-          <p className="text-[11px] text-[#f87171] font-semibold leading-snug px-0.5">
+          <p className="text-[13px] text-[#f87171] font-semibold leading-snug px-0.5">
             This method is saved. Next change allowed
             {nextUpdateAt
               ? ` after ${new Date(nextUpdateAt).toLocaleString()}`
@@ -702,7 +702,7 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
 
       {error && (
         <div
-          className="mx-3 mt-3 px-3 py-2 rounded-lg text-[11px] text-[#FD565C]"
+          className="mx-3 mt-3 px-3 py-2 rounded-lg text-[13px] text-[#FD565C]"
           style={{ background: "rgba(229,56,59,0.12)" }}
         >
           {error}
@@ -714,7 +714,7 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
           type="button"
           disabled={saving || !canSave}
           onClick={() => void handleSave()}
-          className="w-full h-12 rounded-full font-bold text-[15px] tracking-widest disabled:opacity-45 active:scale-[0.99]"
+          className="w-full h-12 rounded-full font-bold text-[17px] tracking-widest disabled:opacity-45 active:scale-[0.99]"
           style={{
             background: canSave
               ? "linear-gradient(180deg,#e8e4df 0%,#cfc8c0 100%)"
@@ -740,14 +740,14 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
             <div className="flex items-center justify-between px-4 h-12 border-b border-white/5">
               <button
                 type="button"
-                className="text-white/50 font-semibold text-[14px]"
+                className="text-white/50 font-semibold text-[16px]"
                 onClick={() => setNetSheet(false)}
               >
                 Cancel
               </button>
               <button
                 type="button"
-                className="text-[#FED358] font-bold text-[14px]"
+                className="text-[#FED358] font-bold text-[16px]"
                 onClick={() => setNetSheet(false)}
               >
                 Confirm
@@ -788,8 +788,8 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
                     network === n.id ? "#FED358" : "rgba(255,255,255,0.55)",
                 }}
               >
-                <span className="block text-[15px] font-bold">{n.label}</span>
-                <span className="block text-[11px] opacity-60 mt-0.5">
+                <span className="block text-[17px] font-bold">{n.label}</span>
+                <span className="block text-[13px] opacity-60 mt-0.5">
                   {n.sub}
                 </span>
               </button>
@@ -810,8 +810,8 @@ function FieldLabel({
   text: string;
 }) {
   return (
-    <div className="flex items-center gap-1.5 text-[13px] font-bold text-[#FED358]">
-      <span className="text-[16px] opacity-90">{icon}</span>
+    <div className="flex items-center gap-1.5 text-[15px] font-bold text-[#FED358]">
+      <span className="text-[18px] opacity-90">{icon}</span>
       {text}
     </div>
   );

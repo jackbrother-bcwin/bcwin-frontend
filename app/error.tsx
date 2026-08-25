@@ -22,11 +22,11 @@ export default function Error({
     >
       <IoWarningOutline size={40} color="#FED358" aria-hidden />
       <h2 className="text-lg font-bold text-[#FDE4BC]">Something went wrong</h2>
-      <p className="max-w-xs text-[12px] text-[#B79C8B]">
+      <p className="max-w-xs text-[14px] text-[#B79C8B]">
         {error.message || "An unexpected error occurred. Please try again."}
       </p>
       {error.digest && (
-        <p className="font-mono text-[10px] text-[#837064]">Ref: {error.digest}</p>
+        <p className="font-mono text-[12px] text-[#837064]">Ref: {error.digest}</p>
       )}
       <button
         type="button"

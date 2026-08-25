@@ -63,7 +63,7 @@ export default function GameHistoryPage({ onBack }: Props) {
           <button
             key={f.id || "all"}
             onClick={() => setFilter(f.id)}
-            className="shrink-0 px-3 h-7 rounded-full text-[10px] font-bold"
+            className="shrink-0 px-3 h-7 rounded-full text-[12px] font-bold"
             style={{
               background: filter === f.id
                 ? "linear-gradient(180deg, #FED358 0%, #FFB472 100%)"
@@ -157,11 +157,11 @@ export default function GameHistoryPage({ onBack }: Props) {
           {totalPages > 1 && (
             <div className="flex justify-center gap-3 py-4">
               <button disabled={page <= 1} onClick={() => load(page - 1, filter)}
-                className="px-4 py-1.5 rounded-full text-[11px] font-bold text-white/70 disabled:opacity-30"
+                className="px-4 py-1.5 rounded-full text-[13px] font-bold text-white/70 disabled:opacity-30"
                 style={{ background: "#382E35" }}>Prev</button>
-              <span className="text-[11px] text-white/40 self-center">{page} / {totalPages}</span>
+              <span className="text-[13px] text-white/40 self-center">{page} / {totalPages}</span>
               <button disabled={page >= totalPages} onClick={() => load(page + 1, filter)}
-                className="px-4 py-1.5 rounded-full text-[11px] font-bold text-white/70 disabled:opacity-30"
+                className="px-4 py-1.5 rounded-full text-[13px] font-bold text-white/70 disabled:opacity-30"
                 style={{ background: "#382E35" }}>Next</button>
             </div>
           )}

@@ -234,7 +234,7 @@ export default function GiftsPage({ onBack, onNavigate }: Props) {
                     <span className="font-semibold text-[#FDE4BC]">
                       Code: {item.code}
                     </span>
-                    <span className="text-[11px] text-[#837064]">
+                    <span className="text-[13px] text-[#837064]">
                       {new Date(item.createdAt).toLocaleString()}
                     </span>
                   </div>

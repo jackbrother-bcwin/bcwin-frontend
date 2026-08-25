@@ -43,7 +43,7 @@ export default function SectionShell({
           <div className="flex min-w-0 items-center gap-1.5">
             {icon ? (
               <span
-                className="shrink-0 text-[15px] leading-none drop-shadow-sm"
+                className="shrink-0 text-[17px] leading-none drop-shadow-sm"
                 aria-hidden
               >
                 {icon}
@@ -51,11 +51,11 @@ export default function SectionShell({
             ) : (
               <span className="home-section-bar shrink-0" aria-hidden />
             )}
-            <h2 className="truncate text-[14px] font-bold tracking-wide text-[#FDE4BC]">
+            <h2 className="truncate text-[16px] font-bold tracking-wide text-[#FDE4BC]">
               {title}
             </h2>
             {meta && (
-              <span className="shrink-0 text-[10px] font-medium tabular-nums text-[#6B5E58]">
+              <span className="shrink-0 text-[12px] font-medium tabular-nums text-[#6B5E58]">
                 {meta}
               </span>
             )}

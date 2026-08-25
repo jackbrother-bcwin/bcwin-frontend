@@ -41,7 +41,7 @@ export default function LanguagePage({ onBack }: Props) {
     >
       <PageHeader title={t("common.language")} onBack={onBack} />
 
-      <p className="px-4 pt-3 pb-2 text-[12px] text-white/45 font-medium">
+      <p className="px-4 pt-3 pb-2 text-[14px] text-white/45 font-medium">
         {t("common.chooseLanguage")}
       </p>
 
@@ -63,10 +63,10 @@ export default function LanguagePage({ onBack }: Props) {
                 className="w-full flex items-center justify-between px-3.5 py-3.5 active:bg-white/[0.03]"
               >
                 <div className="flex flex-col items-start gap-0.5">
-                  <span className="text-[14px] font-semibold text-white">
+                  <span className="text-[16px] font-semibold text-white">
                     {opt.native}
                   </span>
-                  <span className="text-[11px] text-white/40">
+                  <span className="text-[13px] text-white/40">
                     {t(`common.${opt.labelKey}`)}
                   </span>
                 </div>

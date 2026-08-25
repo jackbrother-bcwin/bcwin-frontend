@@ -149,7 +149,7 @@ export default function ProfilePage({ onLogout, onNavigate }: ProfilePageProps) 
 
           {/* UID Card */}
           <div className="flex items-center gap-1.5 self-start">
-            <div className="bg-[#FED358]/15 text-brand-gold px-2 py-0.5 rounded text-[10px] font-bold tracking-wider flex items-center gap-1">
+            <div className="bg-[#FED358]/15 text-brand-gold px-2 py-0.5 rounded text-[12px] font-bold tracking-wider flex items-center gap-1">
               <span>UID</span>
               <span className="text-white/60">|</span>
               <span>{user?.serialNumber ?? "—"}</span>
@@ -166,7 +166,7 @@ export default function ProfilePage({ onLogout, onNavigate }: ProfilePageProps) 
           </div>
 
           {/* Last login (replaces mobile under UID — glossary-profile-last-login) */}
-          <span className="text-[10px] text-text-secondary">
+          <span className="text-[12px] text-text-secondary">
             {user
               ? user.lastLoginDate
                 ? t("profile.lastLogin", {
@@ -183,7 +183,7 @@ export default function ProfilePage({ onLogout, onNavigate }: ProfilePageProps) 
       <div className="mx-4 mb-4 bg-bg-level-3 rounded-lg p-4 flex flex-col gap-4 border border-bg-level-3/45 shadow-sm">
         <div className="flex justify-between items-center">
           <div className="flex flex-col">
-            <span className="text-[11px] text-text-secondary font-medium">
+            <span className="text-[13px] text-text-secondary font-medium">
               {t("profile.totalBalance")}
             </span>
             <div className="flex items-center gap-2 mt-1">
@@ -250,7 +250,7 @@ export default function ProfilePage({ onLogout, onNavigate }: ProfilePageProps) 
                 {action.icon}
               </div>
               <span
-                className={`text-[10px] font-medium ${action.color} group-hover:brightness-125 transition-colors`}
+                className={`text-[12px] font-medium ${action.color} group-hover:brightness-125 transition-colors`}
               >
                 {action.label}
               </span>
@@ -308,7 +308,7 @@ export default function ProfilePage({ onLogout, onNavigate }: ProfilePageProps) 
               <span className="text-xs font-bold text-white leading-tight truncate">
                 {tile.title}
               </span>
-              <span className="text-[9px] text-text-secondary mt-0.5 truncate">
+              <span className="text-[11px] text-text-secondary mt-0.5 truncate">
                 {tile.sub}
               </span>
             </div>
@@ -429,7 +429,7 @@ export default function ProfilePage({ onLogout, onNavigate }: ProfilePageProps) 
               <div className="group-hover:scale-105 transition-transform duration-200">
                 {srv.icon}
               </div>
-              <span className="text-[10px] text-text-secondary font-medium text-center w-full group-hover:text-white transition-colors">
+              <span className="text-[12px] text-text-secondary font-medium text-center w-full group-hover:text-white transition-colors">
                 {srv.label}
               </span>
             </button>

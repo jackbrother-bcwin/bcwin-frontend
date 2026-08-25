@@ -161,10 +161,10 @@ export default function InvitationBonusPage({
       <div className="flex-1 flex flex-col min-h-screen pb-24" style={{ background: "#110D14" }}>
         <PageHeader title="Invitation reward rules" onBack={closeSub} />
         <div className="px-3 pb-8">
-          <p className="text-[13px] text-white/80 font-semibold mb-1">
+          <p className="text-[15px] text-white/80 font-semibold mb-1">
             Invite friends and recharge to get additional platform rewards!
           </p>
-          <p className="text-[11px] text-white/45 mb-4 leading-relaxed">
+          <p className="text-[13px] text-white/45 mb-4 leading-relaxed">
             Only your <b className="text-white/70">level-1</b> invites count.
             Each invitee must register with your code and make a total SUCCESS
             deposit of at least the amount in the table. Claim credits your
@@ -173,7 +173,7 @@ export default function InvitationBonusPage({
 
           <div className="rounded-[12px] overflow-hidden border border-white/10">
             <div
-              className="grid grid-cols-3 text-[11px] font-bold text-[#110D14] py-2.5 px-2"
+              className="grid grid-cols-3 text-[13px] font-bold text-[#110D14] py-2.5 px-2"
               style={{ background: "linear-gradient(90deg,#C8922A,#E8A84A)" }}
             >
               <span className="text-center">Invite account</span>
@@ -183,7 +183,7 @@ export default function InvitationBonusPage({
             {rulesRows.map((r, i) => (
               <div
                 key={`${r.people}-${r.deposit}-${i}`}
-                className="grid grid-cols-3 py-2.5 px-2 text-[11px] text-[#FDE4BC]/90"
+                className="grid grid-cols-3 py-2.5 px-2 text-[13px] text-[#FDE4BC]/90"
                 style={{
                   background: i % 2 === 0 ? "#1a1519" : "#221c20",
                   borderTop: "1px solid rgba(255,255,255,0.04)",
@@ -201,12 +201,12 @@ export default function InvitationBonusPage({
           </div>
 
           <div
-            className="w-full h-11 mt-5 rounded-full text-[14px] font-black text-[#110D14] flex items-center justify-center"
+            className="w-full h-11 mt-5 rounded-full text-[16px] font-black text-[#110D14] flex items-center justify-center"
             style={{ background: "linear-gradient(180deg,#FED358,#E8A84A)" }}
           >
             Rules
           </div>
-          <ul className="mt-4 space-y-2 text-[11px] text-white/50 leading-relaxed list-disc pl-4">
+          <ul className="mt-4 space-y-2 text-[13px] text-white/50 leading-relaxed list-disc pl-4">
             <li>
               Only <b className="text-white/65">direct (L1)</b> invites count —
               friends who registered with your invitation code.
@@ -320,19 +320,19 @@ export default function InvitationBonusPage({
         }}
       >
         <div className="relative z-[1] max-w-[62%]">
-          <h2 className="text-[17px] font-black text-white leading-tight">
+          <h2 className="text-[19px] font-black text-white leading-tight">
             Invite friends and deposit
           </h2>
-          <p className="text-[11px] text-white/90 mt-1.5 leading-snug">
+          <p className="text-[13px] text-white/90 mt-1.5 leading-snug">
             Both parties can receive rewards. Invite friends to register and
             recharge to receive rewards.
           </p>
-          <p className="text-[10px] text-white/70 mt-3">activity date</p>
-          <p className="text-[13px] font-bold text-white tabular-nums">
+          <p className="text-[12px] text-white/70 mt-3">activity date</p>
+          <p className="text-[15px] font-bold text-white tabular-nums">
             2025-04-09 - 2055-03-31
           </p>
         </div>
-        <div className="absolute right-3 top-4 text-[56px] opacity-90">🎁</div>
+        <div className="absolute right-3 top-4 text-[58px] opacity-90">🎁</div>
       </div>
 
       {/* Shortcut tiles */}
@@ -349,7 +349,7 @@ export default function InvitationBonusPage({
           >
             <IoDocumentTextOutline size={26} className="text-white" />
           </div>
-          <span className="text-[11px] text-white/70 font-medium text-center px-2">
+          <span className="text-[13px] text-white/70 font-medium text-center px-2">
             Invitation reward rules
           </span>
         </button>
@@ -365,7 +365,7 @@ export default function InvitationBonusPage({
           >
             <IoNewspaperOutline size={26} className="text-white" />
           </div>
-          <span className="text-[11px] text-white/70 font-medium text-center px-2">
+          <span className="text-[13px] text-white/70 font-medium text-center px-2">
             Invitation record
           </span>
         </button>
@@ -430,20 +430,20 @@ export default function InvitationBonusPage({
                     className="flex items-center gap-1.5 rounded-full pl-2 pr-2.5 py-1"
                     style={{ background: "#17B15E" }}
                   >
-                    <span className="text-[11px] font-bold text-white">
+                    <span className="text-[13px] font-bold text-white">
                       Bonus
                     </span>
-                    <span className="w-5 h-5 rounded-full bg-white/20 text-[10px] font-black text-white flex items-center justify-center">
+                    <span className="w-5 h-5 rounded-full bg-white/20 text-[12px] font-black text-white flex items-center justify-center">
                       {idx + 1}
                     </span>
                     <IoClose size={14} className="text-white/80" />
                   </div>
-                  <span className="text-[15px] font-black text-[#FED358] tabular-nums">
+                  <span className="text-[17px] font-black text-[#FED358] tabular-nums">
                     {formatINR(reward)}
                   </span>
                 </div>
 
-                <div className="mx-3 mt-3 rounded-lg overflow-hidden text-[11px]">
+                <div className="mx-3 mt-3 rounded-lg overflow-hidden text-[13px]">
                   <div
                     className="flex justify-between px-3 py-2"
                     style={{ background: "rgba(255,255,255,0.04)" }}
@@ -464,20 +464,20 @@ export default function InvitationBonusPage({
 
                 <div className="grid grid-cols-2 gap-2 mx-3 mt-3 mb-3">
                   <div className="text-center">
-                    <p className="text-[13px] font-bold text-white tabular-nums">
+                    <p className="text-[15px] font-bold text-white tabular-nums">
                       <span className="text-[#DA3735]">{havePeople}</span>
                       <span className="text-white/40"> / {needPeople}</span>
                     </p>
-                    <p className="text-[10px] text-white/40">Number of invitees</p>
+                    <p className="text-[12px] text-white/40">Number of invitees</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-[13px] font-bold text-white tabular-nums">
+                    <p className="text-[15px] font-bold text-white tabular-nums">
                       <span className="text-[#DA3735]">
                         {haveDeposit > 0 ? Math.min(haveDeposit, needPeople) : 0}
                       </span>
                       <span className="text-white/40"> / {needPeople}</span>
                     </p>
-                    <p className="text-[10px] text-white/40">Deposit number</p>
+                    <p className="text-[12px] text-white/40">Deposit number</p>
                   </div>
                 </div>
 
@@ -486,14 +486,14 @@ export default function InvitationBonusPage({
                     type="button"
                     disabled={claiming === bonusId}
                     onClick={() => void claim(bonusId)}
-                    className="mx-3 mb-3 w-[calc(100%-24px)] h-10 rounded-full text-[13px] font-black text-[#110D14]"
+                    className="mx-3 mb-3 w-[calc(100%-24px)] h-10 rounded-full text-[15px] font-black text-[#110D14]"
                     style={{ background: "linear-gradient(180deg,#FED358,#E8A84A)" }}
                   >
                     {claiming === bonusId ? "…" : "Claim"}
                   </button>
                 ) : (
                   <div
-                    className="mx-3 mb-3 h-10 rounded-full flex items-center justify-center text-[13px] font-bold text-white/50"
+                    className="mx-3 mb-3 h-10 rounded-full flex items-center justify-center text-[15px] font-bold text-white/50"
                     style={{ background: "rgba(255,255,255,0.08)" }}
                   >
                     {claimed ? "Claimed" : "Unfinished"}

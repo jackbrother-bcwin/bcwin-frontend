@@ -79,7 +79,7 @@ export default function LogoutConfirmModal({
           >
             <span
               className="select-none font-black leading-none text-white"
-              style={{ fontSize: 28, marginTop: -2 }}
+              style={{ fontSize: 30, marginTop: -2 }}
             >
               !
             </span>
@@ -89,7 +89,7 @@ export default function LogoutConfirmModal({
         {/* Question */}
         <h2
           id="logout-confirm-title"
-          className="mb-6 text-center text-[16px] font-semibold leading-snug"
+          className="mb-6 text-center text-[18px] font-semibold leading-snug"
           style={{ color: "#FFE8D6" }}
         >
           {title ?? t("profile.logoutConfirm", "Do you want to log out?")}
@@ -101,7 +101,7 @@ export default function LogoutConfirmModal({
             type="button"
             disabled={loading}
             onClick={() => void onConfirm()}
-            className="h-[46px] w-full rounded-full text-[15px] font-bold active:scale-[0.98] transition-transform disabled:opacity-70"
+            className="h-[46px] w-full rounded-full text-[17px] font-bold active:scale-[0.98] transition-transform disabled:opacity-70"
             style={{
               background: "linear-gradient(180deg, #FFD166 0%, #FFA03D 100%)",
               color: "#1A1A1A",
@@ -117,7 +117,7 @@ export default function LogoutConfirmModal({
             type="button"
             disabled={loading}
             onClick={onCancel}
-            className="h-[46px] w-full rounded-full text-[15px] font-bold active:scale-[0.98] transition-transform disabled:opacity-50"
+            className="h-[46px] w-full rounded-full text-[17px] font-bold active:scale-[0.98] transition-transform disabled:opacity-50"
             style={{
               background: "transparent",
               color: "#FFC107",

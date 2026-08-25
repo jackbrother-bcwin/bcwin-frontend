@@ -21,7 +21,7 @@ export default function EmptyState({
         </svg>
       </div>
       <p className="text-sm font-bold text-white/80">{title}</p>
-      {subtitle && <p className="text-[11px] text-white/40 mt-1 max-w-[240px]">{subtitle}</p>}
+      {subtitle && <p className="text-[13px] text-white/40 mt-1 max-w-[240px]">{subtitle}</p>}
     </div>
   );
 }

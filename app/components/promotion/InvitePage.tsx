@@ -225,7 +225,7 @@ export default function InvitePage({ onBack }: Props) {
                 ) : (
                   <span
                     style={{
-                      fontSize: 10,
+                      fontSize: 12,
                       fontWeight: 700,
                       color: "#837064",
                       textAlign: "center",
@@ -268,7 +268,7 @@ export default function InvitePage({ onBack }: Props) {
         </p>
 
         {code ? (
-          <p className="text-center text-[11px] text-white/40 mb-2 tabular-nums">
+          <p className="text-center text-[13px] text-white/40 mb-2 tabular-nums">
             Code · <span className="text-[#FED358] font-bold">{code}</span>
           </p>
         ) : null}

@@ -35,7 +35,7 @@ export default function BrandSplash({
           style={{ borderColor: "rgba(254,211,88,0.25)", borderTopColor: "#FED358" }}
           aria-hidden
         />
-        <p className="text-[11px] text-white/45">{label}</p>
+        <p className="text-[13px] text-white/45">{label}</p>
       </div>
     );
   }
@@ -122,7 +122,7 @@ export default function BrandSplash({
           }}
           aria-hidden
         />
-        <span className="text-[12px] font-semibold tracking-wide text-[#FDE4BC]">
+        <span className="text-[14px] font-semibold tracking-wide text-[#FDE4BC]">
           {label}
         </span>
       </div>
