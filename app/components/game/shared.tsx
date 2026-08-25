@@ -861,8 +861,7 @@ export function WingoTrendChart({
   return (
     <div ref={wrapRef} className="relative min-w-0">
       {/*
-        Hairline red thread BEHIND cells (z-0). Very light so it never competes
-        with digits — cells sit opaque on top so numbers stay fully readable.
+        Hairline red thread BEHIND cells (z-0). Measured through ball centers.
       */}
       {box.w > 0 && box.h > 0 && pts.length > 1 && (
         <svg
@@ -875,8 +874,9 @@ export function WingoTrendChart({
           <path
             d={path}
             fill="none"
-            stroke="rgba(255, 72, 72, 0.72)"
-            strokeWidth={1.15}
+            stroke="#ef4444"
+            strokeWidth={1.25}
+            strokeOpacity={0.85}
             strokeLinecap="round"
             strokeLinejoin="round"
             vectorEffect="non-scaling-stroke"
@@ -887,21 +887,21 @@ export function WingoTrendChart({
       {rows.map((row, rowIdx) => (
         <div
           key={row.id}
-          className="relative z-[1] grid w-full min-w-0 items-center gap-x-1 border-b border-white/5 py-1.5"
+          className="relative z-[1] grid w-full min-w-0 items-center gap-x-1 border-b border-[#2d2d38] py-2"
           style={{
             gridTemplateColumns: "minmax(64px, 34%) minmax(0, 1fr) 22px",
           }}
         >
-          <span className="min-w-0 truncate font-mono text-[14px] leading-tight font-semibold text-[#FED358] sm:text-[15px]">
+          <span className="min-w-0 truncate font-mono text-[13px] leading-tight font-semibold text-[#FED358] sm:text-[14px]">
             {row.periodNumber}
           </span>
           <div className="relative z-[1] grid min-w-0 grid-cols-10 gap-px">
             {Array.from({ length: 10 }, (_, n) => {
               const win = row.resultNumber === n;
-              // Opaque fill on every cell so the thread never shows through digits
-              const bg = win ? numberBackground(n) : "#1a1519";
-              const color = win ? "#fff" : "rgba(255,255,255,0.38)";
-              const border = win ? "none" : "1px solid rgba(255,255,255,0.12)";
+              // Opaque fill matching row background so the thread never shows through digits
+              const bg = win ? numberBackground(n) : "#18181f";
+              const color = win ? "#ffffff" : "rgba(255, 255, 255, 0.7)";
+              const border = win ? "none" : "1px solid rgba(255, 255, 255, 0.22)";
               return (
                 <span
                   key={n}
@@ -912,12 +912,14 @@ export function WingoTrendChart({
                         }
                       : undefined
                   }
-                  className="relative z-[2] mx-auto flex aspect-square w-full max-w-[24px] items-center justify-center rounded-full text-[14px] font-bold leading-none sm:text-[15px]"
+                  className="relative z-[2] mx-auto flex aspect-square w-full max-w-[22px] sm:max-w-[24px] items-center justify-center rounded-full text-[13px] leading-none sm:text-[14px]"
                   style={{
                     background: bg,
                     color,
                     border,
+                    fontWeight: win ? 700 : 500,
                     isolation: "isolate",
+                    boxShadow: win ? "0 1px 3px rgba(0,0,0,0.35)" : "none",
                   }}
                 >
                   {n}
@@ -926,9 +928,9 @@ export function WingoTrendChart({
             })}
           </div>
           <span
-            className="relative z-[1] flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full text-[14px] font-black text-white sm:text-[15px]"
+            className="relative z-[1] flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full text-[13px] font-black text-white sm:text-[14px]"
             style={{
-              background: sizeStyle(isBig(row.resultNumber)).bg,
+              background: isBig(row.resultNumber) ? "#E08714" : "#3B82F6",
             }}
             title={isBig(row.resultNumber) ? "Big" : "Small"}
           >

@@ -186,6 +186,9 @@ export default function GiftsPage({ onBack, onNavigate }: Props) {
         <div className="bg-[#241E22] border border-[#3D363A]/60 rounded-xl p-4 shadow-md flex flex-col">
           <p className="text-sm font-semibold text-[#FDE4BC] mb-1">Hi</p>
           <p className="text-xs text-[#837064] mb-4">We have a gift for you</p>
+          <p className="text-[11px] text-[#837064] mb-3">
+            Up to 3 gift codes per day. Come back tomorrow after that.
+          </p>
 
           <label className="text-xs font-semibold text-[#FDE4BC] mb-2">
             Please enter the gift code below

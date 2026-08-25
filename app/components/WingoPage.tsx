@@ -784,7 +784,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
       <div
         className="mx-3 mt-2 rounded-[12px] overflow-hidden mb-4"
         style={{
-          background: "#1a1519",
+          background: "#18181f",
           border: "1px solid rgba(255,255,255,0.06)",
         }}
       >
@@ -958,19 +958,21 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
 
         {/* ── Chart ── */}
         {historyTab === "chart" && (
-          <div className="p-3">
+          <>
+            {/* Top Header Bar */}
             <div
-              className="grid grid-cols-2 gap-1 px-2 py-2 rounded-t-[8px] mb-2"
-              style={{ background: "linear-gradient(90deg,#C8922A,#E8A84A)" }}
+              className="grid grid-cols-2 gap-1 px-3 py-2.5"
+              style={{ background: "#E28100" }}
             >
-              <span className="text-[17px] font-bold text-[#110D14]">Period</span>
-              <span className="text-[17px] font-bold text-[#110D14] text-right">Number</span>
+              <span className="text-[14px] font-bold text-white tracking-wide sm:text-[15px]">Period</span>
+              <span className="text-[14px] font-bold text-white tracking-wide text-right sm:text-[15px]">Number</span>
             </div>
 
-            <div className="mb-3 space-y-1.5 text-[17px]">
-              <div className="flex justify-between px-1">
-                <span className="font-bold text-[#FED358]">Statistic</span>
-                <span className="text-[#FED358]/70">
+            {/* Statistics Section */}
+            <div className="p-2.5 space-y-1.5 border-b border-[#2d2d38]">
+              <div className="flex justify-between items-center px-0.5 pb-1">
+                <span className="text-[13px] font-bold text-white sm:text-[14px]">Statistic</span>
+                <span className="text-[12px] font-medium text-[#FED358] sm:text-[13px]">
                   (last {chartStats.count || results.length} Periods)
                 </span>
               </div>
@@ -980,8 +982,11 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
                 values={Array.from({ length: 10 }, (_, i) => i)}
                 render={(n) => (
                   <span
-                    className="mx-auto flex aspect-square w-full max-w-[26px] items-center justify-center rounded-full text-[15px] font-bold text-white sm:text-[16px]"
-                    style={{ background: numberBackground(n) }}
+                    className="mx-auto flex aspect-square w-full max-w-[22px] sm:max-w-[24px] items-center justify-center rounded-full text-[12px] font-medium text-[#ef4444] sm:text-[13px]"
+                    style={{
+                      border: "1.5px solid #ef4444",
+                      background: "transparent",
+                    }}
                   >
                     {n}
                   </span>
@@ -993,18 +998,18 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
               <StatRow label="Max consecutive" values={chartStats.maxConsecutive} />
             </div>
 
-            {/* Trend: red thread connecting winning numbers (measured ball centers) */}
-            <p className="mb-1.5 px-1 text-[16px] font-semibold text-[#FED358]/70">
-              Trend · red thread links each period&apos;s result
-            </p>
-            <WingoTrendChart rows={trendRows} />
+            {/* Trend Chart */}
+            <div className="p-2.5 pt-0">
+              <WingoTrendChart rows={trendRows} />
+            </div>
+
             <Pagination
               page={page}
               totalPages={totalPages}
               onChange={loadResults}
               maxPages={HISTORY_MAX_PAGES}
             />
-          </div>
+          </>
         )}
 
         {/* ── My history ── */}
@@ -1242,11 +1247,16 @@ function StatRow({
   render?: (n: number, i: number) => React.ReactNode;
 }) {
   return (
-    <div className="flex min-w-0 items-center gap-1">
-      <span className="w-[102px] shrink-0 text-[16px] font-semibold text-[#FED358] sm:w-[120px]">
+    <div
+      className="grid w-full min-w-0 items-center gap-x-1 py-1"
+      style={{
+        gridTemplateColumns: "minmax(64px, 34%) minmax(0, 1fr) 22px",
+      }}
+    >
+      <span className="min-w-0 truncate text-[13px] font-medium text-[#cbd5e1] sm:text-[14px]">
         {label}
       </span>
-      <div className="grid min-w-0 flex-1 grid-cols-10 gap-px">
+      <div className="grid min-w-0 grid-cols-10 gap-px">
         {values.map((v, i) =>
           render ? (
             <div key={i} className="flex min-w-0 items-center justify-center">
@@ -1255,13 +1265,14 @@ function StatRow({
           ) : (
             <span
               key={i}
-              className="min-w-0 text-center text-[15px] font-bold tabular-nums text-white sm:text-[16px]"
+              className="min-w-0 text-center text-[13px] font-medium tabular-nums text-[#cbd5e1] sm:text-[14px]"
             >
               {v}
             </span>
           )
         )}
       </div>
+      <span className="w-[22px]" aria-hidden />
     </div>
   );
 }
