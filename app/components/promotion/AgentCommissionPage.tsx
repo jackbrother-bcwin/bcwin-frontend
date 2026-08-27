@@ -71,6 +71,40 @@ function rebateSettledParam(
   return "all";
 }
 
+function mergePeople(
+  settled: api.RebatePersonRow[],
+  live: api.RebatePersonRow[],
+  layerFilter: number | "all"
+): api.RebatePersonRow[] {
+  const map = new Map<string, api.RebatePersonRow>();
+  for (const p of [...settled, ...live]) {
+    if (layerFilter !== "all" && Number(p.layer) !== layerFilter) continue;
+    const prev = map.get(p.fromUserId);
+    if (!prev) {
+      map.set(p.fromUserId, { ...p });
+      continue;
+    }
+    prev.commission = roundMoney(prev.commission + Number(p.commission ?? 0), 3);
+    prev.betVolume = roundMoney(prev.betVolume + Number(p.betVolume ?? 0), 3);
+    prev.bets += Number(p.bets ?? 0);
+  }
+  return [...map.values()].sort((a, b) => b.commission - a.commission);
+}
+
+function summaryFromPeople(people: api.RebatePersonRow[]) {
+  let commission = 0;
+  let betVolume = 0;
+  let bets = 0;
+  const bettors = new Set<string>();
+  for (const p of people) {
+    commission = roundMoney(commission + Number(p.commission ?? 0), 3);
+    betVolume = roundMoney(betVolume + Number(p.betVolume ?? 0), 3);
+    bets += Number(p.bets ?? 0);
+    if (p.fromUserId) bettors.add(p.fromUserId);
+  }
+  return { commission, betVolume, bets, bettors: bettors.size };
+}
+
 function CopyUidButton({ uid }: { uid: string }) {
   const [copied, setCopied] = useState(false);
   const handleCopy = (e: React.MouseEvent) => {
@@ -114,6 +148,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
   const [todayByLayer, setTodayByLayer] = useState<
     Record<string, { commission: number; bet: number; users: number }>
   >({});
+  const [todayPeople, setTodayPeople] = useState<api.RebatePersonRow[]>([]);
 
   const [levelPreset, setLevelPreset] = useState<DatePreset>("today");
   const [levelCustom, setLevelCustom] = useState(ymdLocal());
@@ -171,6 +206,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
       string,
       { commission: number; bet: number; users: number }
     >;
+    todayPeople: api.RebatePersonRow[];
   };
 
   const applyOverview = useCallback((s: OverviewSnap) => {
@@ -182,6 +218,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
     setLifetime(s.lifetime);
     setTodayCredited(s.todayCredited);
     setTodayByLayer(s.todayByLayer ?? {});
+    setTodayPeople(s.todayPeople ?? []);
   }, []);
 
   const loadOverview = useCallback(async (signal?: AbortSignal) => {
@@ -247,6 +284,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
         lifetime: Number(overview?.data?.totalCommissionEarned ?? 0),
         todayCredited: roundMoney(credited, 3),
         todayByLayer: dayPreview?.data?.byLayer ?? {},
+        todayPeople: (dayPreview?.data?.people ?? []) as api.RebatePersonRow[],
       };
       applyOverview(snap);
       sessionCacheSet("agent-commission", snap);
@@ -324,6 +362,11 @@ export default function AgentCommissionPage({ onBack }: Props) {
       listPreset === "custom"
         ? rangeForPreset("custom", { start: listCustom, end: listCustom })
         : rangeForPreset(listPreset);
+    const todayYmd = ymdIst();
+    const includesToday = !range.endDate || range.endDate >= todayYmd;
+    const todayOnly =
+      range.startDate === todayYmd &&
+      (!range.endDate || range.endDate === todayYmd);
     const cacheKey = `agent-commission-list:${listPreset}:${listCustom}:${layerFilter}`;
     type ListSnap = {
       people: api.RebatePersonRow[];
@@ -340,21 +383,58 @@ export default function AgentCommissionPage({ onBack }: Props) {
       setListLoading(true);
     }
     try {
+      let live = todayPeople;
+      if (includesToday && live.length === 0) {
+        const prev = await api.getRebateDayPreview({ date: todayYmd });
+        live = (prev.data?.people ?? []) as api.RebatePersonRow[];
+      }
+      live = layerFilter === "all"
+        ? live
+        : live.filter((p) => Number(p.layer) === layerFilter);
+
+      if (todayOnly) {
+        const nextPeople = mergePeople([], live, layerFilter);
+        const nextSummary = summaryFromPeople(nextPeople);
+        const liveComm = nextSummary.commission;
+        const nextByDay =
+          liveComm > 0 || nextPeople.length > 0
+            ? [{ date: todayYmd, commission: liveComm }]
+            : [];
+        const snap: ListSnap = {
+          people: nextPeople,
+          byDay: nextByDay,
+          summary: nextSummary,
+        };
+        sessionCacheSet(cacheKey, snap);
+        setPeople(nextPeople);
+        setListByDay(nextByDay);
+        setListSummary(nextSummary);
+        return;
+      }
+
+      const pastEnd = includesToday ? shiftYmd(todayYmd, -1) : range.endDate;
       const res = await api.getRebatePeople({
         startDate: range.startDate,
-        endDate: range.endDate,
-        settled: rebateSettledParam(listPreset, listCustom),
+        endDate: pastEnd,
+        settled: includesToday
+          ? true
+          : rebateSettledParam(listPreset, listCustom),
         layer: layerFilter === "all" ? undefined : layerFilter,
       });
-      const nextPeople = res.data?.people ?? [];
-      const nextByDay = res.data?.byDay ?? [];
-      const s = res.data?.summary;
-      const nextSummary = {
-        commission: roundMoney(Number(s?.commission ?? 0), 3),
-        betVolume: roundMoney(Number(s?.betVolume ?? 0), 3),
-        bets: Number(s?.bets ?? 0),
-        bettors: Number(s?.bettors ?? 0),
-      };
+      const settledPeople = res.data?.people ?? [];
+      const nextPeople = includesToday
+        ? mergePeople(settledPeople, live, layerFilter)
+        : mergePeople(settledPeople, [], layerFilter);
+      const nextSummary = summaryFromPeople(nextPeople);
+      let nextByDay = [...(res.data?.byDay ?? [])];
+      if (includesToday) {
+        const liveComm = summaryFromPeople(live).commission;
+        const i = nextByDay.findIndex((d) => d.date === todayYmd);
+        if (i >= 0) nextByDay[i] = { date: todayYmd, commission: liveComm };
+        else if (liveComm > 0 || live.length > 0) {
+          nextByDay = [{ date: todayYmd, commission: liveComm }, ...nextByDay];
+        }
+      }
       const snap: ListSnap = {
         people: nextPeople,
         byDay: nextByDay,
@@ -373,7 +453,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
     } finally {
       setListLoading(false);
     }
-  }, [listPreset, listCustom, layerFilter]);
+  }, [listPreset, listCustom, layerFilter, todayPeople]);
 
   useEffect(() => {
     if (bottomTab === "commissions") void loadList();
@@ -556,27 +636,6 @@ export default function AgentCommissionPage({ onBack }: Props) {
     }));
   }, [people, groupMode]);
 
-  const mapRebateToItem = (r: api.RebateRecord): CommissionBreakdownItem => ({
-    id: r.id,
-    layer: r.layer ?? 0,
-    commissionAmount: Number(r.amount ?? 0),
-    amount: Number(r.amount ?? 0),
-    betAmount: Number(r.betAmount ?? 0),
-    commissionRate: Number(r.rate ?? 0),
-    fromUser: r.fromUser
-      ? {
-          id: String(r.fromUser.id ?? ""),
-          username: String(r.fromUser.username ?? ""),
-          ...(r.fromUser.serialNumber != null
-            ? { serialNumber: Number(r.fromUser.serialNumber) }
-            : {}),
-        }
-      : undefined,
-    createdAt: r.createdAt,
-    betType: r.game,
-    settled: r.settled,
-  });
-
   const loadPersonDetail = useCallback(
     async (g: PersonGroup, page: number) => {
       if (!g.fromUserId) {
@@ -611,16 +670,31 @@ export default function AgentCommissionPage({ onBack }: Props) {
                 end: listCustom,
               })
             : rangeForPreset(listPreset);
-        const res = await api.getRebateHistory({
+        const res = await api.getRebatePersonBets({
           startDate: range.startDate,
           endDate: range.endDate,
-          settled: rebateSettledParam(listPreset, listCustom),
           fromUserId: g.fromUserId,
           layer: g.layer > 0 ? g.layer : undefined,
           page,
           limit: DETAIL_PAGE_SIZE,
         });
-        const items = (res.data ?? []).map(mapRebateToItem);
+        const items = (res.data ?? []).map(
+          (r): CommissionBreakdownItem => ({
+            id: r.id,
+            layer: r.layer ?? 0,
+            commissionAmount: Number(r.amount ?? 0),
+            amount: Number(r.amount ?? 0),
+            betAmount: Number(r.betAmount ?? 0),
+            commissionRate: Number(r.rate ?? 0),
+            fromUser: {
+              id: g.fromUserId,
+              username: g.username,
+            },
+            createdAt: r.createdAt,
+            betType: r.game,
+            settled: r.settled,
+          })
+        );
         setPersonDetails((prev) => ({
           ...prev,
           [g.key]: {

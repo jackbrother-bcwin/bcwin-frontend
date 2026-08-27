@@ -963,6 +963,15 @@ export type RebateDayPreview = {
   teamDeposit: number;
   totalCommission: number;
   byLayer: Record<string, { commission: number; bet: number; users: number }>;
+  people?: Array<{
+    fromUserId: string;
+    username: string;
+    serialNumber: number | null;
+    layer: number;
+    commission: number;
+    betVolume: number;
+    bets: number;
+  }>;
 };
 
 /** Live IST-day Agent commission (not in wallet until 00:00 close). */
@@ -970,6 +979,36 @@ export async function getRebateDayPreview(params?: {
   date?: string;
 }): Promise<{ success: true; data: RebateDayPreview }> {
   return request(`/user/rebate/day-preview${buildQuery(params ?? {})}`);
+}
+
+export type RebatePersonBet = {
+  id: string;
+  fromUserId: string;
+  layer: number;
+  betAmount: number;
+  amount: number;
+  rate: number;
+  game: string;
+  createdAt: string;
+  settled: boolean;
+};
+
+/** Expand: live today bets + settled past days for one downline. */
+export async function getRebatePersonBets(params: {
+  fromUserId: string;
+  startDate?: string;
+  endDate?: string;
+  layer?: number | string;
+  page?: number;
+  limit?: number;
+}): Promise<{
+  success: true;
+  data: RebatePersonBet[];
+  total?: number;
+  currentPage?: number;
+  totalPages?: number;
+}> {
+  return request(`/user/rebate/person-bets${buildQuery(params)}`);
 }
 
 export type RebateGameCategory =
