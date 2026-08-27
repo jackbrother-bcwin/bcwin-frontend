@@ -443,6 +443,16 @@ export default function AgentCommissionPage({ onBack }: Props) {
     );
   }, [filteredDepositors]);
 
+  const totalTodayBetSum = useMemo(() => {
+    return roundMoney(
+      filteredDepositors.reduce(
+        (sum, m) => sum + Number(m.totalBetting ?? 0),
+        0
+      ),
+      2
+    );
+  }, [filteredDepositors]);
+
   const today = ymdIst();
   const yesterday = rangeForPreset("yesterday").startDate!;
   const week = rangeForPreset("this_week");
@@ -1262,6 +1272,14 @@ export default function AgentCommissionPage({ onBack }: Props) {
                         {formatINR(totalTodayDepositSum)}
                       </span>
                     </div>
+                    <div className="flex flex-col col-span-2">
+                      <span className="text-[12px] uppercase font-bold text-gray-400 tracking-wider">
+                        Total bet (Today)
+                      </span>
+                      <span className="text-sm font-extrabold text-amber-300 font-mono mt-0.5">
+                        {formatINR(totalTodayBetSum)}
+                      </span>
+                    </div>
                   </div>
                 )}
 
@@ -1316,6 +1334,12 @@ export default function AgentCommissionPage({ onBack }: Props) {
                               <span className="text-[13px] text-gray-400 font-medium">Deposit (Today)</span>
                               <span className="font-extrabold text-amber-300 font-mono">
                                 {formatINR(m.totalDeposit ?? 0)}
+                              </span>
+                            </div>
+                            <div className="flex items-center justify-between bg-black/20 px-2.5 py-1.5 rounded-lg col-span-2">
+                              <span className="text-[13px] text-gray-400 font-medium">Total bet (Today)</span>
+                              <span className="font-extrabold text-amber-300 font-mono">
+                                {formatINR(m.totalBetting ?? 0)}
                               </span>
                             </div>
                           </div>

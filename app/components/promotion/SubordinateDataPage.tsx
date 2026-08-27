@@ -244,6 +244,14 @@ export default function SubordinateDataPage({ onBack }: Props) {
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-[#837064] font-medium">
+                        Total bet
+                      </span>
+                      <span className="text-[#FED358] font-semibold">
+                        {formatINR(m.totalBetting ?? 0)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-[#837064] font-medium">
                         Agent commission
                       </span>
                       <span className="text-[#FED358] font-semibold">
