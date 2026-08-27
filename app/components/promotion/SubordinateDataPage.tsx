@@ -14,6 +14,7 @@ import EmptyState from "./shared/EmptyState";
 import DatePickerSheet from "./shared/DatePickerSheet";
 import TierPickerSheet from "./shared/TierPickerSheet";
 import { latestSettledYmd } from "./dateRange";
+import { sessionCachePeek, sessionCacheSet } from "../../lib/session-cache";
 
 interface Props {
   onBack: () => void;
@@ -66,11 +67,22 @@ export default function SubordinateDataPage({ onBack }: Props) {
   const [loading, setLoading] = useState(false);
 
   const load = useCallback(async () => {
-    setLoading(true);
+    const day = date && date <= maxDate ? date : maxDate;
+    const cacheKey = `subordinate-data:${tier}:${search.trim()}:${day}`;
+    const hit = sessionCachePeek<{
+      members: TeamMember[];
+      summary: api.TeamMembersSummary | null;
+    }>(cacheKey);
+    if (hit) {
+      setMembers(hit.data.members);
+      setSummary(hit.data.summary);
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
     try {
       // Always a settled IST day (default/max = yesterday). API returns
       // only people with bets/deposits/settled rebate on that day.
-      const day = date && date <= maxDate ? date : maxDate;
       const res = await api.getTeamMembers({
         page: 1,
         limit: 100,
@@ -78,11 +90,19 @@ export default function SubordinateDataPage({ onBack }: Props) {
         username: search.trim() || undefined,
         date: day,
       });
-      setMembers(asArray<TeamMember>(res.data));
-      setSummary(res.summary ?? null);
+      const nextMembers = asArray<TeamMember>(res.data);
+      const nextSummary = res.summary ?? null;
+      sessionCacheSet(cacheKey, {
+        members: nextMembers,
+        summary: nextSummary,
+      });
+      setMembers(nextMembers);
+      setSummary(nextSummary);
     } catch {
-      setMembers([]);
-      setSummary(null);
+      if (!hit) {
+        setMembers([]);
+        setSummary(null);
+      }
     } finally {
       setLoading(false);
     }
