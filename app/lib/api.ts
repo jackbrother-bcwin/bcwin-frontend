@@ -1026,6 +1026,38 @@ export async function getRebateDayTotals(params?: {
   return request(`/user/rebate/day-totals${buildQuery(params ?? {})}`);
 }
 
+export type RebatePersonRow = {
+  fromUserId: string;
+  username: string;
+  serialNumber: number | null;
+  layer: number;
+  commission: number;
+  betVolume: number;
+  bets: number;
+};
+
+export type RebatePeoplePayload = {
+  people: RebatePersonRow[];
+  summary: {
+    commission: number;
+    betVolume: number;
+    bets: number;
+    bettors: number;
+  };
+  byDay: Array<{ date: string; commission: number }>;
+  byLayer: Record<string, { commission: number; bet: number; users: number }>;
+};
+
+/** Collapsed Agent Commission list (GROUP BY downline). Expand still uses history. */
+export async function getRebatePeople(params?: {
+  startDate?: string;
+  endDate?: string;
+  settled?: string | boolean;
+  layer?: number | string;
+}): Promise<{ success: true; data: RebatePeoplePayload }> {
+  return request(`/user/rebate/people${buildQuery(params ?? {})}`);
+}
+
 export async function getRebateRates(): Promise<{
   success: true;
   data: {

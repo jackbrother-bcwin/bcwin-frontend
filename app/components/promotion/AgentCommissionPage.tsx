@@ -20,7 +20,6 @@ import {
   ymdIst,
   ymdLocal,
 } from "./dateRange";
-import { rebateIstDay } from "../../lib/ist-day";
 import { sessionCachePeek, sessionCacheSet } from "../../lib/session-cache";
 
 interface Props {
@@ -112,6 +111,9 @@ export default function AgentCommissionPage({ onBack }: Props) {
   const [lifetime, setLifetime] = useState(0);
   /** Today IST: settled vs accrued (not in wallet / TX) */
   const [todayCredited, setTodayCredited] = useState(0);
+  const [todayByLayer, setTodayByLayer] = useState<
+    Record<string, { commission: number; bet: number; users: number }>
+  >({});
 
   const [levelPreset, setLevelPreset] = useState<DatePreset>("today");
   const [levelCustom, setLevelCustom] = useState(ymdLocal());
@@ -126,7 +128,10 @@ export default function AgentCommissionPage({ onBack }: Props) {
   const [listDateOpen, setListDateOpen] = useState(false);
   const [groupMode, setGroupMode] = useState<GroupMode>("list");
   const [layerFilter, setLayerFilter] = useState<number | "all">("all");
-  const [rows, setRows] = useState<CommissionBreakdownItem[]>([]);
+  const [people, setPeople] = useState<api.RebatePersonRow[]>([]);
+  const [listByDay, setListByDay] = useState<
+    Array<{ date: string; commission: number }>
+  >([]);
   const [listSummary, setListSummary] = useState({
     commission: 0,
     betVolume: 0,
@@ -162,6 +167,10 @@ export default function AgentCommissionPage({ onBack }: Props) {
     teamBetting: number;
     lifetime: number;
     todayCredited: number;
+    todayByLayer: Record<
+      string,
+      { commission: number; bet: number; users: number }
+    >;
   };
 
   const applyOverview = useCallback((s: OverviewSnap) => {
@@ -172,6 +181,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
     setTeamBetting(s.teamBetting);
     setLifetime(s.lifetime);
     setTodayCredited(s.todayCredited);
+    setTodayByLayer(s.todayByLayer ?? {});
   }, []);
 
   const loadOverview = useCallback(async (signal?: AbortSignal) => {
@@ -236,6 +246,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
         teamBetting: Number(dayPreview?.data?.teamBetting ?? 0),
         lifetime: Number(overview?.data?.totalCommissionEarned ?? 0),
         todayCredited: roundMoney(credited, 3),
+        todayByLayer: dayPreview?.data?.byLayer ?? {},
       };
       applyOverview(snap);
       sessionCacheSet("agent-commission", snap);
@@ -255,7 +266,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
     return () => ac.abort();
   }, [loadOverview]);
 
-  // Commission by level for selected day
+  // Commission by level: today reuses overview preview; past days GROUP BY layer
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -263,60 +274,38 @@ export default function AgentCommissionPage({ onBack }: Props) {
         levelPreset === "custom"
           ? rangeForPreset("custom", { start: levelCustom, end: levelCustom })
           : rangeForPreset(levelPreset);
-      try {
-        const usePreview =
-          (levelPreset === "today" ||
-            (levelPreset === "custom" && levelCustom === ymdIst())) &&
-          range.startDate === ymdIst();
-        if (usePreview) {
-          const prev = await api.getRebateDayPreview({
-            date: range.startDate,
-          });
-          if (cancelled) return;
-          const out: typeof levelSummary = {};
-          for (let i = 1; i <= 6; i++) {
-            const row = prev.data?.byLayer?.[`L${i}`];
-            out[`L${i}`] = {
-              commission: Number(row?.commission ?? 0),
-              bet: Number(row?.bet ?? 0),
-              users: Number(row?.users ?? 0),
-            };
-          }
-          setLevelSummary(out);
-          return;
+      const usePreview =
+        (levelPreset === "today" ||
+          (levelPreset === "custom" && levelCustom === ymdIst())) &&
+        range.startDate === ymdIst();
+      if (usePreview) {
+        const out: typeof levelSummary = {};
+        for (let i = 1; i <= 6; i++) {
+          const row = todayByLayer[`L${i}`];
+          out[`L${i}`] = {
+            commission: Number(row?.commission ?? 0),
+            bet: Number(row?.bet ?? 0),
+            users: Number(row?.users ?? 0),
+          };
         }
-        const res = await api.getRebateHistory({
+        setLevelSummary(out);
+        return;
+      }
+      try {
+        const res = await api.getRebatePeople({
           startDate: range.startDate,
           endDate: range.endDate,
           settled: rebateSettledParam(levelPreset, levelCustom),
-          page: 1,
-          limit: 500,
         });
         if (cancelled) return;
-        const data = res.data ?? [];
-        const map: Record<
-          string,
-          { commission: number; bet: number; users: Set<string> }
-        > = {};
-        for (let i = 1; i <= 6; i++) {
-          map[`L${i}`] = { commission: 0, bet: 0, users: new Set() };
-        }
-        for (const r of data) {
-          const L = `L${r.layer ?? 0}`;
-          if (!map[L]) continue;
-          map[L]!.commission = roundMoney(
-            map[L]!.commission + Number(r.amount ?? 0),
-            3
-          );
-          map[L]!.bet = roundMoney(map[L]!.bet + Number(r.betAmount ?? 0), 3);
-          if (r.fromUser?.id) map[L]!.users.add(r.fromUser.id);
-        }
+        const layers = res.data?.byLayer ?? {};
         const out: typeof levelSummary = {};
-        for (const [k, v] of Object.entries(map)) {
-          out[k] = {
-            commission: v.commission,
-            bet: v.bet,
-            users: v.users.size,
+        for (let i = 1; i <= 6; i++) {
+          const row = layers[`L${i}`];
+          out[`L${i}`] = {
+            commission: Number(row?.commission ?? 0),
+            bet: Number(row?.bet ?? 0),
+            users: Number(row?.users ?? 0),
           };
         }
         setLevelSummary(out);
@@ -327,69 +316,60 @@ export default function AgentCommissionPage({ onBack }: Props) {
     return () => {
       cancelled = true;
     };
-  }, [levelPreset, levelCustom]);
+  }, [levelPreset, levelCustom, todayByLayer]);
 
   // List / subordinate loaders
   const loadList = useCallback(async () => {
-    setListLoading(true);
+    const range =
+      listPreset === "custom"
+        ? rangeForPreset("custom", { start: listCustom, end: listCustom })
+        : rangeForPreset(listPreset);
+    const cacheKey = `agent-commission-list:${listPreset}:${listCustom}:${layerFilter}`;
+    type ListSnap = {
+      people: api.RebatePersonRow[];
+      byDay: Array<{ date: string; commission: number }>;
+      summary: typeof listSummary;
+    };
+    const hit = sessionCachePeek<ListSnap>(cacheKey);
+    if (hit) {
+      setPeople(hit.data.people);
+      setListByDay(hit.data.byDay);
+      setListSummary(hit.data.summary);
+      setListLoading(false);
+    } else {
+      setListLoading(true);
+    }
     try {
-      const range =
-        listPreset === "custom"
-          ? rangeForPreset("custom", { start: listCustom, end: listCustom })
-          : rangeForPreset(listPreset);
-      const res = await api.getRebateHistory({
+      const res = await api.getRebatePeople({
         startDate: range.startDate,
         endDate: range.endDate,
         settled: rebateSettledParam(listPreset, listCustom),
-        page: 1,
-        limit: 100,
+        layer: layerFilter === "all" ? undefined : layerFilter,
       });
-      let data = (res.data ?? []).map(
-        (r): CommissionBreakdownItem => ({
-          id: r.id,
-          layer: r.layer ?? 0,
-          commissionAmount: Number(r.amount ?? 0),
-          amount: Number(r.amount ?? 0),
-          betAmount: Number(r.betAmount ?? 0),
-          commissionRate: Number(r.rate ?? 0),
-          fromUser: r.fromUser
-            ? {
-                id: String(r.fromUser.id ?? ""),
-                username: String(r.fromUser.username ?? ""),
-                ...(r.fromUser.serialNumber != null
-                  ? { serialNumber: Number(r.fromUser.serialNumber) }
-                  : {}),
-              }
-            : undefined,
-          createdAt: r.createdAt,
-          betType: r.game,
-          settled: r.settled,
-        })
-      );
-      if (layerFilter !== "all") {
-        data = data.filter((r) => Number(r.layer) === layerFilter);
-      }
-      setRows(data);
-      const bettors = new Set<string>();
-      let betVolume = 0;
-      let commission = 0;
-      for (const r of data) {
-        commission = roundMoney(
-          commission + Number(r.commissionAmount ?? r.amount ?? 0),
-          3
-        );
-        betVolume = roundMoney(betVolume + Number(r.betAmount ?? 0), 3);
-        if (r.fromUser?.id) bettors.add(r.fromUser.id);
-      }
-      setListSummary({
-        commission,
-        betVolume,
-        bets: data.length,
-        bettors: bettors.size,
-      });
+      const nextPeople = res.data?.people ?? [];
+      const nextByDay = res.data?.byDay ?? [];
+      const s = res.data?.summary;
+      const nextSummary = {
+        commission: roundMoney(Number(s?.commission ?? 0), 3),
+        betVolume: roundMoney(Number(s?.betVolume ?? 0), 3),
+        bets: Number(s?.bets ?? 0),
+        bettors: Number(s?.bettors ?? 0),
+      };
+      const snap: ListSnap = {
+        people: nextPeople,
+        byDay: nextByDay,
+        summary: nextSummary,
+      };
+      sessionCacheSet(cacheKey, snap);
+      setPeople(nextPeople);
+      setListByDay(nextByDay);
+      setListSummary(nextSummary);
     } catch {
-      setRows([]);
-      setListSummary({ commission: 0, betVolume: 0, bets: 0, bettors: 0 });
+      if (!hit) {
+        setPeople([]);
+        setListByDay([]);
+        setListSummary({ commission: 0, betVolume: 0, bets: 0, bettors: 0 });
+      }
     } finally {
       setListLoading(false);
     }
@@ -510,27 +490,43 @@ export default function AgentCommissionPage({ onBack }: Props) {
     ];
   }, [rates, rebateLevel]);
 
-  const exportCsv = () => {
-    const header = "date,from,layer,bet,commission,rate\n";
-    const body = rows
-      .map((r) =>
-        [
-          r.createdAt ?? "",
-          r.fromUser?.username ?? "",
-          r.layer ?? "",
-          r.betAmount ?? "",
-          r.commissionAmount ?? r.amount ?? "",
-          r.commissionRate ?? "",
-        ].join(",")
-      )
-      .join("\n");
-    const blob = new Blob([header + body], { type: "text/csv;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `commission-${ymdLocal()}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+  const exportCsv = async () => {
+    const range =
+      listPreset === "custom"
+        ? rangeForPreset("custom", { start: listCustom, end: listCustom })
+        : rangeForPreset(listPreset);
+    try {
+      const res = await api.getRebateHistory({
+        startDate: range.startDate,
+        endDate: range.endDate,
+        settled: rebateSettledParam(listPreset, listCustom),
+        page: 1,
+        limit: 100,
+        ...(layerFilter !== "all" ? { layer: layerFilter } : {}),
+      });
+      const header = "date,from,layer,bet,commission,rate\n";
+      const body = (res.data ?? [])
+        .map((r) =>
+          [
+            r.createdAt ?? "",
+            r.fromUser?.username ?? "",
+            r.layer ?? "",
+            r.betAmount ?? "",
+            r.amount ?? "",
+            r.rate ?? "",
+          ].join(",")
+        )
+        .join("\n");
+      const blob = new Blob([header + body], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `commission-${ymdLocal()}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      /* keep current file */
+    }
   };
 
   /**
@@ -549,34 +545,16 @@ export default function AgentCommissionPage({ onBack }: Props) {
 
   const personGroups = useMemo((): PersonGroup[] => {
     if (groupMode !== "list") return [];
-    const map = new Map<string, PersonGroup>();
-    for (const r of rows) {
-      const uid = String(r.fromUser?.id ?? "").trim();
-      const username = String(r.fromUser?.username ?? "—");
-      const layer = Number(r.layer ?? 0);
-      const key = uid || `${username}|L${layer}`;
-      let g = map.get(key);
-      if (!g) {
-        g = {
-          key,
-          fromUserId: uid,
-          username,
-          layer,
-          betVolume: 0,
-          commission: 0,
-          bets: 0,
-        };
-        map.set(key, g);
-      }
-      g.betVolume = roundMoney(g.betVolume + Number(r.betAmount ?? 0), 3);
-      g.commission = roundMoney(
-        g.commission + Number(r.commissionAmount ?? r.amount ?? 0),
-        3
-      );
-      g.bets += 1;
-    }
-    return Array.from(map.values()).sort((a, b) => b.commission - a.commission);
-  }, [rows, groupMode]);
+    return people.map((p) => ({
+      key: p.fromUserId || `${p.username}|L${p.layer}`,
+      fromUserId: p.fromUserId,
+      username: p.username,
+      layer: Number(p.layer ?? 0),
+      betVolume: Number(p.betVolume ?? 0),
+      commission: Number(p.commission ?? 0),
+      bets: Number(p.bets ?? 0),
+    }));
+  }, [people, groupMode]);
 
   const mapRebateToItem = (r: api.RebateRecord): CommissionBreakdownItem => ({
     id: r.id,
@@ -693,8 +671,8 @@ export default function AgentCommissionPage({ onBack }: Props) {
   const grouped = useMemo(() => {
     if (groupMode === "list") return null;
     const buckets = new Map<string, number>();
-    for (const r of rows) {
-      const raw = rebateIstDay(r.createdAt) || "unknown";
+    for (const r of listByDay) {
+      const raw = r.date || "unknown";
       let key = raw;
       if (groupMode === "weekly" && raw.length === 10) {
         const d = new Date(`${raw}T12:00:00+05:30`);
@@ -707,11 +685,11 @@ export default function AgentCommissionPage({ onBack }: Props) {
       }
       buckets.set(
         key,
-        (buckets.get(key) ?? 0) + Number(r.commissionAmount ?? r.amount ?? 0)
+        (buckets.get(key) ?? 0) + Number(r.commission ?? 0)
       );
     }
     return [...buckets.entries()].sort((a, b) => (a[0] < b[0] ? 1 : -1));
-  }, [rows, groupMode]);
+  }, [listByDay, groupMode]);
 
   return (
     <div className="agency-page">
@@ -1030,7 +1008,7 @@ export default function AgentCommissionPage({ onBack }: Props) {
                   <button
                     type="button"
                     className="bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-400 font-semibold text-xs rounded-full px-3.5 py-1.5 flex items-center gap-1.5 transition-all shadow-sm active:scale-95 cursor-pointer"
-                    onClick={exportCsv}
+                    onClick={() => void exportCsv()}
                   >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
