@@ -369,8 +369,7 @@ export default function K3Page({ onBack, onNavigate }: Props) {
   }, [duration, applyPeriod]);
 
   const open = (type: string, choice: string, label: string) => {
-    if (isBettingLocked(countdown, duration))
-      return toast("Betting locked", "error");
+    if (isBettingLocked(countdown, duration)) return;
     if (!period?.id) return toast("No active period", "error");
     setPending({ type, choice, label });
   };
@@ -404,6 +403,9 @@ export default function K3Page({ onBack, onNavigate }: Props) {
 
   const last = results[0];
   const isLocked = isBettingLocked(countdown, duration);
+  useEffect(() => {
+    if (isLocked && pending) setPending(null);
+  }, [isLocked, pending]);
   const recentDice = results.slice(0, 5).map((r) => r.sum % 10);
 
   // Result identity for dice land — prefer server period id
@@ -482,6 +484,7 @@ export default function K3Page({ onBack, onNavigate }: Props) {
           background: "#1a1519",
           border: "1px solid rgba(255,255,255,0.06)",
           opacity: isLocked ? 0.72 : 1,
+          pointerEvents: isLocked ? "none" : "auto",
         }}
       >
         <div className="grid grid-cols-2 gap-2">
@@ -514,8 +517,9 @@ export default function K3Page({ onBack, onNavigate }: Props) {
             <button
               key={b.t}
               type="button"
+              disabled={isLocked}
               onClick={() => open(b.t, b.c, b.l)}
-              className="h-11 rounded-[10px] font-black text-white text-[16px] active:scale-95"
+              className="h-11 rounded-[10px] font-black text-white text-[16px] active:scale-95 disabled:cursor-not-allowed"
               style={{ background: b.bg }}
             >
               {b.l}
@@ -532,8 +536,9 @@ export default function K3Page({ onBack, onNavigate }: Props) {
               <button
                 key={s}
                 type="button"
+                disabled={isLocked}
                 onClick={() => open("SUM", String(s), `Sum ${s}`)}
-                className="h-9 rounded-lg text-[14px] font-bold text-white/80 active:scale-95"
+                className="h-9 rounded-lg text-[14px] font-bold text-white/80 active:scale-95 disabled:cursor-not-allowed"
                 style={{
                   background: "rgba(255,255,255,0.06)",
                   border: "1px solid rgba(255,255,255,0.06)",

@@ -425,10 +425,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
 
   const openBet = (betType: "COLOR" | "NUMBER" | "SIZE", betChoice: string, label: string) => {
     if (randomSpinning) return;
-    if (isBettingLocked(countdown, duration)) {
-      toast("Betting is locked", "error");
-      return;
-    }
+    if (isBettingLocked(countdown, duration)) return;
     if (!period?.id) {
       toast("No active period", "error");
       return;
@@ -470,16 +467,12 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
       clearRandomTimer();
       setRandomSpinning(false);
       setRandomHighlight(null);
-      toast("Betting locked — random cancelled", "error");
     }
   }, [countdown, duration, randomSpinning, clearRandomTimer, toast]);
 
   const pickRandom = useCallback(() => {
     if (randomSpinning) return;
-    if (isBettingLocked(countdown, duration)) {
-      toast("Betting is locked", "error");
-      return;
-    }
+    if (isBettingLocked(countdown, duration)) return;
     if (!period?.id) {
       toast("No active period", "error");
       return;
@@ -632,6 +625,8 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
         style={{
           background: "#201c26",
           border: "1px solid rgba(255,255,255,0.05)",
+          opacity: isLocked ? 0.72 : 1,
+          pointerEvents: isLocked ? "none" : "auto",
         }}
       >
         {/* Color bets: Green, Violet, Red */}
@@ -648,7 +643,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
               <button
                 key={c.key}
                 type="button"
-                disabled={randomSpinning}
+                disabled={randomSpinning || isLocked}
                 onClick={() => openBet("COLOR", c.choice, c.label)}
                 className={`h-[44px] rounded-[10px] font-extrabold text-[18px] text-white active:scale-95 transition-all duration-100 ${
                   hl ? "scale-105 z-[2]" : ""
@@ -683,7 +678,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
                 <button
                   key={i}
                   type="button"
-                  disabled={randomSpinning}
+                  disabled={randomSpinning || isLocked}
                   onClick={() => openBet("NUMBER", String(i), `Number ${i}`)}
                   className={`relative active:scale-90 transition-all duration-100 rounded-full ${
                     hl ? "scale-110 z-[2]" : ""
@@ -729,7 +724,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
                 <button
                   key={m}
                   type="button"
-                  disabled={randomSpinning}
+                  disabled={randomSpinning || isLocked}
                   onClick={() => setSelectedMultiplier(m)}
                   className="flex-1 min-w-[36px] h-[34px] rounded-[8px] text-[14px] font-extrabold transition-all active:scale-95"
                   style={{
@@ -751,7 +746,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
         <div className="flex gap-0 overflow-hidden rounded-full h-[44px] shadow-md">
           <button
             type="button"
-            disabled={randomSpinning}
+            disabled={randomSpinning || isLocked}
             onClick={() => openBet("SIZE", "BIG", "Big")}
             className={`flex-1 font-black text-[19px] text-white active:opacity-90 transition-all duration-100 ${
               isRandomHl("SIZE:BIG") ? "scale-[1.03] z-[2] brightness-110" : ""
@@ -767,7 +762,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
           </button>
           <button
             type="button"
-            disabled={randomSpinning}
+            disabled={randomSpinning || isLocked}
             onClick={() => openBet("SIZE", "SMALL", "Small")}
             className={`flex-1 font-black text-[19px] text-white active:opacity-90 transition-all duration-100 ${
               isRandomHl("SIZE:SMALL") ? "scale-[1.03] z-[2] brightness-110" : ""

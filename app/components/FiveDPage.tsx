@@ -377,10 +377,7 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
   }, [duration, applyPeriod]);
 
   const guardBet = () => {
-    if (isBettingLocked(countdown, duration)) {
-      toast("Betting locked", "error");
-      return false;
-    }
+    if (isBettingLocked(countdown, duration)) return false;
     if (!period?.id) {
       toast("No active period", "error");
       return false;
@@ -474,6 +471,9 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
 
   const last = results[0];
   const isLocked = isBettingLocked(countdown, duration);
+  useEffect(() => {
+    if (isLocked && pending) setPending(null);
+  }, [isLocked, pending]);
   const recentBalls = results
     .slice(0, 5)
     .map((r) => r.resultDigitE ?? r.resultDigitA ?? 0);
@@ -562,6 +562,7 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
           background: "#1a1519",
           border: "1px solid rgba(255,255,255,0.06)",
           opacity: isLocked ? 0.72 : 1,
+          pointerEvents: isLocked ? "none" : "auto",
         }}
       >
         <div className="flex items-center justify-between">
@@ -580,8 +581,9 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
             <button
               key={b.t}
               type="button"
+              disabled={isLocked}
               onClick={() => openSide(b.t, b.l)}
-              className="h-11 rounded-[10px] text-white active:scale-95 flex flex-col items-center justify-center"
+              className="h-11 rounded-[10px] text-white active:scale-95 flex flex-col items-center justify-center disabled:cursor-not-allowed"
               style={{ background: b.bg }}
             >
               <span className="text-[15px] font-black leading-none">{b.l}</span>
@@ -604,8 +606,9 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
                 <button
                   key={i}
                   type="button"
+                  disabled={isLocked}
                   onClick={() => openNum(i)}
-                  className="active:scale-90 transition-transform min-w-0 max-w-full"
+                  className="active:scale-90 transition-transform min-w-0 max-w-full disabled:cursor-not-allowed"
                 >
                   {/* 44px fits 5-col on ~320px widths without horizontal squeeze */}
                   <NumberBall num={i} size={44} />
@@ -623,8 +626,9 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
                 <button
                   key={i}
                   type="button"
+                  disabled={isLocked}
                   onClick={() => openNum(i)}
-                  className="h-8 rounded-lg text-[13px] font-bold text-white/80 active:scale-95"
+                  className="h-8 rounded-lg text-[13px] font-bold text-white/80 active:scale-95 disabled:cursor-not-allowed"
                   style={{
                     background: "rgba(255,255,255,0.06)",
                     border: "1px solid rgba(255,255,255,0.06)",

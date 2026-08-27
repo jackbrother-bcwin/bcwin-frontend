@@ -425,10 +425,7 @@ export default function MotoPage({
   }, []);
 
   const openBet = (bet: MotoBetOpen) => {
-    if (isMotoBettingLocked(countdown, duration) || racing) {
-      toast("Betting locked", "error");
-      return;
-    }
+    if (isMotoBettingLocked(countdown, duration) || racing) return;
     if (!period?.id || period.status !== "ACTIVE") {
       toast("No active race", "error");
       return;
@@ -450,7 +447,6 @@ export default function MotoPage({
       return;
     }
     if (isMotoBettingLocked(countdown, duration)) {
-      toast("Betting locked", "error");
       setPending(null);
       return;
     }
@@ -480,6 +476,9 @@ export default function MotoPage({
     isMotoBettingLocked(countdown, duration) ||
     racing ||
     period?.status !== "ACTIVE";
+  useEffect(() => {
+    if (pending && locked) setPending(null);
+  }, [pending, locked]);
   const resolved = periods.filter((p) => p.firstPlace != null).slice(0, 20);
   const inRaceWindow =
     countdown > 0 &&
