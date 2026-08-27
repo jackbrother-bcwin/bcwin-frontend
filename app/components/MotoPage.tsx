@@ -35,6 +35,7 @@ import {
 } from "./game/useSettledResultPopup";
 import { motoResultChips, RESULT_HEADINGS } from "./game/resultChips";
 import { createOncePerKey, setCountdownIfChanged } from "../lib/game-refresh";
+import { createStuckZeroRecovery, pickLivePeriod } from "../lib/period-live";
 import {
   MOTO_TABS,
   MOTO_RACE_END_SECONDS,
@@ -85,6 +86,7 @@ export default function MotoPage({
   const endRef = useRef<string | null>(null);
   const activePeriodIdRef = useRef<string | null>(null);
   const zeroRefreshOnce = useRef(createOncePerKey());
+  const stuckZero = useRef(createStuckZeroRecovery());
   const raceStartOnce = useRef(createOncePerKey());
   const raceCanvasRef = useRef<RaceCanvasHandle | null>(null);
   const finishLockRef = useRef(false);
@@ -151,20 +153,18 @@ export default function MotoPage({
         api.getGamePeriods<MotoPeriod>("moto", { duration, limit: 30 }),
         api.getGameBets<MotoBet>("moto", { duration, page: 1, limit: 30 }),
       ]);
-      const cur =
-        pRes.currentPeriod ??
-        pRes.periods?.find((p) => p.status === "ACTIVE") ??
-        pRes.periods?.[0] ??
-        null;
+      const live = pickLivePeriod(pRes.currentPeriod, pRes.periods);
+      const cur = live ?? pRes.currentPeriod ?? null;
 
       setPeriod(cur);
       activePeriodIdRef.current = cur?.id ?? null;
-      const nextEnd = cur?.endTime ?? null;
+      const nextEnd = live?.endTime ?? null;
       if (nextEnd && nextEnd !== endRef.current) {
         zeroRefreshOnce.current.clear();
         raceStartOnce.current.clear();
+        stuckZero.current.reset();
         // New period: back to calm grid — never auto GO
-        if (cur?.status === "ACTIVE" && !cur.firstPlace) {
+        if (live && live.status === "ACTIVE" && !live.firstPlace) {
           lastFinishKey.current = null;
           const left = secondsUntil(nextEnd);
           // Only force idle if not already in the lock/race window of this period
@@ -175,8 +175,12 @@ export default function MotoPage({
           }
         }
       }
-      endRef.current = nextEnd;
-      if (nextEnd) setCountdownIfChanged(setCountdown, secondsUntil(nextEnd));
+      if (nextEnd) {
+        endRef.current = nextEnd;
+        setCountdownIfChanged(setCountdown, secondsUntil(nextEnd));
+      } else {
+        setCountdownIfChanged(setCountdown, 0);
+      }
       const periodList = pRes.periods ?? [];
       const betList = bRes.bets ?? [];
       setPeriods(periodList);
@@ -227,6 +231,32 @@ export default function MotoPage({
   refreshUserRef.current = refreshUser;
   applyFinishRef.current = applyPodiumFinish;
 
+  /** Clock-only: unstick 00 without cutting an in-flight podium. */
+  const recoverLivePeriod = useCallback(async () => {
+    try {
+      const res = await api.getGamePeriods<MotoPeriod>("moto", {
+        duration: durationRef.current,
+        limit: 5,
+      });
+      const live = pickLivePeriod(res.currentPeriod, res.periods);
+      if (!live?.endTime) return;
+      const left = secondsUntil(live.endTime);
+      if (left <= 0) return;
+      setPeriod(live);
+      activePeriodIdRef.current = live.id ?? null;
+      if (live.endTime !== endRef.current) {
+        zeroRefreshOnce.current.clear();
+        raceStartOnce.current.clear();
+      }
+      endRef.current = live.endTime;
+      setCountdownIfChanged(setCountdown, left);
+    } catch {
+      /* keep previous */
+    }
+  }, []);
+  const recoverLivePeriodRef = useRef(recoverLivePeriod);
+  recoverLivePeriodRef.current = recoverLivePeriod;
+
   useEffect(() => {
     void load();
   }, [load]);
@@ -235,6 +265,7 @@ export default function MotoPage({
     raceCanvasRef.current?.setIdle();
     lastFinishKey.current = null;
     zeroRefreshOnce.current.clear();
+    stuckZero.current.reset();
     raceStartOnce.current.clear();
     setRacing(false);
     setLastPodium(null);
@@ -244,7 +275,13 @@ export default function MotoPage({
   // Tick: lock (5s on 30s · 10s on longer) → race; near 2s/00 → podium
   useEffect(() => {
     const t = setInterval(() => {
-      if (!endRef.current) return;
+      if (!endRef.current) {
+        setCountdownIfChanged(setCountdown, 0);
+        stuckZero.current.note(0, Date.now(), () => {
+          void recoverLivePeriodRef.current();
+        });
+        return;
+      }
       const left = secondsUntil(endRef.current);
       setCountdownIfChanged(setCountdown, left);
       const lockAt = motoBetLockSeconds(durationRef.current);
@@ -258,7 +295,10 @@ export default function MotoPage({
         });
       }
 
-      if (left > 0) return;
+      if (left > 0) {
+        stuckZero.current.note(left, Date.now(), () => {});
+        return;
+      }
 
       // ── 00: fetch result → finish order + top-3 reward podium ──
       zeroRefreshOnce.current.run(endRef.current, async () => {
@@ -312,6 +352,10 @@ export default function MotoPage({
 
         void loadRef.current();
         void refreshUserRef.current();
+      });
+
+      stuckZero.current.note(left, Date.now(), () => {
+        void recoverLivePeriodRef.current();
       });
     }, 200);
     return () => clearInterval(t);

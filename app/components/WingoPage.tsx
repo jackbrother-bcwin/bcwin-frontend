@@ -35,7 +35,7 @@ import {
 import { themeFromBet } from "./game/BetSlip";
 import BetHistoryCard from "./game/BetHistoryCard";
 import { createOncePerKey, setCountdownIfChanged } from "../lib/game-refresh";
-import { pickLivePeriod } from "../lib/period-live";
+import { createStuckZeroRecovery, pickLivePeriod } from "../lib/period-live";
 import {
   HISTORY_MAX_PAGES,
   capHistoryPage,
@@ -136,6 +136,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
   const endTimeRef = useRef<string | null>(null);
   /** Prevents 1s interval from re-firing full refresh while left stays 0 */
   const zeroRefreshOnce = useRef(createOncePerKey());
+  const stuckZero = useRef(createStuckZeroRecovery());
   const {
     resultPopup,
     closeResultPopup,
@@ -286,6 +287,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
   useEffect(() => {
     resetResultPopupTracking();
     zeroRefreshOnce.current.clear();
+    stuckZero.current.reset();
   }, [duration, gameApi, resetResultPopupTracking]);
 
   useEffect(() => {
@@ -300,12 +302,19 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
   // Isolated 1s tick: countdown + boundary refresh; TRX polls draw window tightly
   useEffect(() => {
     const t = setInterval(() => {
-      if (!endTimeRef.current) return;
-      const left = secondsUntil(endTimeRef.current);
+      const end = endTimeRef.current;
+      if (!end) {
+        setCountdownIfChanged(setCountdown, 0);
+        stuckZero.current.note(0, Date.now(), () => {
+          void loadPeriodRef.current();
+        });
+        return;
+      }
+      const left = secondsUntil(end);
       setCountdownIfChanged(setCountdown, left);
       if (left <= 0) {
         // Once per endTime: full burst so next period + history appear without manual refresh
-        zeroRefreshOnce.current.run(endTimeRef.current, burstRefresh);
+        zeroRefreshOnce.current.run(end, burstRefresh);
       } else if (left <= 1 && !isTrx) {
         // 00-handoff backup: next clock + results even if WS is late
         void loadPeriodRef.current();
@@ -319,6 +328,10 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
           void loadResultsRef.current(pageRef.current);
         }
       }
+      // Stuck at 00 > ~2s (missed WS / expired slot): refetch live period. Lock 5s/10s unchanged.
+      stuckZero.current.note(left, Date.now(), () => {
+        void loadPeriodRef.current();
+      });
     }, 1000);
     return () => clearInterval(t);
   }, [burstRefresh, isTrx]);

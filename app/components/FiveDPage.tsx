@@ -43,7 +43,7 @@ import {
 import { fiveDResultChips, RESULT_HEADINGS } from "./game/resultChips";
 import { createOncePerKey, setCountdownIfChanged } from "../lib/game-refresh";
 import { initCountdownAudioMute } from "../lib/countdown-audio";
-import { pickLivePeriod } from "../lib/period-live";
+import { createStuckZeroRecovery, pickLivePeriod } from "../lib/period-live";
 import { useLotteryBetDepositGate } from "../hooks/useLotteryBetDepositGate";
 import {
   HISTORY_MAX_PAGES,
@@ -119,6 +119,7 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
   const endTimeRef = useRef<string | null>(null);
   const periodIdRef = useRef<string | null>(null);
   const zeroRefreshOnce = useRef(createOncePerKey());
+  const stuckZero = useRef(createStuckZeroRecovery());
   const loadInFlight = useRef(false);
 
   const duration = TABS.find((t) => t.id === activeGame)?.seconds ?? 30;
@@ -275,6 +276,7 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
     endTimeRef.current = null;
     periodIdRef.current = null;
     zeroRefreshOnce.current.clear();
+    stuckZero.current.reset();
     setCountdown(0);
     setPeriod(null);
     resetResultPopupTracking();
@@ -291,6 +293,9 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
       const end = endTimeRef.current;
       if (!end) {
         setCountdownIfChanged(setCountdown, 0);
+        stuckZero.current.note(0, Date.now(), () => {
+          void loadPeriodRef.current();
+        });
         return;
       }
       const left = secondsUntil(end);
@@ -301,6 +306,9 @@ export default function FiveDPage({ onBack, onNavigate }: Props) {
         void loadPeriodRef.current();
         if (left <= 1) void loadResultsRef.current(pageRef.current);
       }
+      stuckZero.current.note(left, Date.now(), () => {
+        void loadPeriodRef.current();
+      });
     };
     tick();
     const t = window.setInterval(tick, 250);
