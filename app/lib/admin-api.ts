@@ -105,8 +105,54 @@ export async function getGameStatistics(params?: Record<string, string | number 
   );
 }
 
+export type TopPerformer = {
+  userId?: string;
+  username: string;
+  mobile: string;
+  status: string;
+  totalDeposits: number;
+  totalWithdrawals: number;
+  totalBets: number;
+  totalBetAmount: number;
+  totalWon: number;
+  bettingActivity: number;
+  currentBalance: number;
+  avgBetSize: number;
+  activityScore: number;
+  retentionRate: number;
+  netProfit: number;
+  winRate: number;
+  roi: number;
+  directDownlinksCount?: number;
+  totalTeamSize?: number;
+  teamTurnover?: number;
+  teamDeposits?: number;
+  teamWithdrawals?: number;
+  teamBets?: number;
+  totalCombinedTurnover?: number;
+  totalCombinedDeposits?: number;
+};
+
+export type TopPerformanceResponse = {
+  timeFilter: string;
+  mode?: string;
+  cardItems: {
+    totalDeposits: number;
+    totalWithdrawals: number;
+    totalBets: number;
+    totalTurnover: number;
+    averageROI: number;
+    avgWinRate: number;
+    netProfit: number;
+    totalTeamTurnover?: number;
+    totalTeamDeposits?: number;
+    totalTeamMembers?: number;
+  };
+  topPerformers: TopPerformer[];
+};
+
 export async function getTopPerformance(params?: Record<string, string | number | undefined>) {
-  return adminRequest<{ success: true; data: unknown }>(
+  return adminRequest<{ success: true; data: TopPerformanceResponse }>(
     `/admin/top-performance${q(params ?? {})}`
   );
 }
