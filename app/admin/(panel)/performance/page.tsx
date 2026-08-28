@@ -94,25 +94,25 @@ export default function TopPerformancePage() {
 
   // Chart data for performers
   const performersChartData = useMemo(() => {
-    return allPerformers.slice(0, 10).map((p, i) => {
+    return allPerformers.slice(0, 10).map((p, i): Record<string, string | number> => {
       const name = p.username || `#${i + 1}`;
-      if (mode === "teams" || mode === "all") {
+      if (mode === "players") {
         return {
           name,
-          "Personal Turnover": Number(p.totalBetAmount ?? 0),
-          "Team Turnover": Number(p.teamTurnover ?? 0),
+          Turnover: Number(p.totalBetAmount ?? 0),
+          Deposits: Number(p.totalDeposits ?? 0),
         };
       }
       return {
         name,
-        Turnover: Number(p.totalBetAmount ?? 0),
-        Deposits: Number(p.totalDeposits ?? 0),
+        "Personal Turnover": Number(p.totalBetAmount ?? 0),
+        "Team Turnover": Number(p.teamTurnover ?? 0),
       };
     });
   }, [allPerformers, mode]);
 
   // Chart data for game distribution
-  const gameChart = useMemo(() => {
+  const gameChart: Array<Record<string, string | number>> = useMemo(() => {
     if (!gameStats) return [];
     if (Array.isArray(gameStats)) {
       return (gameStats as Array<Record<string, unknown>>)
