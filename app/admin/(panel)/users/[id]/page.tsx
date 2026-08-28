@@ -16,6 +16,7 @@ import {
   IoCardOutline,
   IoStatsChartOutline,
   IoOpenOutline,
+  IoCalendarOutline,
 } from "react-icons/io5";
 import * as admin from "../../../../lib/admin-api";
 import { useToast } from "../../../../components/ui/Toast";
@@ -32,6 +33,7 @@ import { formatIstDateTime } from "../../../../lib/ist-day";
 
 type TabId =
   | "overview"
+  | "userhub"
   | "deposits"
   | "withdrawals"
   | "bets"
@@ -41,6 +43,7 @@ type TabId =
 
 const TABS: { id: TabId; label: string; icon: React.ReactNode }[] = [
   { id: "overview", label: "Overview", icon: <IoStatsChartOutline size={14} /> },
+  { id: "userhub", label: "User Hub", icon: <IoCalendarOutline size={14} /> },
   { id: "deposits", label: "Deposits", icon: <IoCashOutline size={14} /> },
   { id: "withdrawals", label: "Withdrawals", icon: <IoWalletOutline size={14} /> },
   { id: "bets", label: "Bets", icon: <IoGameControllerOutline size={14} /> },
@@ -138,6 +141,22 @@ export default function UserDetailPage() {
     tree: Array<Record<string, unknown>>;
   } | null>(null);
 
+  // User Hub — yesterday stats
+  type YesterdayLevel = {
+    level: string | number;
+    memberCount: number;
+    depositCount: number;
+    depositAmount: number;
+    withdrawCount: number;
+    withdrawAmount: number;
+    betCount: number;
+    betAmount: number;
+  };
+  const [yesterdayStats, setYesterdayStats] = useState<{
+    date: string;
+    levels: YesterdayLevel[];
+  } | null>(null);
+
   const stats = (user?.stats as Record<string, unknown>) ?? {};
   const bank = (user?.bank as Record<string, unknown> | null) ?? null;
 
@@ -198,6 +217,12 @@ export default function UserDetailPage() {
         });
       } else if (tab === "salary") {
         await loadSalary();
+      } else if (tab === "userhub") {
+        const res = await admin.getUserYesterdayStats(id);
+        setYesterdayStats({
+          date: res.date ?? "",
+          levels: res.levels ?? [],
+        });
       }
     } catch (e: unknown) {
       toast(e instanceof Error ? e.message : "Failed to load data", "error");
@@ -209,6 +234,7 @@ export default function UserDetailPage() {
   useEffect(() => {
     if (tab === "overview" || tab === "bank") return;
     void loadTabData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab, page, loadTabData]);
 
   useEffect(() => {
@@ -916,6 +942,86 @@ export default function UserDetailPage() {
               </div>
             )}
           </Surface>
+        </div>
+      )}
+
+      {/* ── User Hub — Yesterday Stats ── */}
+      {tab === "userhub" && (
+        <div className="space-y-4 admin-fade-up">
+          {listLoading ? (
+            <LoadingBlock label="Loading yesterday's stats…" />
+          ) : !yesterdayStats ? (
+            <EmptyBlock label="No data available" />
+          ) : (
+            <>
+              <div className="admin-surface p-4">
+                <h3 className="text-sm font-bold text-slate-800">
+                  Yesterday&apos;s Team Performance
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Stats for IST date: <span className="font-mono font-semibold text-slate-700">{yesterdayStats.date}</span>
+                </p>
+              </div>
+
+              {yesterdayStats.levels.map((lv) => {
+                const isSelf = lv.level === "self";
+                const label = isSelf ? "Self" : `Level ${lv.level}`;
+                return (
+                  <div
+                    key={String(lv.level)}
+                    className={`rounded-xl border p-4 shadow-sm ${
+                      isSelf
+                        ? "bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200"
+                        : "bg-white border-slate-200"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-3">
+                      <h4 className={`text-sm font-bold ${
+                        isSelf ? "text-blue-800" : "text-slate-800"
+                      }`}>
+                        {label}
+                      </h4>
+                      <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600">
+                        {lv.memberCount} {lv.memberCount === 1 ? "member" : "members"}
+                      </span>
+                    </div>
+                    <div className="grid gap-3 grid-cols-2 sm:grid-cols-3">
+                      {/* Deposit */}
+                      <div className="rounded-lg bg-emerald-50 border border-emerald-100 p-3">
+                        <p className="text-[10px] font-semibold text-emerald-600 uppercase tracking-wide">Deposits</p>
+                        <p className="mt-1 text-lg font-black tabular-nums text-emerald-800">
+                          {lv.depositCount}
+                        </p>
+                        <p className="text-xs font-semibold text-emerald-700 tabular-nums">
+                          {money(lv.depositAmount)}
+                        </p>
+                      </div>
+                      {/* Withdraw */}
+                      <div className="rounded-lg bg-amber-50 border border-amber-100 p-3">
+                        <p className="text-[10px] font-semibold text-amber-600 uppercase tracking-wide">Withdrawals</p>
+                        <p className="mt-1 text-lg font-black tabular-nums text-amber-800">
+                          {lv.withdrawCount}
+                        </p>
+                        <p className="text-xs font-semibold text-amber-700 tabular-nums">
+                          {money(lv.withdrawAmount)}
+                        </p>
+                      </div>
+                      {/* Bets */}
+                      <div className="rounded-lg bg-violet-50 border border-violet-100 p-3">
+                        <p className="text-[10px] font-semibold text-violet-600 uppercase tracking-wide">Bets</p>
+                        <p className="mt-1 text-lg font-black tabular-nums text-violet-800">
+                          {lv.betCount}
+                        </p>
+                        <p className="text-xs font-semibold text-violet-700 tabular-nums">
+                          {money(lv.betAmount)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </>
+          )}
         </div>
       )}
 

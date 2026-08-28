@@ -176,6 +176,23 @@ export async function getUserDetails(id: string) {
   );
 }
 
+export async function getUserYesterdayStats(id: string) {
+  return adminRequest<{
+    success: true;
+    date: string;
+    levels: Array<{
+      level: string | number;
+      memberCount: number;
+      depositCount: number;
+      depositAmount: number;
+      withdrawCount: number;
+      withdrawAmount: number;
+      betCount: number;
+      betAmount: number;
+    }>;
+  }>(`/admin/users/${id}/yesterday-stats`, { timeoutMs: 60_000 });
+}
+
 export async function updateUserPenalty(
   id: string,
   data: {
