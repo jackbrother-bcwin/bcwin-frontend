@@ -10,7 +10,6 @@ import {
   IoBusinessOutline,
   IoPersonOutline,
   IoCardOutline,
-  IoCallOutline,
   IoKeyOutline,
   IoWarningOutline,
   IoSearchOutline,
@@ -27,6 +26,14 @@ import * as api from "../../lib/api";
 import type { BankSavePayload } from "../../lib/api";
 import { INDIAN_BANKS } from "./indianBanks";
 import { useSpaBackClose } from "../../hooks/useSpaBackClose";
+import {
+  isValidBankAccount,
+  isValidBep20Address,
+  isValidIfsc,
+  isValidRecipientName,
+  isValidTrc20Address,
+  isValidUpiId,
+} from "../../lib/bank-validation";
 
 export type BankPageMode = "bank" | "upi" | "usdt";
 
@@ -51,12 +58,18 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [canUpdate, setCanUpdate] = useState(true);
   const [nextUpdateAt, setNextUpdateAt] = useState<string | null>(null);
+  const [legacyInvalid, setLegacyInvalid] = useState({
+    bank: false,
+    upi: false,
+    trc20: false,
+    bep20: false,
+  });
 
   const [fullName, setFullName] = useState("");
   const [bankAccount, setBankAccount] = useState("");
   const [bankName, setBankName] = useState("");
   const [ifsc, setIfsc] = useState("");
-  const [phone, setPhone] = useState("");
+  const [confirmBankAccount, setConfirmBankAccount] = useState("");
   const [upiId, setUpiId] = useState("");
   const [tronAddress, setTronAddress] = useState("");
   /** Cached per-chain addresses so switching network does not lose the other */
@@ -128,6 +141,19 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
         setBankName(d.bankName ?? "");
         setIfsc(d.ifsc ?? "");
         setUpiId(d.upiId ?? "");
+        setLegacyInvalid({
+          bank:
+            !!(d.bankAccount || d.ifsc || d.bankName) &&
+            !(
+              !!d.bankName &&
+              isValidRecipientName(d.fullName ?? "") &&
+              isValidBankAccount(d.bankAccount ?? "") &&
+              isValidIfsc(d.ifsc ?? "")
+            ),
+          upi: !!d.upiId && !isValidUpiId(d.upiId),
+          trc20: !!trc && !isValidTrc20Address(trc),
+          bep20: !!bep && !isValidBep20Address(bep),
+        });
         setSavedTrc20(trc);
         setSavedBep20(bep);
         // Prefer BEP20 by default (when both or only BEP20); else TRC20
@@ -149,7 +175,7 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
         setCanUpdate(true);
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [isDemo]);
 
   useEffect(() => {
     if (otpCountdown <= 0) return;
@@ -172,13 +198,16 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
 
   const canSaveBank =
     !!bankName &&
-    fullName.trim().length >= 3 &&
-    bankAccount.trim().length >= 8 &&
-    ifsc.trim().length >= 6;
+    isValidRecipientName(fullName) &&
+    isValidBankAccount(bankAccount) &&
+    bankAccount.trim() === confirmBankAccount.trim() &&
+    isValidIfsc(ifsc);
 
-  const canSaveUpi = upiId.trim().includes("@");
-  const isTrc20Addr = /^T[1-9A-HJ-NP-Za-km-z]{33}$/.test(tronAddress.trim());
-  const isBep20Addr = /^0x[a-fA-F0-9]{40}$/.test(tronAddress.trim());
+  const canSaveUpi =
+    isValidUpiId(upiId) &&
+    (!fullName.trim() || isValidRecipientName(fullName));
+  const isTrc20Addr = isValidTrc20Address(tronAddress);
+  const isBep20Addr = isValidBep20Address(tronAddress);
   const canSaveUsdt =
     (network === "TRC20" && isTrc20Addr) ||
     (network === "BEP20" && isBep20Addr);
@@ -195,9 +224,71 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
         : network === "TRC20"
           ? !!savedTrc20.trim()
           : !!savedBep20.trim();
+  const currentMethodWasInvalid =
+    mode === "bank"
+      ? legacyInvalid.bank
+      : mode === "upi"
+        ? legacyInvalid.upi
+        : network === "TRC20"
+          ? legacyInvalid.trc20
+          : legacyInvalid.bep20;
   /** First-time add of empty fields always allowed; changing saved values needs 24h (demo can always update) */
-  const updateAllowed = isDemo || !modeAlreadySet || canUpdate;
+  const updateAllowed =
+    isDemo || !modeAlreadySet || canUpdate || currentMethodWasInvalid;
   const canSave = fieldsOk && otpOk && updateAllowed && otpTargetReady;
+
+  const fieldError =
+    mode === "bank"
+      ? !bankName
+        ? "Please select a bank"
+        : !isValidRecipientName(fullName)
+          ? "Recipient name must be 3–100 characters using letters, spaces, periods, apostrophes or hyphens"
+          : !isValidBankAccount(bankAccount)
+            ? "Account number must be 8–20 digits"
+            : bankAccount.trim() !== confirmBankAccount.trim()
+              ? "Account numbers do not match"
+              : !isValidIfsc(ifsc)
+                ? "IFSC must be 11 characters: 4 letters, 0, then 6 letters or digits"
+                : null
+      : mode === "upi"
+        ? !isValidUpiId(upiId)
+          ? "Enter a valid UPI ID in name@handle format (3–50 characters, no spaces)"
+          : fullName.trim() && !isValidRecipientName(fullName)
+            ? "Account holder name must be 3–100 characters using letters, spaces, periods, apostrophes or hyphens"
+            : null
+        : !canSaveUsdt
+          ? network === "TRC20"
+            ? "Enter a valid TRC20 address (T followed by 33 Base58 characters)"
+            : "Enter a valid BEP20 address (0x followed by 40 hexadecimal characters)"
+          : null;
+
+  const buildSavePayload = (): BankSavePayload => {
+    const addr = tronAddress.trim() || null;
+    const usdtFields: Pick<
+      BankSavePayload,
+      "trc20Address" | "bep20Address"
+    > =
+      network === "TRC20"
+        ? { trc20Address: addr, bep20Address: undefined }
+        : { bep20Address: addr, trc20Address: undefined };
+
+    return {
+      ...(mode === "bank"
+        ? {
+            fullName: fullName.trim(),
+            bankAccount: bankAccount.trim(),
+            bankName: bankName.trim(),
+            ifsc: ifsc.trim().toUpperCase(),
+          }
+        : mode === "upi"
+          ? {
+              upiId: upiId.trim(),
+              fullName: fullName.trim() || null,
+            }
+          : usdtFields),
+      otp: otp.replace(/\D/g, "").trim(),
+    };
+  };
 
   const sendOtp = async () => {
     if (!otpTargetReady) {
@@ -268,7 +359,7 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
   const handleSave = async () => {
     setError(null);
     if (!fieldsOk) {
-      setError("Please complete all required fields");
+      setError(fieldError ?? "Please complete all required fields");
       return;
     }
     if (!isDemo && !otpTargetReady) {
@@ -283,7 +374,12 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
       setError("Enter the 6-digit OTP");
       return;
     }
-    if (!isDemo && modeAlreadySet && !canUpdate) {
+    if (
+      !isDemo &&
+      modeAlreadySet &&
+      !canUpdate &&
+      !currentMethodWasInvalid
+    ) {
       setError(
         nextUpdateAt
           ? `You can change saved details once every 24 hours. Try after ${new Date(nextUpdateAt).toLocaleString()}`
@@ -303,25 +399,8 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
     }
     setSaving(true);
     try {
-      // Map UI address into the correct chain field (API uses trc20/bep20, not tronAddress)
-      const addr = tronAddress.trim() || null;
-      const usdtFields: Pick<BankSavePayload, "trc20Address" | "bep20Address"> =
-        mode === "usdt"
-          ? network === "TRC20"
-            ? { trc20Address: addr, bep20Address: undefined }
-            : { bep20Address: addr, trc20Address: undefined }
-          : {};
-
-      // Merge with existing so we don't wipe other channels
-      const payload: BankSavePayload = {
-        fullName: fullName.trim() || null,
-        bankAccount: bankAccount.trim() || null,
-        bankName: bankName.trim() || null,
-        ifsc: ifsc.trim().toUpperCase() || null,
-        upiId: upiId.trim() || null,
-        ...usdtFields,
-        otp: otp.replace(/\D/g, "").trim(),
-      };
+      // PATCH only the active method so unrelated saved destinations are untouched.
+      const payload = buildSavePayload();
       if (exists) await api.updateBank(payload);
       else await api.saveBank(payload);
       setExists(true);
@@ -329,6 +408,16 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
         setCanUpdate(false);
         setNextUpdateAt(new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString());
       }
+      setLegacyInvalid((current) => ({
+        ...current,
+        ...(mode === "bank"
+          ? { bank: false }
+          : mode === "upi"
+            ? { upi: false }
+            : network === "TRC20"
+              ? { trc20: false }
+              : { bep20: false }),
+      }));
       toast("Saved successfully", "success");
       onBack();
     } catch (e: unknown) {
@@ -336,25 +425,7 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
       const msg = e instanceof Error ? e.message : "Save failed";
       if (/already exist/i.test(msg)) {
         try {
-          const addr = tronAddress.trim() || null;
-          const usdtFields: Pick<
-            BankSavePayload,
-            "trc20Address" | "bep20Address"
-          > =
-            mode === "usdt"
-              ? network === "TRC20"
-                ? { trc20Address: addr, bep20Address: undefined }
-                : { bep20Address: addr, trc20Address: undefined }
-              : {};
-          await api.updateBank({
-            fullName: fullName.trim() || null,
-            bankAccount: bankAccount.trim() || null,
-            bankName: bankName.trim() || null,
-            ifsc: ifsc.trim().toUpperCase() || null,
-            upiId: upiId.trim() || null,
-            ...usdtFields,
-            otp: otp.replace(/\D/g, "").trim(),
-          });
+          await api.updateBank(buildSavePayload());
           setExists(true);
           setCanUpdate(false);
           toast("Saved successfully", "success");
@@ -508,6 +579,7 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
               className={inputCls}
               style={inputStyle}
               placeholder="Please enter the recipient's name"
+              maxLength={100}
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
             />
@@ -521,18 +593,23 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
               style={inputStyle}
               placeholder="Please enter your bank account number"
               inputMode="numeric"
+              maxLength={20}
               value={bankAccount}
               onChange={(e) => setBankAccount(e.target.value)}
             />
 
-            <FieldLabel icon={<IoCallOutline />} text="Phone number" />
+            <FieldLabel
+              icon={<IoCardOutline />}
+              text="Confirm bank account number"
+            />
             <input
               className={inputCls}
               style={inputStyle}
-              placeholder="Please enter your phone number"
-              inputMode="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              placeholder="Re-enter your bank account number"
+              inputMode="numeric"
+              maxLength={20}
+              value={confirmBankAccount}
+              onChange={(e) => setConfirmBankAccount(e.target.value)}
             />
 
             <FieldLabel icon={<IoKeyOutline />} text="IFSC code" />
@@ -540,6 +617,7 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
               className={inputCls}
               style={inputStyle}
               placeholder="Please enter IFSC code"
+              maxLength={11}
               value={ifsc}
               onChange={(e) => setIfsc(e.target.value.toUpperCase())}
             />
@@ -553,6 +631,7 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
               className={inputCls}
               style={inputStyle}
               placeholder="name@upi"
+              maxLength={50}
               value={upiId}
               onChange={(e) => setUpiId(e.target.value)}
             />
@@ -564,6 +643,7 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
               className={inputCls}
               style={inputStyle}
               placeholder="Name as per UPI"
+              maxLength={100}
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
             />
@@ -696,6 +776,12 @@ export default function BankDetailsPage({ onBack, mode = "bank" }: Props) {
               ? ` after ${new Date(nextUpdateAt).toLocaleString()}`
               : " after 24 hours"}
             . You can still add other missing methods.
+          </p>
+        )}
+
+        {fieldError && (
+          <p className="text-[12px] text-[#f87171] font-semibold leading-snug px-0.5">
+            {fieldError}
           </p>
         )}
       </div>

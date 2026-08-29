@@ -4,6 +4,14 @@ import React, { useState } from "react";
 import * as admin from "../../../lib/admin-api";
 import { useToast } from "../../../components/ui/Toast";
 import { EmptyBlock, PageTitle, Surface } from "../../components/ui";
+import {
+  isValidBankAccount,
+  isValidBep20Address,
+  isValidIfsc,
+  isValidRecipientName,
+  isValidTrc20Address,
+  isValidUpiId,
+} from "../../../lib/bank-validation";
 
 type BankForm = {
   fullName: string;
@@ -34,6 +42,27 @@ const FIELDS: { key: keyof BankForm; label: string; placeholder: string }[] = [
   { key: "trc20Address", label: "USDT TRC20", placeholder: "T… (34 chars)" },
   { key: "bep20Address", label: "USDT BEP20", placeholder: "0x… (42 chars)" },
 ];
+
+function bankFormError(form: BankForm): string | null {
+  if (form.fullName.trim() && !isValidRecipientName(form.fullName))
+    return "Recipient name must be 3–100 valid characters";
+  if (
+    form.bankName.trim() &&
+    (form.bankName.trim().length < 2 || form.bankName.trim().length > 120)
+  )
+    return "Bank name must be 2–120 characters";
+  if (form.bankAccount.trim() && !isValidBankAccount(form.bankAccount))
+    return "Account number must be 8–20 digits";
+  if (form.ifsc.trim() && !isValidIfsc(form.ifsc))
+    return "IFSC must be 11 characters: 4 letters, 0, then 6 letters or digits";
+  if (form.upiId.trim() && !isValidUpiId(form.upiId))
+    return "UPI ID must use name@handle format (3–50 characters, no spaces)";
+  if (form.trc20Address.trim() && !isValidTrc20Address(form.trc20Address))
+    return "TRC20 address must start with T and contain 34 characters";
+  if (form.bep20Address.trim() && !isValidBep20Address(form.bep20Address))
+    return "BEP20 address must be 0x followed by 40 hexadecimal characters";
+  return null;
+}
 
 function flattenUser(u: {
   id: string;
@@ -167,6 +196,11 @@ export default function BankAdminPage() {
                 toast("Select a user first", "error");
                 return;
               }
+              const validationError = bankFormError(form);
+              if (validationError) {
+                toast(validationError, "error");
+                return;
+              }
               setBusy(true);
               try {
                 await admin.updateUserBank(editUserId, {
@@ -201,9 +235,30 @@ export default function BankAdminPage() {
                 <input
                   className="admin-input font-mono text-[13px]"
                   placeholder={placeholder}
+                  maxLength={
+                    key === "fullName"
+                      ? 100
+                      : key === "bankName"
+                        ? 120
+                        : key === "bankAccount"
+                          ? 20
+                          : key === "ifsc"
+                            ? 11
+                            : key === "upiId"
+                              ? 50
+                              : key === "trc20Address"
+                                ? 34
+                                : 42
+                  }
                   value={form[key]}
                   onChange={(e) =>
-                    setForm((f) => ({ ...f, [key]: e.target.value }))
+                    setForm((f) => ({
+                      ...f,
+                      [key]:
+                        key === "ifsc"
+                          ? e.target.value.toUpperCase()
+                          : e.target.value,
+                    }))
                   }
                 />
               </div>
