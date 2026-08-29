@@ -225,6 +225,8 @@ export default function WithdrawHistoryPage({ onBack }: Props) {
   );
 
   useEffect(() => {
+    // Initial/filtered page fetch is the external synchronization for this screen.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void load(1);
   }, [load]);
 
@@ -335,7 +337,17 @@ export default function WithdrawHistoryPage({ onBack }: Props) {
                   <Row label="Tx hash" value={w.txHash} mono />
                 ) : null}
                 <Row label="Time" value={formatTxTime(w.createdAt)} muted />
-                {w.note && <Row label="Note" value={w.note} muted />}
+                {w.note && (
+                  <Row
+                    label={
+                      w.status.toUpperCase() === "FAILED"
+                        ? "Rejection remark"
+                        : "Note"
+                    }
+                    value={w.note}
+                    muted
+                  />
+                )}
               </div>
               {canCancel(w.status) && (
                 <div className="px-3.5 pb-3">
@@ -652,5 +664,3 @@ function Sheet({
     </div>
   );
 }
-
-

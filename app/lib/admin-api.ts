@@ -381,6 +381,7 @@ export async function listWithdrawals(params?: {
 export async function manageWithdrawal(body: {
   action: "approve" | "reject";
   orderId: string;
+  remark?: string;
 }) {
   return adminRequest<{ success: true; message: string }>(
     "/admin/transactions/withdraw/manage",

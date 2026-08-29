@@ -27,6 +27,8 @@ function WithdrawalsInner() {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState(false);
+  const [rejectOrderIds, setRejectOrderIds] = useState<string[]>([]);
+  const [rejectRemark, setRejectRemark] = useState("");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -43,23 +45,39 @@ function WithdrawalsInner() {
   }, [page, status, toast]);
 
   useEffect(() => {
-    load();
+    // Initial/filtered page fetch is the external synchronization for this screen.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void load();
   }, [load]);
 
   const processable = useMemo(
-    () => rows.filter((r) => ["GENERATED", "PROCESSING"].includes(String(r.status))),
+    () => rows.filter((r) => String(r.status) === "GENERATED"),
     [rows]
   );
 
-  const bulk = async (action: "approve" | "reject", orderIds: string[]) => {
+  const bulk = async (
+    action: "approve" | "reject",
+    orderIds: string[],
+    remark?: string
+  ) => {
     if (!orderIds.length) return;
-    if (!confirm(`${action.toUpperCase()} ${orderIds.length} withdrawals?`)) return;
+    if (
+      action === "approve" &&
+      !confirm(`APPROVE ${orderIds.length} withdrawals?`)
+    )
+      return;
     setBusy(true);
     let ok = 0;
     let fail = 0;
     for (const orderId of orderIds) {
       try {
-        await admin.manageWithdrawal({ orderId, action });
+        await admin.manageWithdrawal({
+          orderId,
+          action,
+          ...(action === "reject" && remark?.trim()
+            ? { remark: remark.trim() }
+            : {}),
+        });
         ok++;
       } catch {
         fail++;
@@ -67,7 +85,20 @@ function WithdrawalsInner() {
     }
     toast(`${action}: ${ok} ok · ${fail} failed`, fail ? "error" : "success");
     setBusy(false);
-    load();
+    await load();
+  };
+
+  const openReject = (orderIds: string[]) => {
+    if (!orderIds.length) return;
+    setRejectOrderIds(orderIds);
+    setRejectRemark("");
+  };
+
+  const submitReject = async () => {
+    const orderIds = rejectOrderIds;
+    await bulk("reject", orderIds, rejectRemark);
+    setRejectOrderIds([]);
+    setRejectRemark("");
   };
 
   const selectedProcessable = [...selected].filter((id) =>
@@ -107,7 +138,7 @@ function WithdrawalsInner() {
             variant: "danger",
             icon: "close",
             disabled: busy || !selectedProcessable.length,
-            onClick: () => bulk("reject", selectedProcessable),
+            onClick: () => openReject(selectedProcessable),
           },
           {
             label: `Approve ALL pending (${processable.length})`,
@@ -121,7 +152,8 @@ function WithdrawalsInner() {
             variant: "danger",
             icon: "close",
             disabled: busy || !processable.length,
-            onClick: () => bulk("reject", processable.map((r) => String(r.orderId))),
+            onClick: () =>
+              openReject(processable.map((r) => String(r.orderId))),
           },
         ]}
       />
@@ -163,6 +195,7 @@ function WithdrawalsInner() {
                   <th>Amount</th>
                   <th>Method</th>
                   <th>Status</th>
+                  <th>Remark</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -170,7 +203,7 @@ function WithdrawalsInner() {
                 {rows.map((r) => {
                   const orderId = String(r.orderId ?? "");
                   const st = String(r.status ?? "");
-                  const can = ["GENERATED", "PROCESSING"].includes(st);
+                  const can = st === "GENERATED";
                   const u = (r.user ?? {}) as Record<string, unknown>;
                   const uid = String(u.id ?? r.userId ?? "");
                   return (
@@ -181,7 +214,8 @@ function WithdrawalsInner() {
                           checked={selected.has(orderId)}
                           onChange={(e) => {
                             const n = new Set(selected);
-                            e.target.checked ? n.add(orderId) : n.delete(orderId);
+                            if (e.target.checked) n.add(orderId);
+                            else n.delete(orderId);
                             setSelected(n);
                           }}
                         />
@@ -196,13 +230,18 @@ function WithdrawalsInner() {
                       <td className="font-semibold">₹{Number(r.amount ?? 0).toLocaleString("en-IN")}</td>
                       <td>{String(r.method ?? "—")}</td>
                       <td><Badge status={st} /></td>
+                      <td className="max-w-[220px] text-xs text-slate-600">
+                        <span className="line-clamp-2" title={String(r.note ?? "")}>
+                          {String(r.note ?? "—")}
+                        </span>
+                      </td>
                       <td>
                         <div className="flex flex-wrap items-center gap-1">
                           <AdminHubLink userId={uid} />
                           {can && (
                             <>
                               <button type="button" disabled={busy} onClick={() => bulk("approve", [orderId])} className="admin-btn-success text-[11px]">Approve</button>
-                              <button type="button" disabled={busy} onClick={() => bulk("reject", [orderId])} className="admin-btn-danger text-[11px]">Reject</button>
+                              <button type="button" disabled={busy} onClick={() => openReject([orderId])} className="admin-btn-danger text-[11px]">Reject</button>
                             </>
                           )}
                         </div>
@@ -216,6 +255,69 @@ function WithdrawalsInner() {
         )}
         <Pagination page={page} totalPages={totalPages} onPage={setPage} />
       </Surface>
+
+      {rejectOrderIds.length > 0 && (
+        <div
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/55 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="reject-withdrawal-title"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget && !busy) setRejectOrderIds([]);
+          }}
+        >
+          <form
+            className="w-full max-w-md rounded-2xl bg-white p-5 shadow-2xl"
+            onSubmit={(e) => {
+              e.preventDefault();
+              void submitReject();
+            }}
+          >
+            <h2
+              id="reject-withdrawal-title"
+              className="text-lg font-bold text-slate-900"
+            >
+              Reject {rejectOrderIds.length} withdrawal
+              {rejectOrderIds.length === 1 ? "" : "s"}?
+            </h2>
+            <p className="mt-1 text-sm text-slate-500">
+              The amount will be refunded. This remark will be visible to the
+              user in Withdrawal history.
+            </p>
+            <label className="mt-4 block text-xs font-semibold text-slate-600">
+              Rejection remark (optional)
+            </label>
+            <textarea
+              className="admin-input mt-1 min-h-28 resize-y"
+              maxLength={300}
+              autoFocus
+              placeholder="Example: Account holder name does not match"
+              value={rejectRemark}
+              onChange={(e) => setRejectRemark(e.target.value)}
+            />
+            <p className="mt-1 text-right text-[11px] text-slate-400">
+              {rejectRemark.length}/300
+            </p>
+            <div className="mt-4 flex justify-end gap-2">
+              <button
+                type="button"
+                className="admin-btn-ghost"
+                disabled={busy}
+                onClick={() => setRejectOrderIds([])}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="admin-btn-danger"
+                disabled={busy}
+              >
+                {busy ? "Rejecting…" : "Reject and refund"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 }
