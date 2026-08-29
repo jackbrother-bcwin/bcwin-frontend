@@ -116,7 +116,7 @@ export default function IllegalBetPenaltiesPage() {
         action={
           <div className="flex flex-wrap gap-2">
             <Link
-              href="/admin/illegal-bets"
+              href="/greebuserrichadmin/illegal-bets"
               className="admin-btn-ghost text-xs no-underline"
             >
               ← Illegal bets (detections)
@@ -229,7 +229,7 @@ export default function IllegalBetPenaltiesPage() {
                           Clear
                         </button>
                         <Link
-                          href={`/admin/users/${u.id}`}
+                          href={`/greebuserrichadmin/users/${u.id}`}
                           className="text-xs font-bold text-blue-600 hover:underline"
                         >
                           Hub

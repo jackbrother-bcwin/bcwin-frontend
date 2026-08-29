@@ -720,7 +720,7 @@ export default function SalaryPage() {
                             {/* Go to user hub button */}
                             {userId && (
                               <Link
-                                href={`/admin/users/${userId}?tab=salary`}
+                                href={`/greebuserrichadmin/users/${userId}?tab=salary`}
                                 className="inline-flex items-center gap-1 rounded bg-blue-50 px-2 py-1 text-xs font-bold text-blue-700 hover:bg-blue-100 transition-colors no-underline"
                               >
                                 Hub ↗
@@ -921,7 +921,7 @@ export default function SalaryPage() {
                               <span>{user?.mobileNumber ?? String(c.userId).slice(0, 8)}</span>
                               {userId && (
                                 <Link
-                                  href={`/admin/users/${userId}?tab=salary`}
+                                  href={`/greebuserrichadmin/users/${userId}?tab=salary`}
                                   className="text-blue-600 hover:underline text-[10px]"
                                 >
                                   Hub ↗

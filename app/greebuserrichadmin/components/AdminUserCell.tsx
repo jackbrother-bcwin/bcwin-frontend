@@ -37,7 +37,7 @@ export function AdminUserCell({
       ) : null}
       {showHub && uid ? (
         <NextLink
-          href={`/admin/users/${uid}`}
+          href={`/greebuserrichadmin/users/${uid}`}
           className="mt-1 inline-block admin-btn-ghost text-[11px] no-underline"
         >
           Hub
@@ -51,7 +51,7 @@ export function AdminHubLink({ userId }: { userId?: string }) {
   if (!userId) return null;
   return (
     <NextLink
-      href={`/admin/users/${userId}`}
+      href={`/greebuserrichadmin/users/${userId}`}
       className="admin-btn-ghost text-[11px] no-underline"
     >
       Hub

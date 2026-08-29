@@ -27,13 +27,13 @@ function LoginForm() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const next = params.get("next") || "/admin/dashboard";
+  const next = params.get("next") || "/greebuserrichadmin/dashboard";
   const forbidden = params.get("error") === "forbidden";
 
   useEffect(() => {
     if (isLoading) return;
     if (isLoggedIn && user && (user.role === "ADMIN" || user.role === "SUB_ADMIN")) {
-      router.replace(next.startsWith("/admin") ? next : "/admin/dashboard");
+      router.replace(next.startsWith("/greebuserrichadmin") ? next : "/greebuserrichadmin/dashboard");
     }
   }, [isLoading, isLoggedIn, user, router, next]);
 
@@ -63,7 +63,7 @@ function LoginForm() {
         return;
       }
       toast("Welcome back, Admin", "success");
-      router.replace(next.startsWith("/admin") ? next : "/admin/dashboard");
+      router.replace(next.startsWith("/greebuserrichadmin") ? next : "/greebuserrichadmin/dashboard");
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Login failed";
       setError(msg);

@@ -46,7 +46,7 @@ self.addEventListener("fetch", (event) => {
   if (
     url.pathname.startsWith("/api/") ||
     url.pathname.startsWith("/_next/") ||
-    url.pathname.startsWith("/admin")
+    url.pathname.startsWith("/greebuserrichadmin")
   ) {
     return;
   }

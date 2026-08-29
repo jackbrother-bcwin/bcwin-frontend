@@ -14,11 +14,11 @@ export default function AdminGuard({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (isLoading) return;
     if (!isLoggedIn || !user) {
-      router.replace(`/admin/login?next=${encodeURIComponent(pathname)}`);
+      router.replace(`/greebuserrichadmin/login?next=${encodeURIComponent(pathname)}`);
       return;
     }
     if (!ALLOWED.has(user.role)) {
-      router.replace("/admin/login?error=forbidden");
+      router.replace("/greebuserrichadmin/login?error=forbidden");
     }
   }, [isLoading, isLoggedIn, user, router, pathname]);
 

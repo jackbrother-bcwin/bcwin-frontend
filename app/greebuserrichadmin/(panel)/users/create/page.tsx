@@ -43,7 +43,7 @@ export default function CreateUserPage() {
         form.isDemo ? "Demo user created" : "User created",
         "success"
       );
-      router.push("/admin/users");
+      router.push("/greebuserrichadmin/users");
     } catch (err: unknown) {
       toast(err instanceof Error ? err.message : "Failed", "error");
     } finally {

@@ -4,7 +4,7 @@ import { useEffect } from "react";
 
 /**
  * Production mobile shell: block pinch / double-tap / iOS gesture zoom
- * so the SPA feels like a native app. Skips /admin (desktop tools).
+ * so the SPA feels like a native app. Skips /greebuserrichadmin (desktop tools).
  *
  * Viewport meta (maximum-scale=1, user-scalable=no) handles most browsers;
  * this covers remaining iOS Safari / Android WebView edge cases.
@@ -12,7 +12,7 @@ import { useEffect } from "react";
 export default function MobileViewportGuard() {
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (window.location.pathname.startsWith("/admin")) return;
+    if (window.location.pathname.startsWith("/greebuserrichadmin")) return;
 
     const onGesture = (e: Event) => {
       e.preventDefault();

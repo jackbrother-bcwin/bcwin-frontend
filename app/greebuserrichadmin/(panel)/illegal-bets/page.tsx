@@ -18,7 +18,7 @@ export default function Page() {
         subtitle="Detection history of illegal / hedge bets. Manage user penalties on a separate page."
         action={
           <Link
-            href="/admin/illegal-bets/penalties"
+            href="/greebuserrichadmin/illegal-bets/penalties"
             className="admin-btn-primary text-xs no-underline"
           >
             Penalty users →
@@ -38,7 +38,7 @@ export default function Page() {
             </p>
           </div>
           <Link
-            href="/admin/illegal-bets/penalties"
+            href="/greebuserrichadmin/illegal-bets/penalties"
             className="admin-btn-secondary shrink-0 text-xs no-underline"
           >
             Open penalty users

@@ -73,49 +73,49 @@ export default function AdminDashboardPage() {
           label="Today's Recharge"
           value={fmt(deposits.todayAmount)}
           hint="SUCCESS only"
-          onClick={() => router.push("/admin/finance/deposits?status=SUCCESS")}
+          onClick={() => router.push("/greebuserrichadmin/finance/deposits?status=SUCCESS")}
         />
         <StatCard
           label="Today's Withdrawal"
           value={fmt(withdrawals.todayAmount)}
           hint="SUCCESS only"
-          onClick={() => router.push("/admin/finance/withdrawals?status=SUCCESS")}
+          onClick={() => router.push("/greebuserrichadmin/finance/withdrawals?status=SUCCESS")}
         />
         <StatCard
           label="User Balance"
           value={fmt(users.totalBalance)}
           hint="See in Detail"
-          onClick={() => router.push("/admin/users")}
+          onClick={() => router.push("/greebuserrichadmin/users")}
         />
         <StatCard
           label="Total Users"
           value={num(users.totalCount)}
           hint="See in Detail"
-          onClick={() => router.push("/admin/users")}
+          onClick={() => router.push("/greebuserrichadmin/users")}
         />
         <StatCard
           label="Pending Recharge"
           value={fmt(deposits.pendingAmount ?? deposits.processingAmount)}
           hint="See in Detail"
-          onClick={() => router.push("/admin/finance/deposits?status=PROCESSING")}
+          onClick={() => router.push("/greebuserrichadmin/finance/deposits?status=PROCESSING")}
         />
         <StatCard
           label="Success Recharge"
           value={fmt(deposits.successAmount ?? deposits.totalSuccessAmount)}
           hint="See in Detail"
-          onClick={() => router.push("/admin/finance/deposits?status=SUCCESS")}
+          onClick={() => router.push("/greebuserrichadmin/finance/deposits?status=SUCCESS")}
         />
         <StatCard
           label="Total Withdrawal"
           value={fmt(withdrawals.successAmount ?? withdrawals.totalSuccessAmount)}
           hint="See in Detail"
-          onClick={() => router.push("/admin/finance/withdrawals")}
+          onClick={() => router.push("/greebuserrichadmin/finance/withdrawals")}
         />
         <StatCard
           label="Withdrawal Requests"
           value={fmt(withdrawals.pendingAmount ?? withdrawals.processingAmount)}
           hint="See in Detail"
-          onClick={() => router.push("/admin/finance/withdrawals?status=PROCESSING")}
+          onClick={() => router.push("/greebuserrichadmin/finance/withdrawals?status=PROCESSING")}
         />
         <StatCard
           label="Today's total bet"
@@ -136,12 +136,12 @@ export default function AdminDashboardPage() {
           <h3 className="mb-3 text-sm font-bold text-slate-700">Quick actions</h3>
           <div className="flex flex-wrap gap-2">
             {[
-              { href: "/admin/games/wingo", label: "Set WinGo result" },
-              { href: "/admin/finance/deposits", label: "Approve deposits" },
-              { href: "/admin/finance/withdrawals", label: "Process withdrawals" },
-              { href: "/admin/support/queries", label: "Support tickets" },
-              { href: "/admin/gifts", label: "Create gift" },
-              { href: "/admin/config", label: "Platform config" },
+              { href: "/greebuserrichadmin/games/wingo", label: "Set WinGo result" },
+              { href: "/greebuserrichadmin/finance/deposits", label: "Approve deposits" },
+              { href: "/greebuserrichadmin/finance/withdrawals", label: "Process withdrawals" },
+              { href: "/greebuserrichadmin/support/queries", label: "Support tickets" },
+              { href: "/greebuserrichadmin/gifts", label: "Create gift" },
+              { href: "/greebuserrichadmin/config", label: "Platform config" },
             ].map((a) => (
               <button
                 key={a.href}

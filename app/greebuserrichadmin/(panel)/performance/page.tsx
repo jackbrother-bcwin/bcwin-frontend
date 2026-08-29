@@ -330,7 +330,7 @@ export default function TopPerformancePage() {
                     {filteredPerformers.map((p, idx) => {
                       const netProfit = p.netProfit ?? 0;
                       const isProfit = netProfit >= 0;
-                      const userHref = p.userId ? `/admin/users/${p.userId}` : null;
+                      const userHref = p.userId ? `/greebuserrichadmin/users/${p.userId}` : null;
                       const teamSize = p.totalTeamSize ?? 0;
                       const directCount = p.directDownlinksCount ?? 0;
 

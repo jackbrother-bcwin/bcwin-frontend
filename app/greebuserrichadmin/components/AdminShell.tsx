@@ -34,90 +34,90 @@ type NavItem = {
 };
 
 const NAV: NavItem[] = [
-  { href: "/admin/dashboard", label: "Dashboard", icon: <IoGridOutline size={18} /> },
+  { href: "/greebuserrichadmin/dashboard", label: "Dashboard", icon: <IoGridOutline size={18} /> },
   {
-    href: "/admin/games",
+    href: "/greebuserrichadmin/games",
     label: "Game Managers",
     icon: <IoGameControllerOutline size={18} />,
     children: [
-      { href: "/admin/games/wingo", label: "WinGo Manager" },
-      { href: "/admin/games/trxwingo", label: "TRX WinGo" },
-      { href: "/admin/games/k3", label: "K3 Manager" },
-      { href: "/admin/games/5d", label: "5D Manager" },
-      { href: "/admin/games/moto", label: "Moto Manager" },
+      { href: "/greebuserrichadmin/games/wingo", label: "WinGo Manager" },
+      { href: "/greebuserrichadmin/games/trxwingo", label: "TRX WinGo" },
+      { href: "/greebuserrichadmin/games/k3", label: "K3 Manager" },
+      { href: "/greebuserrichadmin/games/5d", label: "5D Manager" },
+      { href: "/greebuserrichadmin/games/moto", label: "Moto Manager" },
     ],
   },
   {
-    href: "/admin/finance",
+    href: "/greebuserrichadmin/finance",
     label: "Finance",
     icon: <IoCashOutline size={18} />,
     children: [
-      { href: "/admin/finance/deposits", label: "Deposits" },
-      { href: "/admin/finance/withdrawals", label: "Withdrawals" },
-      { href: "/admin/finance/game-history", label: "Game history" },
-      { href: "/admin/finance/commission", label: "Commission" },
-      { href: "/admin/finance/rebate", label: "Rebate" },
-      { href: "/admin/finance/balance", label: "Balance updates" },
+      { href: "/greebuserrichadmin/finance/deposits", label: "Deposits" },
+      { href: "/greebuserrichadmin/finance/withdrawals", label: "Withdrawals" },
+      { href: "/greebuserrichadmin/finance/game-history", label: "Game history" },
+      { href: "/greebuserrichadmin/finance/commission", label: "Commission" },
+      { href: "/greebuserrichadmin/finance/rebate", label: "Rebate" },
+      { href: "/greebuserrichadmin/finance/balance", label: "Balance updates" },
     ],
   },
   {
-    href: "/admin/users",
+    href: "/greebuserrichadmin/users",
     label: "Users",
     icon: <IoPeopleOutline size={18} />,
     children: [
-      { href: "/admin/users", label: "User list" },
-      { href: "/admin/users/create", label: "Create user" },
-      { href: "/admin/users/invite-tree", label: "Invite tree" },
-      { href: "/admin/agents", label: "Agents" },
-      { href: "/admin/subadmins", label: "Sub-admins" },
-      { href: "/admin/turnover", label: "Turnover + charts" },
-      { href: "/admin/bank", label: "Bank details" },
+      { href: "/greebuserrichadmin/users", label: "User list" },
+      { href: "/greebuserrichadmin/users/create", label: "Create user" },
+      { href: "/greebuserrichadmin/users/invite-tree", label: "Invite tree" },
+      { href: "/greebuserrichadmin/agents", label: "Agents" },
+      { href: "/greebuserrichadmin/subadmins", label: "Sub-admins" },
+      { href: "/greebuserrichadmin/turnover", label: "Turnover + charts" },
+      { href: "/greebuserrichadmin/bank", label: "Bank details" },
     ],
   },
   {
-    href: "/admin/support",
+    href: "/greebuserrichadmin/support",
     label: "Support",
     icon: <IoHeadsetOutline size={18} />,
     children: [
-      { href: "/admin/support/queries", label: "Queries (bulk)" },
-      { href: "/admin/support/notifications", label: "Notifications" },
+      { href: "/greebuserrichadmin/support/queries", label: "Queries (bulk)" },
+      { href: "/greebuserrichadmin/support/notifications", label: "Notifications" },
     ],
   },
   {
-    href: "/admin/manage",
+    href: "/greebuserrichadmin/manage",
     label: "Manage",
     icon: <IoSparklesOutline size={18} />,
     children: [
-      { href: "/admin/gifts", label: "Gifts" },
-      { href: "/admin/vip", label: "VIP rules" },
-      { href: "/admin/activity", label: "Activity tiers" },
-      { href: "/admin/spin", label: "Lucky spin" },
-      { href: "/admin/win-streak", label: "Win streak" },
-      { href: "/admin/salary", label: "Salary" },
+      { href: "/greebuserrichadmin/gifts", label: "Gifts" },
+      { href: "/greebuserrichadmin/vip", label: "VIP rules" },
+      { href: "/greebuserrichadmin/activity", label: "Activity tiers" },
+      { href: "/greebuserrichadmin/spin", label: "Lucky spin" },
+      { href: "/greebuserrichadmin/win-streak", label: "Win streak" },
+      { href: "/greebuserrichadmin/salary", label: "Salary" },
     ],
   },
   {
-    href: "/admin/security",
+    href: "/greebuserrichadmin/security",
     label: "Security",
     icon: <IoShieldCheckmarkOutline size={18} />,
     children: [
-      { href: "/admin/illegal-bets", label: "Illegal bets" },
-      { href: "/admin/illegal-bets/penalties", label: "Penalty users" },
-      { href: "/admin/ip", label: "IP control" },
+      { href: "/greebuserrichadmin/illegal-bets", label: "Illegal bets" },
+      { href: "/greebuserrichadmin/illegal-bets/penalties", label: "Penalty users" },
+      { href: "/greebuserrichadmin/ip", label: "IP control" },
     ],
   },
-  { href: "/admin/profit-loss", label: "Profit & Loss", icon: <IoStatsChartOutline size={18} /> },
-  { href: "/admin/performance", label: "Top performance", icon: <IoTrophyOutline size={18} /> },
+  { href: "/greebuserrichadmin/profit-loss", label: "Profit & Loss", icon: <IoStatsChartOutline size={18} /> },
+  { href: "/greebuserrichadmin/performance", label: "Top performance", icon: <IoTrophyOutline size={18} /> },
   {
-    href: "/admin/config",
+    href: "/greebuserrichadmin/config",
     label: "Config",
     icon: <IoSettingsOutline size={18} />,
     children: [
-      { href: "/admin/config", label: "Platform config" },
-      { href: "/admin/config/commission", label: "Commission rates" },
+      { href: "/greebuserrichadmin/config", label: "Platform config" },
+      { href: "/greebuserrichadmin/config/commission", label: "Commission rates" },
     ],
   },
-  { href: "/admin/inout", label: "Inout games", icon: <IoGlobeOutline size={18} /> },
+  { href: "/greebuserrichadmin/inout", label: "Inout games", icon: <IoGlobeOutline size={18} /> },
 ];
 
 const SIDEBAR_W = 260;
@@ -135,7 +135,7 @@ function useIsDesktop() {
 }
 
 function crumbLabel(pathname: string) {
-  const raw = pathname.replace(/^\/admin\/?/, "") || "dashboard";
+  const raw = pathname.replace(/^\/greebuserrichadmin\/?/, "") || "dashboard";
   return raw
     .split("/")
     .filter(Boolean)
@@ -194,12 +194,12 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   const handleLogout = async () => {
     await logout();
     toast("Logged out", "success");
-    router.replace("/admin/login");
+    router.replace("/greebuserrichadmin/login");
   };
 
   const isActive = (href: string) =>
     pathname === href ||
-    (href !== "/admin/dashboard" && pathname.startsWith(href + "/"));
+    (href !== "/greebuserrichadmin/dashboard" && pathname.startsWith(href + "/"));
 
   const navLinkClass = (active: boolean) =>
     `admin-nav-item flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-[13px] font-medium transition-colors ${

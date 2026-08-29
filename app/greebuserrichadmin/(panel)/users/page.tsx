@@ -54,7 +54,7 @@ export default function UsersListPage() {
         subtitle="Search, inspect, ban, and adjust balances"
         action={
           <div className="flex gap-2">
-            <Link href="/admin/users/create" className="admin-btn-primary text-xs no-underline">
+            <Link href="/greebuserrichadmin/users/create" className="admin-btn-primary text-xs no-underline">
               Create user
             </Link>
             <RefreshBtn onClick={load} loading={loading} />
@@ -157,37 +157,37 @@ export default function UsersListPage() {
                       <td>
                         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 whitespace-nowrap">
                           <Link
-                            href={`/admin/users/${uid}`}
+                            href={`/greebuserrichadmin/users/${uid}`}
                             className="text-xs font-bold text-blue-600 hover:underline"
                           >
                             Hub
                           </Link>
                           <Link
-                            href={`/admin/users/${uid}?tab=salary`}
+                            href={`/greebuserrichadmin/users/${uid}?tab=salary`}
                             className="text-xs font-semibold text-slate-500 hover:text-blue-600 hover:underline"
                           >
                             Salary
                           </Link>
                           <Link
-                            href={`/admin/users/${uid}?tab=deposits`}
+                            href={`/greebuserrichadmin/users/${uid}?tab=deposits`}
                             className="text-xs font-semibold text-slate-500 hover:text-blue-600 hover:underline"
                           >
                             Deposits
                           </Link>
                           <Link
-                            href={`/admin/users/${uid}?tab=withdrawals`}
+                            href={`/greebuserrichadmin/users/${uid}?tab=withdrawals`}
                             className="text-xs font-semibold text-slate-500 hover:text-blue-600 hover:underline"
                           >
                             Withdraw
                           </Link>
                           <Link
-                            href={`/admin/users/${uid}?tab=bets`}
+                            href={`/greebuserrichadmin/users/${uid}?tab=bets`}
                             className="text-xs font-semibold text-slate-500 hover:text-blue-600 hover:underline"
                           >
                             Bets
                           </Link>
                           <Link
-                            href={`/admin/users/${uid}?tab=invite`}
+                            href={`/greebuserrichadmin/users/${uid}?tab=invite`}
                             className="text-xs font-semibold text-slate-500 hover:text-blue-600 hover:underline"
                           >
                             Tree

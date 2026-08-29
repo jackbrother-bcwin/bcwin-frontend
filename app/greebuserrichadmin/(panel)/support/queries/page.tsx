@@ -492,7 +492,7 @@ function UserCard({ user }: { user: QueryUser }): React.JSX.Element {
         <button
           type="button"
           onClick={() => {
-            window.open(`/admin/users?search=${encodeURIComponent(username !== "N/A" ? username : mobile)}`, "_blank");
+            window.open(`/greebuserrichadmin/users?search=${encodeURIComponent(username !== "N/A" ? username : mobile)}`, "_blank");
           }}
           className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:underline"
         >

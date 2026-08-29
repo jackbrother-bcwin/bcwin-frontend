@@ -243,7 +243,7 @@ export default function UserDetailPage() {
 
   const setTabNav = (t: TabId) => {
     setTab(t);
-    const url = `/admin/users/${id}${t === "overview" ? "" : `?tab=${t}`}`;
+    const url = `/greebuserrichadmin/users/${id}${t === "overview" ? "" : `?tab=${t}`}`;
     router.replace(url, { scroll: false });
   };
 
@@ -412,7 +412,7 @@ export default function UserDetailPage() {
               Give Salary
             </button>
             <Link
-              href={`/admin/users/invite-tree?q=${encodeURIComponent(String(user.id))}`}
+              href={`/greebuserrichadmin/users/invite-tree?q=${encodeURIComponent(String(user.id))}`}
               className="admin-btn-ghost text-xs no-underline"
             >
               Open invite tree
@@ -420,7 +420,7 @@ export default function UserDetailPage() {
             <button
               type="button"
               className="admin-btn-ghost text-xs inline-flex items-center gap-1"
-              onClick={() => router.push("/admin/users")}
+              onClick={() => router.push("/greebuserrichadmin/users")}
             >
               <IoArrowBack size={14} /> Users
             </button>
@@ -788,7 +788,7 @@ export default function UserDetailPage() {
                               <td>{fmtDate(m.createdAt)}</td>
                               <td>
                                 <Link
-                                  href={`/admin/users/${mid}`}
+                                  href={`/greebuserrichadmin/users/${mid}`}
                                   className="text-blue-600 hover:underline"
                                 >
                                   Open hub →
