@@ -73,6 +73,8 @@ function ChartShell({
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // Recharts must wait for a browser-measured container after hydration.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
@@ -138,6 +140,76 @@ export function AdminBarChart({
           {yKey2 && (
             <Bar dataKey={yKey2} fill="#22c55e" radius={[6, 6, 0, 0]} />
           )}
+        </BarChart>
+      </ResponsiveContainer>
+    </ChartShell>
+  );
+}
+
+export function AdminHorizontalPercentChart({
+  data,
+  height,
+  title,
+}: {
+  data: Array<{ label: string; share: number; amount: number }>;
+  height?: number;
+  title?: string;
+}) {
+  const sanitized = (data || []).map((item) => ({
+    ...item,
+    share: Number(item.share) || 0,
+    amount: Number(item.amount) || 0,
+  }));
+
+  if (!sanitized.length) return null;
+  const chartHeight = height ?? Math.max(230, sanitized.length * 38 + 50);
+
+  return (
+    <ChartShell title={title} height={chartHeight}>
+      <ResponsiveContainer width="99%" height="100%">
+        <BarChart
+          data={sanitized}
+          layout="vertical"
+          margin={{ top: 4, right: 22, left: 12, bottom: 0 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" horizontal={false} />
+          <XAxis
+            type="number"
+            domain={[0, 100]}
+            tick={{ fontSize: 10 }}
+            stroke="#94a3b8"
+            tickFormatter={(value) => `${value}%`}
+          />
+          <YAxis
+            type="category"
+            dataKey="label"
+            width={120}
+            tick={{ fontSize: 10 }}
+            stroke="#94a3b8"
+            tickFormatter={(value) =>
+              String(value).length > 18
+                ? `${String(value).slice(0, 17)}…`
+                : String(value)
+            }
+          />
+          <Tooltip
+            formatter={(value, name, item) => {
+              if (name === "share") {
+                const amount = Number(item.payload?.amount ?? 0).toLocaleString(
+                  "en-IN",
+                  { maximumFractionDigits: 3 }
+                );
+                return [`${Number(value).toFixed(2)}% · ₹${amount}`, "Contribution"];
+              }
+              return [value, name];
+            }}
+            contentStyle={{
+              borderRadius: 8,
+              border: "1px solid #e2e8f0",
+              fontSize: 12,
+            }}
+          />
+          <Bar dataKey="share" fill="#2563eb" radius={[0, 6, 6, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </ChartShell>

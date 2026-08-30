@@ -239,6 +239,79 @@ export async function getUserYesterdayStats(id: string) {
   }>(`/admin/users/${id}/yesterday-stats`, { timeoutMs: 60_000 });
 }
 
+export type TeamDayMetric = {
+  count: number;
+  amount: number;
+};
+
+export type TeamDayMetricSet = {
+  memberCount: number;
+  deposit: TeamDayMetric;
+  withdrawal: TeamDayMetric;
+  bet: TeamDayMetric;
+};
+
+export type TeamDayLeg = Omit<TeamDayMetricSet, "deposit" | "withdrawal" | "bet"> & {
+  id: string;
+  username: string;
+  mobileNumber: string;
+  serialNumber: number;
+  deposit: TeamDayMetric & { share: number };
+  withdrawal: TeamDayMetric & { share: number };
+  bet: TeamDayMetric & { share: number };
+};
+
+export type TeamDayAnalysis = {
+  success: true;
+  date: string;
+  self: TeamDayMetricSet;
+  team: TeamDayMetricSet;
+  levels: Array<TeamDayMetricSet & { level: number }>;
+  concentration: {
+    isConcentrated: boolean;
+    threshold: number;
+    leader: {
+      id: string;
+      username: string;
+      serialNumber: number;
+      amount: number;
+      share: number;
+    } | null;
+  };
+  chart: Array<{
+    id: string;
+    label: string;
+    amount: number;
+    share: number;
+    isOthers: boolean;
+  }>;
+  legs: TeamDayLeg[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+  sortBy: "deposit" | "withdrawal" | "bet";
+};
+
+export async function getUserTeamDayAnalysis(
+  id: string,
+  params: {
+    date: string;
+    sortBy: "deposit" | "withdrawal" | "bet";
+    page?: number;
+  }
+) {
+  return adminRequest<TeamDayAnalysis>(
+    `/admin/users/${id}/team-day-analysis${q({
+      ...params,
+      limit: 25,
+    })}`,
+    { timeoutMs: 60_000 }
+  );
+}
+
 export async function updateUserPenalty(
   id: string,
   data: {

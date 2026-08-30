@@ -15,7 +15,6 @@ import {
   IoWalletOutline,
   IoCardOutline,
   IoStatsChartOutline,
-  IoOpenOutline,
   IoCalendarOutline,
 } from "react-icons/io5";
 import * as admin from "../../../../lib/admin-api";
@@ -29,7 +28,8 @@ import {
   Surface,
 } from "../../../components/ui";
 import { AdminBarChart, AdminPieChart } from "../../../components/Charts";
-import { formatIstDateTime } from "../../../../lib/ist-day";
+import { TeamDayAnalysisPanel } from "../../../components/TeamDayAnalysis";
+import { formatIstDateTime, latestSettledYmd } from "../../../../lib/ist-day";
 
 type TabId =
   | "overview"
@@ -141,23 +141,21 @@ export default function UserDetailPage() {
     tree: Array<Record<string, unknown>>;
   } | null>(null);
 
-  // User Hub — yesterday stats
-  type YesterdayLevel = {
-    level: string | number;
-    memberCount: number;
-    depositCount: number;
-    depositAmount: number;
-    withdrawCount: number;
-    withdrawAmount: number;
-    betCount: number;
-    betAmount: number;
-  };
-  const [yesterdayStats, setYesterdayStats] = useState<{
-    date: string;
-    levels: YesterdayLevel[];
-  } | null>(null);
+  // User Hub — one completed IST day
+  const maxTeamDate = useMemo(() => latestSettledYmd(), []);
+  const [teamDate, setTeamDate] = useState(maxTeamDate);
+  const [teamSort, setTeamSort] = useState<"deposit" | "withdrawal" | "bet">(
+    "deposit"
+  );
+  const [teamPage, setTeamPage] = useState(1);
+  const [teamAnalysis, setTeamAnalysis] = useState<admin.TeamDayAnalysis | null>(
+    null
+  );
 
-  const stats = (user?.stats as Record<string, unknown>) ?? {};
+  const stats = useMemo(
+    () => (user?.stats as Record<string, unknown>) ?? {},
+    [user]
+  );
   const bank = (user?.bank as Record<string, unknown> | null) ?? null;
 
   const loadUser = useCallback(async () => {
@@ -176,6 +174,8 @@ export default function UserDetailPage() {
     void loadUser();
   }, [loadUser]);
 
+  // This existing tab loader intentionally owns several independent list setters.
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const loadTabData = useCallback(async () => {
     if (!id) return;
     setListLoading(true);
@@ -218,26 +218,30 @@ export default function UserDetailPage() {
       } else if (tab === "salary") {
         await loadSalary();
       } else if (tab === "userhub") {
-        const res = await admin.getUserYesterdayStats(id);
-        setYesterdayStats({
-          date: res.date ?? "",
-          levels: res.levels ?? [],
+        const res = await admin.getUserTeamDayAnalysis(id, {
+          date: teamDate,
+          sortBy: teamSort,
+          page: teamPage,
         });
+        setTeamAnalysis(res);
       }
     } catch (e: unknown) {
       toast(e instanceof Error ? e.message : "Failed to load data", "error");
     } finally {
       setListLoading(false);
     }
-  }, [id, tab, page, toast, loadSalary]);
+  }, [id, tab, page, toast, loadSalary, teamDate, teamSort, teamPage]);
 
   useEffect(() => {
     if (tab === "overview" || tab === "bank") return;
+    // Tab/date/page changes synchronize this client screen with the admin API.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void loadTabData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab, page, loadTabData]);
 
   useEffect(() => {
+    // A newly selected tab starts its independent list at page one.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage(1);
   }, [tab]);
 
@@ -945,204 +949,30 @@ export default function UserDetailPage() {
         </div>
       )}
 
-      {/* ── User Hub — Yesterday Stats ── */}
+      {/* ── User Hub — Daily Team Analysis ── */}
       {tab === "userhub" && (
-        <div className="space-y-4 admin-fade-up">
+        <div className="admin-fade-up">
           {listLoading ? (
-            <LoadingBlock label="Loading yesterday's stats…" />
-          ) : !yesterdayStats ? (
-            <EmptyBlock label="No data available" />
-          ) : (() => {
-            const selfLevel = yesterdayStats.levels.find((lv) => lv.level === "self");
-            const teamLevels = yesterdayStats.levels.filter((lv) => lv.level !== "self");
-            const totalTeam = teamLevels.reduce(
-              (acc, lv) => ({
-                memberCount: acc.memberCount + lv.memberCount,
-                depositCount: acc.depositCount + lv.depositCount,
-                depositAmount: acc.depositAmount + lv.depositAmount,
-                withdrawCount: acc.withdrawCount + lv.withdrawCount,
-                withdrawAmount: acc.withdrawAmount + lv.withdrawAmount,
-                betCount: acc.betCount + lv.betCount,
-                betAmount: acc.betAmount + lv.betAmount,
-              }),
-              {
-                memberCount: 0,
-                depositCount: 0,
-                depositAmount: 0,
-                withdrawCount: 0,
-                withdrawAmount: 0,
-                betCount: 0,
-                betAmount: 0,
-              }
-            );
-
-            return (
-              <>
-                <div className="admin-surface p-4 flex flex-wrap items-center justify-between gap-2">
-                  <div>
-                    <h3 className="text-sm font-bold text-slate-800">
-                      Yesterday&apos;s Team Performance
-                    </h3>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      Stats for IST date: <span className="font-mono font-semibold text-slate-700">{yesterdayStats.date}</span>
-                    </p>
-                  </div>
-                  <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700 ring-1 ring-inset ring-blue-700/10">
-                    IST 00:00 – 24:00
-                  </span>
-                </div>
-
-                {/* 1. Self Card (Vibrant Indigo / Blue Gradient) */}
-                {selfLevel && (
-                  <div className="rounded-xl border-2 border-indigo-300 bg-gradient-to-br from-blue-100 via-indigo-100/90 to-sky-100 p-4 shadow-md">
-                    <div className="flex items-center justify-between gap-2 mb-3">
-                      <div className="flex items-center gap-2">
-                        <span className="flex h-3 w-3 rounded-full bg-indigo-600 ring-2 ring-indigo-300" />
-                        <h4 className="text-sm font-extrabold text-indigo-950">
-                          Self Performance
-                        </h4>
-                      </div>
-                      <span className="inline-flex items-center rounded-full bg-indigo-600 text-white px-2.5 py-0.5 text-[11px] font-bold shadow-xs">
-                        Direct User
-                      </span>
-                    </div>
-                    <div className="grid gap-3 grid-cols-2 sm:grid-cols-3">
-                      <div className="rounded-lg bg-white/95 border border-indigo-200 p-3 shadow-xs">
-                        <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Deposits</p>
-                        <p className="mt-1 text-lg font-black tabular-nums text-slate-900">
-                          {selfLevel.depositCount}
-                        </p>
-                        <p className="text-xs font-bold text-emerald-700 tabular-nums">
-                          {money(selfLevel.depositAmount)}
-                        </p>
-                      </div>
-                      <div className="rounded-lg bg-white/95 border border-indigo-200 p-3 shadow-xs">
-                        <p className="text-[10px] font-bold text-amber-600 uppercase tracking-wider">Withdrawals</p>
-                        <p className="mt-1 text-lg font-black tabular-nums text-slate-900">
-                          {selfLevel.withdrawCount}
-                        </p>
-                        <p className="text-xs font-bold text-amber-700 tabular-nums">
-                          {money(selfLevel.withdrawAmount)}
-                        </p>
-                      </div>
-                      <div className="rounded-lg bg-white/95 border border-indigo-200 p-3 shadow-xs">
-                        <p className="text-[10px] font-bold text-violet-600 uppercase tracking-wider">Bets</p>
-                        <p className="mt-1 text-lg font-black tabular-nums text-slate-900">
-                          {selfLevel.betCount}
-                        </p>
-                        <p className="text-xs font-bold text-violet-700 tabular-nums">
-                          {money(selfLevel.betAmount)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* 2. Total Team (L1-L6) Summary Card (Vibrant Purple / Fuchsia Gradient) */}
-                <div className="rounded-xl border-2 border-purple-300 bg-gradient-to-br from-purple-100 via-fuchsia-100/90 to-violet-100 p-4 shadow-md ring-2 ring-purple-200/50">
-                  <div className="flex items-center justify-between gap-2 mb-3">
-                    <div className="flex items-center gap-2">
-                      <span className="flex h-3 w-3 rounded-full bg-purple-600 ring-2 ring-purple-300" />
-                      <h4 className="text-sm font-black text-purple-950">
-                        Total Team Summary (Levels 1 – 6)
-                      </h4>
-                    </div>
-                    <span className="inline-flex items-center rounded-full bg-purple-600 text-white px-2.5 py-0.5 text-[11px] font-bold shadow-xs">
-                      {totalTeam.memberCount} total members
-                    </span>
-                  </div>
-                  <div className="grid gap-3 grid-cols-2 sm:grid-cols-3">
-                    <div className="rounded-lg bg-white/95 border border-purple-200 p-3 shadow-xs">
-                      <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Total Deposits</p>
-                      <p className="mt-1 text-lg font-black tabular-nums text-slate-900">
-                        {totalTeam.depositCount}
-                      </p>
-                      <p className="text-xs font-bold text-emerald-700 tabular-nums">
-                        {money(totalTeam.depositAmount)}
-                      </p>
-                    </div>
-                    <div className="rounded-lg bg-white/95 border border-purple-200 p-3 shadow-xs">
-                      <p className="text-[10px] font-bold text-amber-600 uppercase tracking-wider">Total Withdrawals</p>
-                      <p className="mt-1 text-lg font-black tabular-nums text-slate-900">
-                        {totalTeam.withdrawCount}
-                      </p>
-                      <p className="text-xs font-bold text-amber-700 tabular-nums">
-                        {money(totalTeam.withdrawAmount)}
-                      </p>
-                    </div>
-                    <div className="rounded-lg bg-white/95 border border-purple-200 p-3 shadow-xs">
-                      <p className="text-[10px] font-bold text-violet-600 uppercase tracking-wider">Total Bets</p>
-                      <p className="mt-1 text-lg font-black tabular-nums text-slate-900">
-                        {totalTeam.betCount}
-                      </p>
-                      <p className="text-xs font-bold text-violet-700 tabular-nums">
-                        {money(totalTeam.betAmount)}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 3. Individual Level Breakdown (L1-L6) (Clean White / Slate) */}
-                <div className="pt-2">
-                  <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">
-                    Downline Level Breakdown
-                  </h4>
-                  <div className="space-y-3">
-                    {teamLevels.map((lv) => (
-                      <div
-                        key={String(lv.level)}
-                        className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs hover:border-slate-300 transition-colors"
-                      >
-                        <div className="flex items-center justify-between gap-2 mb-3">
-                          <div className="flex items-center gap-2">
-                            <span className="flex h-2 w-2 rounded-full bg-slate-400" />
-                            <h5 className="text-sm font-bold text-slate-800">
-                              Level {lv.level}
-                            </h5>
-                          </div>
-                          <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-semibold text-slate-600">
-                            {lv.memberCount} {lv.memberCount === 1 ? "member" : "members"}
-                          </span>
-                        </div>
-                        <div className="grid gap-3 grid-cols-2 sm:grid-cols-3">
-                          {/* Deposit */}
-                          <div className="rounded-lg bg-emerald-50/60 border border-emerald-100 p-3">
-                            <p className="text-[10px] font-semibold text-emerald-700 uppercase tracking-wide">Deposits</p>
-                            <p className="mt-1 text-lg font-black tabular-nums text-emerald-900">
-                              {lv.depositCount}
-                            </p>
-                            <p className="text-xs font-semibold text-emerald-700 tabular-nums">
-                              {money(lv.depositAmount)}
-                            </p>
-                          </div>
-                          {/* Withdraw */}
-                          <div className="rounded-lg bg-amber-50/60 border border-amber-100 p-3">
-                            <p className="text-[10px] font-semibold text-amber-700 uppercase tracking-wide">Withdrawals</p>
-                            <p className="mt-1 text-lg font-black tabular-nums text-amber-900">
-                              {lv.withdrawCount}
-                            </p>
-                            <p className="text-xs font-semibold text-amber-700 tabular-nums">
-                              {money(lv.withdrawAmount)}
-                            </p>
-                          </div>
-                          {/* Bets */}
-                          <div className="rounded-lg bg-violet-50/60 border border-violet-100 p-3">
-                            <p className="text-[10px] font-semibold text-violet-700 uppercase tracking-wide">Bets</p>
-                            <p className="mt-1 text-lg font-black tabular-nums text-violet-900">
-                              {lv.betCount}
-                            </p>
-                            <p className="text-xs font-semibold text-violet-700 tabular-nums">
-                              {money(lv.betAmount)}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </>
-            );
-          })()}
+            <LoadingBlock label="Loading team contribution…" />
+          ) : !teamAnalysis ? (
+            <EmptyBlock label="No team analysis available" />
+          ) : (
+            <TeamDayAnalysisPanel
+              analysis={teamAnalysis}
+              selectedDate={teamDate}
+              maxDate={maxTeamDate}
+              sortBy={teamSort}
+              onDate={(date) => {
+                setTeamPage(1);
+                setTeamDate(date);
+              }}
+              onSort={(sort) => {
+                setTeamPage(1);
+                setTeamSort(sort);
+              }}
+              onPage={setTeamPage}
+            />
+          )}
         </div>
       )}
 
