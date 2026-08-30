@@ -129,7 +129,7 @@ export default function IllegalBetPenaltiesPage() {
       <div className="mb-4 flex flex-wrap gap-2">
         <input
           className="admin-input max-w-xs"
-          placeholder="Search mobile / username / serial"
+          placeholder="Search mobile / username / serial / email"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           onKeyDown={(e) => {

@@ -177,7 +177,8 @@ export default function QueriesPage() {
       return false;
     }
     if (!search.trim()) return true;
-    const q = search.toLowerCase();
+    const q = search.trim().toLowerCase();
+    const mobileDigits = q.replace(/\D/g, "");
     const ticketId = String(r.ticketId || "").toLowerCase();
     const subject = String(r.subject || "").toLowerCase();
     const desc = getQueryDescription(r.details).toLowerCase();
@@ -192,6 +193,7 @@ export default function QueriesPage() {
       desc.includes(q) ||
       username.includes(q) ||
       mobile.includes(q) ||
+      (mobileDigits.length > 0 && mobile.replace(/\D/g, "").includes(mobileDigits)) ||
       serial.includes(q)
     );
   });

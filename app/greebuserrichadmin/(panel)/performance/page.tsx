@@ -84,11 +84,13 @@ export default function TopPerformancePage() {
   const allPerformers = data?.topPerformers ?? [];
   const filteredPerformers = useMemo(() => {
     const q = search.trim().toLowerCase();
+    const mobileDigits = q.replace(/\D/g, "");
     if (!q) return allPerformers;
     return allPerformers.filter(
       (p) =>
         p.username.toLowerCase().includes(q) ||
-        p.mobile.toLowerCase().includes(q)
+        p.mobile.toLowerCase().includes(q) ||
+        (mobileDigits.length > 0 && p.mobile.replace(/\D/g, "").includes(mobileDigits))
     );
   }, [allPerformers, search]);
 
