@@ -94,6 +94,7 @@ const NAV: NavItem[] = [
       { href: "/greebuserrichadmin/spin", label: "Lucky spin" },
       { href: "/greebuserrichadmin/win-streak", label: "Win streak" },
       { href: "/greebuserrichadmin/salary", label: "Salary" },
+      { href: "/greebuserrichadmin/salary-leaders", label: "Salary Leaders" },
     ],
   },
   {

@@ -901,6 +901,55 @@ export async function getSalaryStatistics() {
   );
 }
 
+// ─── Salary Leaders ──────────────────────────────────────────────────────────
+
+export type SalaryLeader = {
+  id: string;
+  userId: string;
+  createdAt: string;
+  user: {
+    id: string;
+    serialNumber: number;
+    username: string;
+    mobileNumber: string;
+    email: string | null;
+    role: "USER" | "ADMIN" | "SUB_ADMIN" | "AGENT";
+    isDemo: boolean;
+  };
+};
+
+export async function listSalaryLeaders(params?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+}) {
+  return adminRequest<{
+    success: true;
+    leaders: SalaryLeader[];
+    total: number;
+    currentPage: number;
+    totalPages: number;
+  }>(`/admin/salary-leaders${q(params ?? {})}`);
+}
+
+export async function addSalaryLeader(userId: string) {
+  return adminRequest<{
+    success: true;
+    message: string;
+    leader?: SalaryLeader;
+  }>("/admin/salary-leaders", {
+    method: "POST",
+    body: JSON.stringify({ userId }),
+  });
+}
+
+export async function deleteSalaryLeader(userId: string) {
+  return adminRequest<{ success: true; message: string }>(
+    `/admin/salary-leaders/${userId}`,
+    { method: "DELETE" }
+  );
+}
+
 // ─── Auto salary slabs ───────────────────────────────────────────────────────
 
 export async function listAutoSalarySlabs() {
