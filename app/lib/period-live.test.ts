@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, test } from "bun:test";
 import {
+  countdownSecondsUntil,
   createStuckZeroRecovery,
   isLivePeriod,
   pickLivePeriod,
@@ -67,6 +68,21 @@ describe("pickLivePeriod", () => {
     });
     expect(isLivePeriod(future)).toBe(false);
     expect(pickLivePeriod(future, [future])).toBeNull();
+  });
+
+  test("keeps a period live during its final fractional second", () => {
+    Date.now = () => NOW;
+    const almostDone = period({ id: "almost-done", endTime: iso(250) });
+    expect(isLivePeriod(almostDone)).toBe(true);
+    expect(pickLivePeriod(almostDone, [almostDone])?.id).toBe("almost-done");
+  });
+
+  test("countdown does not show 00 before the deadline", () => {
+    Date.now = () => NOW;
+    expect(countdownSecondsUntil(iso(1))).toBe(1);
+    expect(countdownSecondsUntil(iso(999))).toBe(1);
+    expect(countdownSecondsUntil(iso(1001))).toBe(2);
+    expect(countdownSecondsUntil(iso(0))).toBe(0);
   });
 });
 

@@ -1790,7 +1790,9 @@ export async function getGamePeriods<T = WingoPeriod>(
   currentPage?: number;
   totalPages?: number;
 }> {
-  return request(`/${game}/periods${buildQuery(params ?? {})}`);
+  return request(`/${game}/periods${buildQuery(params ?? {})}`, {
+    cache: "no-store",
+  });
 }
 
 export async function getGameResults<T = WingoResult>(
@@ -1803,7 +1805,9 @@ export async function getGameResults<T = WingoResult>(
   currentPage?: number;
   totalPages?: number;
 }> {
-  return request(`/${game}/results${buildQuery(params ?? {})}`);
+  return request(`/${game}/results${buildQuery(params ?? {})}`, {
+    cache: "no-store",
+  });
 }
 
 /** Single period result — GET /{game}/results/{periodId} */
@@ -1811,7 +1815,9 @@ export async function getGameResultByPeriod<T = WingoResult>(
   game: GamePrefix,
   periodId: string
 ): Promise<{ success: true; result?: T; data?: T } & Record<string, unknown>> {
-  return request(`/${game}/results/${encodeURIComponent(periodId)}`);
+  return request(`/${game}/results/${encodeURIComponent(periodId)}`, {
+    cache: "no-store",
+  });
 }
 
 export async function getGameBets<T = WingoBet>(

@@ -3,8 +3,6 @@
  * Never treat an expired period as the "current" clock source.
  */
 
-import { secondsUntil } from "./format";
-
 export type PeriodLike = {
   id?: string;
   periodNumber?: string;
@@ -14,13 +12,34 @@ export type PeriodLike = {
   durationSeconds?: number;
 };
 
+function timeMs(value: string | null | undefined): number | null {
+  if (!value) return null;
+  const parsed = new Date(value).getTime();
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+/** Display seconds without showing 00 before the actual deadline. */
+export function countdownSecondsUntil(
+  endTime: string | Date | null | undefined
+): number {
+  if (!endTime) return 0;
+  const end =
+    typeof endTime === "string" ? new Date(endTime).getTime() : endTime.getTime();
+  if (!Number.isFinite(end)) return 0;
+  return Math.max(0, Math.ceil((end - Date.now()) / 1000));
+}
+
 /** True if period is ACTIVE, has started, and endTime is still in the future. */
 export function isLivePeriod(p: PeriodLike | null | undefined): boolean {
   if (!p?.endTime) return false;
   if (String(p.status ?? "").toUpperCase() === "ENDED") return false;
   if (String(p.status ?? "").toUpperCase() === "RESOLVED") return false;
-  if (p.startTime && secondsUntil(p.startTime) > 0) return false;
-  return secondsUntil(p.endTime) > 0;
+  const now = Date.now();
+  const end = timeMs(p.endTime);
+  const start = timeMs(p.startTime);
+  if (end == null || end <= now) return false;
+  if (start != null && start > now) return false;
+  return true;
 }
 
 /**
@@ -37,7 +56,6 @@ export function pickLivePeriod<T extends PeriodLike>(
       String(p.status ?? "").toUpperCase() === "ACTIVE" && isLivePeriod(p)
   );
   if (active) return active;
-  if (currentPeriod && isLivePeriod(currentPeriod)) return currentPeriod;
   return null;
 }
 
@@ -69,7 +87,7 @@ export function createStuckZeroRecovery(opts?: {
     note(
       left: number,
       now: number,
-      refetch: () => void | Promise<void>
+      refetch: () => unknown
     ): boolean {
       if (left > 0) {
         zeroSince = null;

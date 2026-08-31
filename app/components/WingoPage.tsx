@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { useToast } from "./ui/Toast";
 import * as api from "../lib/api";
 import type { WingoBet, WingoPeriod, WingoResult } from "../lib/api";
-import { formatINR, formatTime, secondsUntil } from "../lib/format";
+import { formatINR, formatTime } from "../lib/format";
 import { gameWs } from "../lib/ws";
 import { openSafeUrl } from "../lib/safe";
 import {
@@ -35,7 +35,12 @@ import {
 import { themeFromBet } from "./game/BetSlip";
 import BetHistoryCard from "./game/BetHistoryCard";
 import { createOncePerKey, setCountdownIfChanged } from "../lib/game-refresh";
-import { createStuckZeroRecovery, pickLivePeriod } from "../lib/period-live";
+import {
+  countdownSecondsUntil,
+  createStuckZeroRecovery,
+  isLivePeriod,
+  pickLivePeriod,
+} from "../lib/period-live";
 import {
   HISTORY_MAX_PAGES,
   capHistoryPage,
@@ -112,8 +117,10 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
   const [myBetsTotalPages, setMyBetsTotalPages] = useState(1);
   const pageRef = useRef(1);
   const myBetsPageRef = useRef(1);
-  pageRef.current = page;
-  myBetsPageRef.current = myBetsPage;
+  useEffect(() => {
+    pageRef.current = page;
+    myBetsPageRef.current = myBetsPage;
+  }, [page, myBetsPage]);
   const [betSheet, setBetSheet] = useState<{
     betType: "COLOR" | "NUMBER" | "SIZE";
     betChoice: string;
@@ -133,7 +140,12 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
   const [randomHighlight, setRandomHighlight] = useState<string | null>(null);
   const [randomSpinning, setRandomSpinning] = useState(false);
   const randomTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const burstTimersRef = useRef<number[]>([]);
   const endTimeRef = useRef<string | null>(null);
+  /** Only the newest period request may update the clock. */
+  const periodRequestRef = useRef(0);
+  const resultsRequestRef = useRef(0);
+  const betsRequestRef = useRef(0);
   /** Prevents 1s interval from re-firing full refresh while left stays 0 */
   const zeroRefreshOnce = useRef(createOncePerKey());
   const stuckZero = useRef(createStuckZeroRecovery());
@@ -152,34 +164,38 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
     : `WinGo ${activeTabMeta?.subLabel ?? ""}`;
 
   const loadPeriod = useCallback(async (signal?: AbortSignal) => {
+    const requestId = ++periodRequestRef.current;
     try {
       const res = await api.getGamePeriods<WingoPeriod>(gameApi, {
         duration,
         limit: 5,
       });
-      if (signal?.aborted) return;
-      const current =
-        pickLivePeriod(res.currentPeriod, res.periods) ??
-        res.currentPeriod ??
-        null;
+      if (signal?.aborted || requestId !== periodRequestRef.current) return;
+      const current = pickLivePeriod(res.currentPeriod, res.periods);
       setPeriod(current);
       const nextEnd = current?.endTime ?? null;
       if (nextEnd && nextEnd !== endTimeRef.current) {
         zeroRefreshOnce.current.clear();
+        stuckZero.current.reset();
       }
       endTimeRef.current = nextEnd;
       if (nextEnd) {
-        setCountdownIfChanged(setCountdown, secondsUntil(nextEnd));
+        setCountdownIfChanged(setCountdown, countdownSecondsUntil(nextEnd));
+      } else {
+        setCountdownIfChanged(setCountdown, 0);
       }
     } catch {
       /* keep previous */
     } finally {
-      if (!signal?.aborted) setLoading(false);
+      if (!signal?.aborted && requestId === periodRequestRef.current) {
+        setLoading(false);
+      }
     }
   }, [gameApi, duration]);
 
   const loadResults = useCallback(
     async (p = 1, signal?: AbortSignal) => {
+      const requestId = ++resultsRequestRef.current;
       try {
         const page = capHistoryPage(p);
         const res = await api.getGameResults<WingoResult>(gameApi, {
@@ -187,7 +203,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
           page,
           limit: 10,
         });
-        if (signal?.aborted) return;
+        if (signal?.aborted || requestId !== resultsRequestRef.current) return;
         setResults(res.results ?? []);
         setTotalPages(capHistoryPages(res.totalPages));
         setPage(capHistoryPage(res.currentPage ?? page));
@@ -233,6 +249,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
   );
 
   const loadMyBets = useCallback(async (p = 1, signal?: AbortSignal) => {
+    const requestId = ++betsRequestRef.current;
     try {
       const page = capHistoryPage(p);
       const res = await api.getGameBets<WingoBet>(gameApi, {
@@ -240,7 +257,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
         page,
         limit: 10,
       });
-      if (signal?.aborted) return;
+      if (signal?.aborted || requestId !== betsRequestRef.current) return;
       const list = res.bets ?? [];
       setMyBets(list);
       setMyBetsPage(capHistoryPage(res.currentPage ?? page));
@@ -253,7 +270,9 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
         });
       }
     } catch {
-      if (!signal?.aborted) setMyBets([]);
+      if (!signal?.aborted && requestId === betsRequestRef.current) {
+        setMyBets([]);
+      }
     }
   }, [gameApi, duration, maybeShowResultPopup]);
 
@@ -262,10 +281,12 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
   const loadResultsRef = useRef(loadResults);
   const loadMyBetsRef = useRef(loadMyBets);
   const refreshUserRef = useRef(refreshUser);
-  loadPeriodRef.current = loadPeriod;
-  loadResultsRef.current = loadResults;
-  loadMyBetsRef.current = loadMyBets;
-  refreshUserRef.current = refreshUser;
+  useEffect(() => {
+    loadPeriodRef.current = loadPeriod;
+    loadResultsRef.current = loadResults;
+    loadMyBetsRef.current = loadMyBets;
+    refreshUserRef.current = refreshUser;
+  }, [loadPeriod, loadResults, loadMyBets, refreshUser]);
 
   const refreshAfterSettle = useCallback(() => {
     loadPeriodRef.current();
@@ -274,52 +295,58 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
     refreshUserRef.current();
   }, []);
 
+  const clearBurstTimers = useCallback(() => {
+    for (const timer of burstTimersRef.current) window.clearTimeout(timer);
+    burstTimersRef.current = [];
+  }, []);
+
   /** Burst reloads so history/period catch up even if WS is late or settle lags. */
   const burstRefresh = useCallback(() => {
+    clearBurstTimers();
     refreshAfterSettle();
     const delays = isTrx ? [800, 2000, 4000, 7000] : [1000, 2500];
-    for (const ms of delays) {
-      window.setTimeout(() => refreshAfterSettle(), ms);
-    }
-  }, [refreshAfterSettle, isTrx]);
+    burstTimersRef.current = delays.map((ms) =>
+      window.setTimeout(() => refreshAfterSettle(), ms)
+    );
+  }, [clearBurstTimers, refreshAfterSettle, isTrx]);
 
   // Reset popup tracking when duration/game changes
   useEffect(() => {
     resetResultPopupTracking();
     zeroRefreshOnce.current.clear();
     stuckZero.current.reset();
-  }, [duration, gameApi, resetResultPopupTracking]);
+    clearBurstTimers();
+  }, [duration, gameApi, resetResultPopupTracking, clearBurstTimers]);
+
+  useEffect(() => () => clearBurstTimers(), [clearBurstTimers]);
 
   useEffect(() => {
     const ac = new AbortController();
-    setLoading(true);
-    loadPeriod(ac.signal);
-    loadResults(1, ac.signal);
-    loadMyBets(1, ac.signal);
-    return () => ac.abort();
+    const kickoff = window.setTimeout(() => {
+      void loadPeriod(ac.signal);
+      void loadResults(1, ac.signal);
+      void loadMyBets(1, ac.signal);
+    }, 0);
+    return () => {
+      window.clearTimeout(kickoff);
+      ac.abort();
+    };
   }, [loadPeriod, loadResults, loadMyBets]);
 
-  // Isolated 1s tick: countdown + boundary refresh; TRX polls draw window tightly
+  // Fast wall-clock tick. State only changes once per displayed second.
   useEffect(() => {
     const t = setInterval(() => {
       const end = endTimeRef.current;
       if (!end) {
         setCountdownIfChanged(setCountdown, 0);
-        stuckZero.current.note(0, Date.now(), () => {
-          void loadPeriodRef.current();
-        });
+        stuckZero.current.note(0, Date.now(), () => loadPeriodRef.current());
         return;
       }
-      const left = secondsUntil(end);
+      const left = countdownSecondsUntil(end);
       setCountdownIfChanged(setCountdown, left);
       if (left <= 0) {
         // Once per endTime: full burst so next period + history appear without manual refresh
         zeroRefreshOnce.current.run(end, burstRefresh);
-      } else if (left <= 1 && !isTrx) {
-        // 00-handoff backup: next clock + results even if WS is late
-        void loadPeriodRef.current();
-        void loadResultsRef.current(pageRef.current);
-        void loadMyBetsRef.current(myBetsPageRef.current);
       }
       // TRX: HTTP backup near draw only if live socket is down (WS already pushes)
       if (isTrx && !gameWs.isOpen() && left <= 12 && left >= 0) {
@@ -329,10 +356,8 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
         }
       }
       // Stuck at 00 > ~2s (missed WS / expired slot): refetch live period. Lock 5s/10s unchanged.
-      stuckZero.current.note(left, Date.now(), () => {
-        void loadPeriodRef.current();
-      });
-    }, 1000);
+      stuckZero.current.note(left, Date.now(), () => loadPeriodRef.current());
+    }, 250);
     return () => clearInterval(t);
   }, [burstRefresh, isTrx]);
 
@@ -341,18 +366,25 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
     const u1 = gameWs.subscribe(wsPeriodTopic, (data) => {
       const d = data as WingoPeriod;
       if (d?.durationSeconds && d.durationSeconds !== duration) return;
-      if (d?.startTime && secondsUntil(d.startTime) > 0) return;
-      if (d?.status === "ACTIVE" || d?.periodNumber) {
-        setPeriod((prev) => ({ ...(prev ?? ({} as WingoPeriod)), ...d }));
-        if (d.endTime) {
-          endTimeRef.current = d.endTime;
-          zeroRefreshOnce.current.clear();
-          setCountdownIfChanged(setCountdown, secondsUntil(d.endTime));
-        }
-        // Reload the page they are on — do not yank 5/50 back to 1
-        void loadResultsRef.current(pageRef.current);
-        void loadMyBetsRef.current(myBetsPageRef.current);
-      }
+      if (!isLivePeriod(d)) return;
+
+      const incomingEnd = new Date(d.endTime).getTime();
+      const displayedEnd = endTimeRef.current
+        ? new Date(endTimeRef.current).getTime()
+        : 0;
+      // A delayed socket packet must never roll the UI back to an older round.
+      if (Number.isFinite(displayedEnd) && displayedEnd > incomingEnd) return;
+
+      periodRequestRef.current += 1;
+      setLoading(false);
+      setPeriod((prev) => ({ ...(prev ?? ({} as WingoPeriod)), ...d }));
+      endTimeRef.current = d.endTime;
+      zeroRefreshOnce.current.clear();
+      stuckZero.current.reset();
+      setCountdownIfChanged(setCountdown, countdownSecondsUntil(d.endTime));
+      // Reload the page they are on — do not yank 5/50 back to 1
+      void loadResultsRef.current(pageRef.current);
+      void loadMyBetsRef.current(myBetsPageRef.current);
     });
     const u2 = gameWs.subscribe(wsResultTopic, (data) => {
       const d = data as {
@@ -407,6 +439,13 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
       loadMyBetsRef.current(myBetsPageRef.current);
       refreshUserRef.current();
     });
+    const u4 = gameWs.onConnectionChange((open) => {
+      if (!open) return;
+      // Catch up immediately after a reconnect instead of waiting for a poll.
+      void loadPeriodRef.current();
+      void loadResultsRef.current(pageRef.current);
+      void loadMyBetsRef.current(myBetsPageRef.current);
+    });
     // TRX needs tighter backup poll (period + results) so UI rolls without WS
     const pollMs = isTrx ? 3000 : 8000;
     const poll = setInterval(() => {
@@ -419,9 +458,39 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
       u1();
       u2();
       u3();
+      u4();
       clearInterval(poll);
     };
   }, [wsPeriodTopic, wsResultTopic, duration, burstRefresh, isTrx]);
+
+  // Background tabs throttle timers. Resync immediately when the player returns.
+  useEffect(() => {
+    let lastSyncAt = 0;
+    const sync = () => {
+      if (document.visibilityState === "hidden") return;
+      const now = Date.now();
+      if (now - lastSyncAt < 500) return;
+      lastSyncAt = now;
+      gameWs.connect();
+      void loadPeriodRef.current();
+      void loadResultsRef.current(pageRef.current);
+      void loadMyBetsRef.current(myBetsPageRef.current);
+    };
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") sync();
+    };
+
+    document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("focus", sync);
+    window.addEventListener("online", sync);
+    window.addEventListener("pageshow", sync);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("focus", sync);
+      window.removeEventListener("online", sync);
+      window.removeEventListener("pageshow", sync);
+    };
+  }, []);
 
   const openBet = (betType: "COLOR" | "NUMBER" | "SIZE", betChoice: string, label: string) => {
     if (randomSpinning) return;
@@ -463,12 +532,14 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
 
   // Abort spin if lock hits mid-animation
   useEffect(() => {
-    if (randomSpinning && isBettingLocked(countdown, duration)) {
-      clearRandomTimer();
+    if (!randomSpinning || !isBettingLocked(countdown, duration)) return;
+    clearRandomTimer();
+    const timer = window.setTimeout(() => {
       setRandomSpinning(false);
       setRandomHighlight(null);
-    }
-  }, [countdown, duration, randomSpinning, clearRandomTimer, toast]);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [countdown, duration, randomSpinning, clearRandomTimer]);
 
   const pickRandom = useCallback(() => {
     if (randomSpinning) return;
@@ -571,7 +642,9 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
 
   // Close slip if period enters lock while sheet is open
   useEffect(() => {
-    if (isLocked && betSheet) setBetSheet(null);
+    if (!isLocked || !betSheet) return;
+    const timer = window.setTimeout(() => setBetSheet(null), 0);
+    return () => window.clearTimeout(timer);
   }, [isLocked, betSheet]);
 
   const recentBalls = useMemo(
@@ -601,7 +674,17 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
       <DurationTabs
         tabs={tabs}
         activeId={activeGame}
-        onChange={(id) => setActiveGame(id as GameTab)}
+        onChange={(id) => {
+          if (id === activeGame) return;
+          periodRequestRef.current += 1;
+          resultsRequestRef.current += 1;
+          betsRequestRef.current += 1;
+          setLoading(true);
+          setPeriod(null);
+          endTimeRef.current = null;
+          setCountdown(0);
+          setActiveGame(id as GameTab);
+        }}
       />
 
       <PeriodBanner
@@ -779,7 +862,9 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
         </div>
 
         {/* 3-2-1 overlay only in final 5s */}
-        {countdown <= 5 && <CountdownPopout seconds={countdown} />}
+        {countdown > 0 && countdown <= 5 && (
+          <CountdownPopout seconds={countdown} />
+        )}
       </div>
 
       {/* History tabs */}
@@ -925,7 +1010,6 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
                 ) : (
                   results.map((row) => {
                     const big = isBig(row.resultNumber);
-                    const size = sizeStyle(big);
                     return (
                       <div
                         key={row.id}

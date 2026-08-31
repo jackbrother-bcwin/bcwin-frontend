@@ -29,6 +29,7 @@ export type WsTopic =
   | "trx-wingo-results";
 
 type Handler = (data: unknown, topic: string) => void;
+type ConnectionHandler = (open: boolean) => void;
 
 function uuid(): string {
   if (typeof crypto !== "undefined" && crypto.randomUUID) return crypto.randomUUID();
@@ -68,11 +69,13 @@ class GameWebSocket {
   private ws: WebSocket | null = null;
   private clientId = uuid();
   private handlers = new Map<string, Set<Handler>>();
+  private connectionHandlers = new Set<ConnectionHandler>();
   private subscribed = new Set<string>();
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private pingTimer: ReturnType<typeof setInterval> | null = null;
   private intentionalClose = false;
   private reconnectAttempt = 0;
+  private lastPongAt = 0;
 
   isOpen(): boolean {
     return this.ws?.readyState === WebSocket.OPEN;
@@ -85,25 +88,34 @@ class GameWebSocket {
     }
     this.intentionalClose = false;
     const url = resolveWsUrl(this.clientId);
+    let socket: WebSocket;
     try {
-      this.ws = new WebSocket(url);
+      socket = new WebSocket(url);
+      this.ws = socket;
     } catch {
       this.scheduleReconnect();
       return;
     }
 
-    this.ws.onopen = () => {
+    socket.onopen = () => {
+      if (this.ws !== socket) return;
       this.reconnectAttempt = 0;
+      this.lastPongAt = Date.now();
       // re-subscribe
       for (const topic of this.subscribed) {
         this.send({ action: "subscribe", topic });
       }
       this.startPing();
+      this.notifyConnection(true);
     };
 
-    this.ws.onmessage = (ev) => {
+    socket.onmessage = (ev) => {
+      if (this.ws !== socket) return;
       const raw = ev.data?.toString?.() ?? "";
-      if (raw === "pong") return;
+      if (raw === "pong") {
+        this.lastPongAt = Date.now();
+        return;
+      }
       try {
         const msg = JSON.parse(raw) as { topic?: string; data?: unknown };
         if (msg.topic) {
@@ -117,23 +129,33 @@ class GameWebSocket {
       }
     };
 
-    this.ws.onclose = () => {
+    socket.onclose = () => {
+      if (this.ws !== socket) return;
       this.stopPing();
       this.ws = null;
+      this.notifyConnection(false);
       if (!this.intentionalClose) this.scheduleReconnect();
     };
 
-    this.ws.onerror = () => {
-      // onclose will fire
+    socket.onerror = () => {
+      // Force half-open/error sockets through close → reconnect.
+      try {
+        socket.close();
+      } catch {
+        // onclose/watchdog will recover
+      }
     };
   }
 
   disconnect() {
     this.intentionalClose = true;
     if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
+    this.reconnectTimer = null;
     this.stopPing();
-    this.ws?.close();
+    const socket = this.ws;
     this.ws = null;
+    socket?.close();
+    this.notifyConnection(false);
   }
 
   subscribe(topic: WsTopic | string, handler: Handler) {
@@ -159,6 +181,14 @@ class GameWebSocket {
     }
   }
 
+  /** Observe socket recovery so screens can immediately reconcile missed events. */
+  onConnectionChange(handler: ConnectionHandler) {
+    this.connectionHandlers.add(handler);
+    return () => {
+      this.connectionHandlers.delete(handler);
+    };
+  }
+
   private send(payload: object) {
     if (this.ws?.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(payload));
@@ -168,13 +198,34 @@ class GameWebSocket {
   private startPing() {
     this.stopPing();
     this.pingTimer = setInterval(() => {
-      if (this.ws?.readyState === WebSocket.OPEN) this.ws.send("ping");
+      const socket = this.ws;
+      if (socket?.readyState !== WebSocket.OPEN) return;
+      // Browsers can retain OPEN for a dead mobile/Wi-Fi connection.
+      if (Date.now() - this.lastPongAt > 45_000) {
+        socket.close(4000, "Heartbeat timeout");
+        return;
+      }
+      try {
+        socket.send("ping");
+      } catch {
+        socket.close();
+      }
     }, 25000);
   }
 
   private stopPing() {
     if (this.pingTimer) clearInterval(this.pingTimer);
     this.pingTimer = null;
+  }
+
+  private notifyConnection(open: boolean) {
+    for (const handler of this.connectionHandlers) {
+      try {
+        handler(open);
+      } catch {
+        // A screen callback must never break reconnect handling.
+      }
+    }
   }
 
   private scheduleReconnect() {
