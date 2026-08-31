@@ -152,6 +152,35 @@ export type RankedAdminUser = {
   isBanned: boolean;
 };
 
+export type AdminGameKey = "wingo" | "trxwingo" | "k3" | "5d" | "moto";
+
+export type AdminLiveBetDistribution = {
+  betType: string;
+  betChoice: string;
+  betCount: number;
+  amount: number;
+};
+
+export type AdminLiveBet = {
+  id: string;
+  user: AdminUserIdentity;
+  betType: string;
+  betChoice: string;
+  betAmount: number;
+  status: "PENDING";
+  createdAt: string;
+};
+
+export type AdminGameLiveBook = {
+  success: true;
+  game: AdminGameKey;
+  periodId: string;
+  total: number;
+  totalBetAmount: number;
+  distribution: AdminLiveBetDistribution[];
+  bets: AdminLiveBet[];
+};
+
 export async function getDashboardWingoLive() {
   return adminRequest<{ success: true; periods: DashboardWingoPeriod[] }>(
     "/admin/dashboard/wingo-live",
@@ -172,6 +201,16 @@ export async function getTopAdminUsers(sort: "balance" | "withdrawals" = "balanc
     sort: "balance" | "withdrawals";
     users: RankedAdminUser[];
   }>(`/admin/dashboard/top-users${q({ sort })}`, { cache: "no-store" });
+}
+
+export async function getAdminGameLiveBets(
+  game: AdminGameKey,
+  periodId: string
+) {
+  return adminRequest<AdminGameLiveBook>(
+    `/admin/dashboard/game-live-bets${q({ game, periodId })}`,
+    { timeoutMs: 10_000, cache: "no-store" }
+  );
 }
 
 export async function getGameStatistics(params?: Record<string, string | number | undefined>) {

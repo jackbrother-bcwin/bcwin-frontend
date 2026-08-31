@@ -8,6 +8,8 @@ export type LiveBet = {
   betType?: string;
   betChoice?: string;
   betAmount?: number;
+  /** Number of identical bets represented by an aggregated live-book row. */
+  betCount?: number;
   status?: string;
 };
 
@@ -82,6 +84,7 @@ export function analyzeWingoBets(bets: LiveBet[]): {
   for (const b of bets) {
     if (!isOpen(b)) continue;
     const amt = Number(b.betAmount ?? 0);
+    const count = Math.max(1, Number(b.betCount ?? 1));
     if (!amt) continue;
     totalStake += amt;
     const type = String(b.betType ?? "").toUpperCase();
@@ -91,14 +94,14 @@ export function analyzeWingoBets(bets: LiveBet[]): {
       const key = choice || type;
       const prev = colorMap.get(key) ?? { amount: 0, count: 0 };
       prev.amount += amt;
-      prev.count += 1;
+      prev.count += count;
       colorMap.set(key, prev);
     }
     if (type === "SIZE" || ["BIG", "SMALL"].includes(choice)) {
       const key = choice || type;
       const prev = sizeMap.get(key) ?? { amount: 0, count: 0 };
       prev.amount += amt;
-      prev.count += 1;
+      prev.count += count;
       sizeMap.set(key, prev);
     }
 
@@ -106,7 +109,7 @@ export function analyzeWingoBets(bets: LiveBet[]): {
       if (!matchesWingoNumber(b, n)) continue;
       const row = byNumber[n]!;
       row.liability += amt;
-      row.betCount += 1;
+      row.betCount += count;
       if (type === "NUMBER" || /^\d$/.test(choice)) row.directAmount += amt;
       else if (type === "COLOR" || ["GREEN", "RED", "VIOLET"].includes(choice)) row.colorAmount += amt;
       else if (type === "SIZE" || ["BIG", "SMALL"].includes(choice)) row.sizeAmount += amt;

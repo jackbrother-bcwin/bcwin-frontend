@@ -16,8 +16,10 @@ import {
   IoCheckmarkCircle,
 } from "react-icons/io5";
 import * as admin from "../../../../lib/admin-api";
-import { getGamePeriods, getGameBets, getGameResults } from "../../../../lib/api";
+import { getGamePeriods, getGameResults } from "../../../../lib/api";
 import { useToast } from "../../../../components/ui/Toast";
+import { formatIstDateTime } from "../../../../lib/ist-day";
+import { AdminUserCell } from "../../../components/AdminUserCell";
 import {
   EmptyBlock,
   LoadingBlock,
@@ -119,7 +121,7 @@ export default function GameManagerPage() {
   const [period, setPeriod] = useState<PeriodRow | null>(null);
   const [recent, setRecent] = useState<PeriodRow[]>([]);
   const [results, setResults] = useState<Array<Record<string, unknown>>>([]);
-  const [bets, setBets] = useState<LiveBet[]>([]);
+  const [liveBook, setLiveBook] = useState<admin.AdminGameLiveBook | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [countdown, setCountdown] = useState(0);
@@ -144,14 +146,19 @@ export default function GameManagerPage() {
     "RANDOM" | "WINNING" | "TRX"
   >("RANDOM");
   const [algoSaving, setAlgoSaving] = useState(false);
+  const livePeriodIdRef = useRef<string | null>(null);
 
   // Reset duration when switching game route
   useEffect(() => {
-    setDuration(meta.durations[0] ?? 60);
-    setNumber(0);
-    setDice([1, 1, 1]);
-    setDigits([0, 0, 0, 0, 0]);
-    setFixed(null);
+    const resetTimer = window.setTimeout(() => {
+      setDuration(meta.durations[0] ?? 60);
+      setNumber(0);
+      setDice([1, 1, 1]);
+      setDigits([0, 0, 0, 0, 0]);
+      setFixed(null);
+      setLiveBook(null);
+    }, 0);
+    return () => window.clearTimeout(resetTimer);
   }, [gameKey, meta.durations]);
 
   const applyFixedToUi = useCallback(
@@ -200,6 +207,20 @@ export default function GameManagerPage() {
     [meta.api]
   );
 
+  const refreshLiveBets = useCallback(
+    async (periodId: string) => {
+      try {
+        const response = await admin.getAdminGameLiveBets(meta.api, periodId);
+        if (livePeriodIdRef.current === periodId) {
+          setLiveBook(response);
+        }
+      } catch {
+        // Keep the last good snapshot; the next 2-second poll retries.
+      }
+    },
+    [meta.api]
+  );
+
   const load = useCallback(async () => {
     setLoading(true);
     try {
@@ -221,22 +242,24 @@ export default function GameManagerPage() {
       if (cur?.endTime) setCountdown(secondsUntil(cur.endTime));
 
       if (cur?.id) {
-        const [bRes, fixedRes] = await Promise.all([
-          getGameBets(meta.api, {
-            periodId: String(cur.id),
-            limit: 100,
-          }),
+        const periodId = String(cur.id);
+        livePeriodIdRef.current = periodId;
+        const [liveResponse, fixedRes] = await Promise.all([
+          admin.getAdminGameLiveBets(meta.api, periodId).catch(() => null),
           meta.canSetResult &&
           (meta.api === "wingo" || meta.api === "k3" || meta.api === "5d")
             ? admin
-                .getFixedResult(meta.api, String(cur.id))
+                .getFixedResult(meta.api, periodId)
                 .catch(() => ({ fixed: null }))
             : Promise.resolve({ fixed: null }),
         ]);
-        setBets((bRes.bets as unknown as LiveBet[]) ?? []);
+        if (livePeriodIdRef.current === periodId && liveResponse) {
+          setLiveBook(liveResponse);
+        }
         applyFixedToUi(fixedRes.fixed);
       } else {
-        setBets([]);
+        livePeriodIdRef.current = null;
+        setLiveBook(null);
         setFixed(null);
       }
     } catch (e: unknown) {
@@ -247,10 +270,24 @@ export default function GameManagerPage() {
   }, [meta.api, meta.canSetResult, duration, toast, applyFixedToUi]);
 
   useEffect(() => {
-    load();
+    const initialTimer = window.setTimeout(() => void load(), 0);
     const t = setInterval(load, 6000);
-    return () => clearInterval(t);
+    return () => {
+      window.clearTimeout(initialTimer);
+      clearInterval(t);
+    };
   }, [load]);
+
+  useEffect(() => {
+    const periodId = String(period?.id ?? "");
+    if (!periodId) return;
+    livePeriodIdRef.current = periodId;
+    const timer = window.setInterval(
+      () => void refreshLiveBets(periodId),
+      2_000
+    );
+    return () => window.clearInterval(timer);
+  }, [period?.id, refreshLiveBets]);
 
   // Load wingo algorithm from platform config (wingo / trxwingo managers)
   const loadAlgo = useCallback(async () => {
@@ -267,7 +304,8 @@ export default function GameManagerPage() {
   }, [meta.api]);
 
   useEffect(() => {
-    void loadAlgo();
+    const initialTimer = window.setTimeout(() => void loadAlgo(), 0);
+    return () => window.clearTimeout(initialTimer);
   }, [loadAlgo]);
 
   const saveWingoAlgorithm = async (next: "RANDOM" | "WINNING" | "TRX") => {
@@ -300,11 +338,30 @@ export default function GameManagerPage() {
     return () => clearInterval(t);
   }, [period?.endTime, load]);
 
+  const activeLiveBook =
+    liveBook && liveBook.periodId === String(period?.id ?? "") ? liveBook : null;
+  const liveDistribution = useMemo(
+    () => activeLiveBook?.distribution ?? [],
+    [activeLiveBook]
+  );
+  const bets = useMemo<LiveBet[]>(
+    () =>
+      liveDistribution.map((row) => ({
+        betType: row.betType,
+        betChoice: row.betChoice,
+        betAmount: row.amount,
+        betCount: row.betCount,
+        status: "PENDING",
+      })),
+    [liveDistribution]
+  );
+  const liveRows = activeLiveBook?.bets ?? [];
+  const liveBetCount = activeLiveBook?.total ?? 0;
   const wingoAnalysis = useMemo(() => analyzeWingoBets(bets), [bets]);
   const k3Analysis = useMemo(() => analyzeK3Bets(bets), [bets]);
   const maxLiab = Math.max(1, ...wingoAnalysis.byNumber.map((r) => r.liability));
 
-  const totalBet = bets.reduce((s, b) => s + Number(b.betAmount ?? 0), 0);
+  const totalBet = activeLiveBook?.totalBetAmount ?? 0;
   const cdParts = formatCd(countdown).split(":");
   const urgent = countdown > 0 && countdown <= 10;
 
@@ -511,7 +568,7 @@ export default function GameManagerPage() {
                 {period?.status ?? "—"}
               </span>
               <span className="rounded-full bg-white/15 px-2.5 py-0.5 text-[10px] font-bold text-white sm:text-[11px]">
-                {bets.length} live bets
+                {liveBetCount} live bets
               </span>
               <span className="rounded-full bg-white/15 px-2.5 py-0.5 text-[10px] font-bold text-white sm:text-[11px]">
                 ₹{totalBet.toLocaleString("en-IN")} stake
@@ -998,7 +1055,7 @@ export default function GameManagerPage() {
             )}
             {(meta.api === "5d" || meta.api === "moto") && (
               <p className="text-xs text-slate-500 leading-relaxed">
-                Total open stake <b>₹{totalBet.toLocaleString("en-IN")}</b> across {bets.length} bets.
+                Total open stake <b>₹{totalBet.toLocaleString("en-IN")}</b> across {liveBetCount} bets.
                 Use the live table for granular monitoring.
               </p>
             )}
@@ -1069,8 +1126,17 @@ export default function GameManagerPage() {
       </div>
 
       {/* Distribution table */}
-      <Surface title="Bet distribution" className="mt-4">
-        {bets.length === 0 ? (
+      <Surface
+        title="Bet distribution"
+        className="mt-4"
+        action={
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide text-emerald-600">
+            <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
+            Live · 2 sec
+          </span>
+        }
+      >
+        {liveDistribution.length === 0 ? (
           <EmptyBlock />
         ) : (
           <div className="overflow-x-auto">
@@ -1078,24 +1144,18 @@ export default function GameManagerPage() {
               <thead>
                 <tr>
                   <th>Choice / type</th>
-                  <th>Users</th>
+                  <th>Bets</th>
                   <th>Stake</th>
                   <th>Share</th>
                 </tr>
               </thead>
               <tbody>
-                {Array.from(
-                  bets.reduce((map, b) => {
-                    const key = `${b.betType ?? "?"} · ${b.betChoice ?? "?"}`;
-                    const prev = map.get(key) ?? { count: 0, amount: 0 };
-                    prev.count += 1;
-                    prev.amount += Number(b.betAmount ?? 0);
-                    map.set(key, prev);
-                    return map;
-                  }, new Map<string, { count: number; amount: number }>())
-                )
-                  .map(([choice, v]) => ({ choice, ...v }))
-                  .sort((a, b) => b.amount - a.amount)
+                {liveDistribution
+                  .map((row) => ({
+                    choice: `${row.betType} · ${row.betChoice}`,
+                    count: row.betCount,
+                    amount: row.amount,
+                  }))
                   .map((r) => (
                     <tr key={r.choice}>
                       <td className="font-semibold">{r.choice}</td>
@@ -1124,26 +1184,45 @@ export default function GameManagerPage() {
         )}
       </Surface>
 
-      <Surface title="Live bets" className="mt-4">
-        {bets.length === 0 ? (
+      <Surface
+        title="Live bets"
+        className="mt-4"
+        action={
+          liveBetCount > liveRows.length ? (
+            <span className="text-[10px] font-semibold text-slate-400">
+              Newest {liveRows.length} of {liveBetCount}
+            </span>
+          ) : (
+            <span className="text-[10px] font-semibold text-emerald-600">
+              Refreshing every 2 sec
+            </span>
+          )
+        }
+      >
+        {liveRows.length === 0 ? (
           <EmptyBlock label="No open bets this period" />
         ) : (
           <div className="overflow-x-auto">
             <table className="admin-table">
               <thead>
                 <tr>
+                  <th>User</th>
                   <th>Bet ID</th>
                   <th>Type</th>
                   <th>Choice</th>
                   <th>Amount</th>
                   <th>Status</th>
+                  <th>Placed</th>
                 </tr>
               </thead>
               <tbody>
-                {bets.map((b, i) => (
-                  <tr key={String((b as { id?: string }).id ?? i)}>
+                {liveRows.map((b) => (
+                  <tr key={b.id}>
+                    <td>
+                      <AdminUserCell user={b.user} bank={b.user.bank} showHub />
+                    </td>
                     <td className="font-mono text-[11px]">
-                      {String((b as { id?: string }).id ?? "—").slice(0, 8)}…
+                      {b.id.slice(0, 8)}…
                     </td>
                     <td>{String(b.betType ?? "—")}</td>
                     <td className="font-bold">{String(b.betChoice ?? "—")}</td>
@@ -1152,6 +1231,9 @@ export default function GameManagerPage() {
                       <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700">
                         {String(b.status ?? "OPEN")}
                       </span>
+                    </td>
+                    <td className="whitespace-nowrap text-[11px] text-slate-500">
+                      {formatIstDateTime(b.createdAt)}
                     </td>
                   </tr>
                 ))}
