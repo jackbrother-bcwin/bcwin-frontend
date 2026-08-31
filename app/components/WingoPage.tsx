@@ -126,6 +126,8 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
     betChoice: string;
     label: string;
   } | null>(null);
+  /** A slip object may create at most one request; a new slip is a new object. */
+  const submittedSlipRef = useRef<typeof betSheet>(null);
   const { ensureCanBet, depositModal } = useLotteryBetDepositGate(
     isTrx ? "Trx Win Go" : "Win Go",
     onNavigate,
@@ -172,7 +174,9 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
       });
       if (signal?.aborted || requestId !== periodRequestRef.current) return;
       const current = pickLivePeriod(res.currentPeriod, res.periods);
-      setPeriod(current);
+      // During the sub-second handoff keep the last period label painted. The
+      // zero countdown still locks betting until a genuinely live round lands.
+      if (current) setPeriod(current);
       const nextEnd = current?.endTime ?? null;
       if (nextEnd && nextEnd !== endTimeRef.current) {
         zeroRefreshOnce.current.clear();
@@ -605,18 +609,42 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
   const isRandomHl = (key: string) => randomHighlight === key;
 
   const confirmBet = async (payload: BetSlipConfirmPayload) => {
-    if (!betSheet || !period?.id) return;
-    if (!(await ensureCanBet())) return;
+    const sheet = betSheet;
+    if (!sheet || !period?.id) return;
+    if (submittedSlipRef.current === sheet) return;
+    submittedSlipRef.current = sheet;
+    const releaseRejectedSlip = () => {
+      if (submittedSlipRef.current === sheet) submittedSlipRef.current = null;
+    };
+    let canBet = false;
+    try {
+      canBet = await ensureCanBet();
+    } catch (e: unknown) {
+      toast(e instanceof Error ? e.message : "Bet check failed", "error");
+      releaseRejectedSlip();
+      return;
+    }
+    if (!canBet) {
+      releaseRejectedSlip();
+      return;
+    }
+    if (isBettingLocked(countdown, duration)) {
+      toast("Betting closed for this period", "error");
+      releaseRejectedSlip();
+      setBetSheet(null);
+      return;
+    }
     const betAmount = payload.total;
     if (user && betAmount > user.balance) {
       toast("Insufficient balance", "error");
+      releaseRejectedSlip();
       return;
     }
     if (betAmount <= 0) {
       toast("Invalid amount", "error");
+      releaseRejectedSlip();
       return;
     }
-    const sheet = betSheet;
     const periodId = period.id;
     setBetSheet(null);
     try {
@@ -689,7 +717,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
 
       <PeriodBanner
         gameLabel={gameLabel}
-        periodNumber={period?.periodNumber ?? (loading ? "…" : "—")}
+        periodNumber={period?.periodNumber ?? (loading ? "Syncing…" : "Next round…")}
         countdown={countdown}
         recentBalls={recentBalls}
         onHowToPlay={() => setShowHowTo(true)}

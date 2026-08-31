@@ -64,6 +64,10 @@ const AMOUNTS = [1, 10, 100, 1000, 10000];
 const QTY_PRESETS = [1, 3, 9, 27, 81, 243, 729] as const;
 const QTY_MIN = 1;
 
+function clampQty(n: number): number {
+  return Math.max(QTY_MIN, Math.floor(n) || QTY_MIN);
+}
+
 export function themeFromBet(
   betType: string,
   betChoice: string
@@ -113,7 +117,7 @@ interface BetSlipProps {
   periodNumber?: string | null;
   initialMultiplier?: number;
   onCancel: () => void;
-  onConfirm: (payload: BetSlipConfirmPayload) => void;
+  onConfirm: (payload: BetSlipConfirmPayload) => unknown;
   onRules?: () => void;
 }
 
@@ -140,15 +144,16 @@ export default function BetSlip({
   const [qty, setQty] = useState<number | string>(1);
   const [agree, setAgree] = useState(true);
 
-  const clampQty = (n: number) =>
-    Math.max(QTY_MIN, Math.floor(n) || QTY_MIN);
-
   const parsedQty = typeof qty === "number" ? qty : parseInt(qty, 10);
   const validQty = Math.max(QTY_MIN, Number.isNaN(parsedQty) ? QTY_MIN : parsedQty);
 
   const [shown, setShown] = useState(open);
   const [leaving, setLeaving] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const shownRef = useRef(open);
+  const openRef = useRef(open);
+  /** Ref lock closes same-frame confirm/cancel and rapid double-tap races. */
+  const actionLockedRef = useRef(false);
   const overlayRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   /** Keep last paint so parent clearing the bet does not flash default red. */
@@ -162,21 +167,32 @@ export default function BetSlip({
   const theme = paint.theme;
   const t = THEME[theme];
 
-  useSpaBackClose(shown && !leaving, onCancel, "bet-slip");
+  const requestCancel = () => {
+    if (actionLockedRef.current || leaving) return;
+    actionLockedRef.current = true;
+    setLeaving(true);
+    onCancel();
+  };
+
+  useSpaBackClose(shown && !leaving, requestCancel, "bet-slip");
   useBodyScrollLock(shown);
 
   useEffect(() => {
     if (!open) return;
-    setPaint({
-      theme: themeProp ?? "red",
-      gameTitle,
-      choiceLabel,
-      ballNumber,
-    });
+    const timer = window.setTimeout(() => {
+      setPaint({
+        theme: themeProp ?? "red",
+        gameTitle,
+        choiceLabel,
+        ballNumber,
+      });
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [open, themeProp, gameTitle, choiceLabel, ballNumber]);
 
   // Slide down then unmount when parent sets open=false (optimistic dismiss).
   useEffect(() => {
+    openRef.current = open;
     const overlay = overlayRef.current;
     const panel = panelRef.current;
     const clearInline = () => {
@@ -194,10 +210,14 @@ export default function BetSlip({
 
     if (open) {
       shownRef.current = true;
-      setShown(true);
-      setLeaving(false);
+      actionLockedRef.current = false;
       clearInline();
-      return;
+      const timer = window.setTimeout(() => {
+        setSubmitting(false);
+        setShown(true);
+        setLeaving(false);
+      }, 0);
+      return () => window.clearTimeout(timer);
     }
     if (!shownRef.current) return;
     const reduce =
@@ -205,11 +225,13 @@ export default function BetSlip({
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) {
       shownRef.current = false;
-      setShown(false);
-      setLeaving(false);
-      return;
+      const timer = window.setTimeout(() => {
+        setShown(false);
+        setLeaving(false);
+      }, 0);
+      return () => window.clearTimeout(timer);
     }
-    setLeaving(true);
+    const leavingTimer = window.setTimeout(() => setLeaving(true), 0);
     // Kill enter keyframes so they cannot pin translateY(0) over the exit.
     if (overlay) {
       overlay.style.animation = "none";
@@ -241,20 +263,22 @@ export default function BetSlip({
     return () => {
       window.cancelAnimationFrame(raf1);
       window.cancelAnimationFrame(raf2);
+      window.clearTimeout(leavingTimer);
       window.clearTimeout(t);
     };
   }, [open]);
 
   // Reset when opening a new choice
   useEffect(() => {
-    if (open) {
+    if (!open) return;
+    const timer = window.setTimeout(() => {
       setBase(1);
       // initialMultiplier historically meant X chip; treat as initial quantity preset
       const init = clampQty(Number(initialMultiplier) || 1);
       setQty(init);
       setAgree(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- clampQty stable
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [open, choiceLabel, ballNumber, initialMultiplier]);
 
   /** Stake = amount × quantity only (X chips only set quantity) */
@@ -266,6 +290,50 @@ export default function BetSlip({
   if (!shown) return null;
 
   const canSubmit = agree && total > 0 && !betting && !leaving;
+  const isSubmitting = Boolean(betting) || submitting;
+  const submitEnabled = canSubmit && !isSubmitting;
+
+  const submitOnce = () => {
+    if (!submitEnabled || actionLockedRef.current) return;
+    actionLockedRef.current = true;
+    setSubmitting(true);
+    const finalQty = clampQty(
+      typeof qty === "number" ? qty : parseInt(qty, 10) || QTY_MIN
+    );
+
+    let result: unknown;
+    try {
+      result = onConfirm({
+        baseAmount: base,
+        quantity: finalQty,
+        multiplier: 1,
+        total: base * finalQty,
+      });
+    } catch {
+      actionLockedRef.current = false;
+      setSubmitting(false);
+      return;
+    }
+
+    // Validation may leave this same slip open. Unlock on the next frame only
+    // in that case; accepted bets close it and stay locked for their lifetime.
+    void Promise.resolve(result).then(
+      () => {
+        window.requestAnimationFrame(() => {
+          if (!openRef.current) return;
+          actionLockedRef.current = false;
+          setSubmitting(false);
+        });
+      },
+      () => {
+        window.requestAnimationFrame(() => {
+          if (!openRef.current) return;
+          actionLockedRef.current = false;
+          setSubmitting(false);
+        });
+      }
+    );
+  };
 
   return (
     <div
@@ -276,7 +344,7 @@ export default function BetSlip({
         zIndex: 220,
         pointerEvents: leaving ? "none" : undefined,
       }}
-      onClick={() => !betting && !leaving && onCancel()}
+      onClick={() => !isSubmitting && !leaving && requestCancel()}
       onTouchMove={(e) => {
         const t = e.target as HTMLElement | null;
         if (t?.closest?.(".bet-sheet-panel")) return;
@@ -285,6 +353,7 @@ export default function BetSlip({
       role="dialog"
       aria-modal="true"
       aria-label="Place bet"
+      aria-busy={isSubmitting}
     >
       {/*
         Do NOT use .app-fixed-chrome here — its translateX(-50%) fights
@@ -531,29 +600,20 @@ export default function BetSlip({
           <div className="flex gap-0 -mx-4 -mb-4 overflow-hidden rounded-b-[4px]">
             <button
               type="button"
-              disabled={betting}
-              onClick={onCancel}
+              disabled={isSubmitting || leaving}
+              onClick={requestCancel}
               className="flex-1 h-[50px] text-[17px] font-bold text-slate-500 bg-slate-100 active:bg-slate-200"
             >
               Cancel
             </button>
             <button
               type="button"
-              disabled={!canSubmit}
-              onClick={() => {
-                if (leaving) return;
-                const finalQty = clampQty(typeof qty === "number" ? qty : parseInt(qty, 10) || QTY_MIN);
-                onConfirm({
-                  baseAmount: base,
-                  quantity: finalQty,
-                  multiplier: 1,
-                  total: base * finalQty,
-                });
-              }}
+              disabled={!submitEnabled}
+              onClick={submitOnce}
               className="flex-[1.35] h-[50px] text-[17px] font-extrabold text-white disabled:opacity-50 active:opacity-90"
               style={{ background: t.btn }}
             >
-              {betting ? "Placing…" : `Total amount ${total.toLocaleString("en-IN")}`}
+              {isSubmitting ? "Placing…" : `Total amount ${total.toLocaleString("en-IN")}`}
             </button>
           </div>
         </div>
