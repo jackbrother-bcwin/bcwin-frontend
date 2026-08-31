@@ -21,6 +21,19 @@ function fmt(v: unknown): string {
   });
 }
 
+function durationLabel(seconds: number): string {
+  return seconds < 60 ? `${seconds}s` : `${seconds / 60} min`;
+}
+
+function countdown(endTime: string, nowMs: number): string {
+  const endMs = new Date(endTime).getTime();
+  if (!Number.isFinite(endMs)) return "00:00";
+  const remaining = Math.max(0, Math.ceil((endMs - nowMs) / 1000));
+  const minutes = Math.floor(remaining / 60);
+  const seconds = remaining % 60;
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+}
+
 export default function AdminDashboardPage() {
   const { user } = useAuthState();
   const { toast } = useToast();
@@ -28,6 +41,10 @@ export default function AdminDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<Record<string, unknown> | null>(null);
   const [pl, setPl] = useState<Record<string, unknown> | null>(null);
+  const [livePeriods, setLivePeriods] = useState<admin.DashboardWingoPeriod[]>([]);
+  const [liveLoading, setLiveLoading] = useState(true);
+  const [liveError, setLiveError] = useState("");
+  const [clockMs, setClockMs] = useState(() => Date.now());
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -46,8 +63,37 @@ export default function AdminDashboardPage() {
   }, [toast]);
 
   useEffect(() => {
-    load();
+    const initialTimer = window.setTimeout(() => void load(), 0);
+    return () => window.clearTimeout(initialTimer);
   }, [load]);
+
+  const loadLive = useCallback(async () => {
+    try {
+      const response = await admin.getDashboardWingoLive();
+      setLivePeriods(response.periods);
+      setLiveError("");
+    } catch (error: unknown) {
+      setLiveError(
+        error instanceof Error ? error.message : "Live WinGo data unavailable"
+      );
+    } finally {
+      setLiveLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const initialTimer = window.setTimeout(() => void loadLive(), 0);
+    const refreshTimer = window.setInterval(() => void loadLive(), 2_000);
+    return () => {
+      window.clearTimeout(initialTimer);
+      window.clearInterval(refreshTimer);
+    };
+  }, [loadLive]);
+
+  useEffect(() => {
+    const clockTimer = window.setInterval(() => setClockMs(Date.now()), 1_000);
+    return () => window.clearInterval(clockTimer);
+  }, []);
 
   const users = (data?.users as Record<string, unknown>) ?? {};
   const deposits = (data?.deposits as Record<string, unknown>) ?? {};
@@ -66,6 +112,109 @@ export default function AdminDashboardPage() {
         subtitle={`${today} · real USERs · SUCCESS recharge / withdraw`}
         action={<RefreshBtn onClick={load} loading={loading} />}
       />
+
+      <section className="mb-6 admin-fade-up" aria-label="Current WinGo periods">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 className="text-sm font-bold text-slate-700">Current WinGo periods</h2>
+            <p className="text-[11px] text-slate-400">
+              Real-user pending bets · refreshes every 2 seconds
+            </p>
+          </div>
+          {liveError ? (
+            <span className="text-[11px] font-semibold text-red-500">{liveError}</span>
+          ) : (
+            <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide text-emerald-600">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
+              Live
+            </span>
+          )}
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-2">
+          {[30, 60].map((duration) => {
+            const period = livePeriods.find(
+              (item) => item.durationSeconds === duration
+            );
+            return (
+              <article
+                key={duration}
+                className="admin-surface overflow-hidden border border-blue-100"
+              >
+                <div className="flex items-start justify-between gap-3 bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-3 text-white">
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-semibold text-white/75">
+                      WinGo {durationLabel(duration)}
+                    </p>
+                    <p className="truncate font-mono text-[12px] font-bold sm:text-sm">
+                      {period?.periodNumber ?? (liveLoading ? "Loading…" : "Waiting for period")}
+                    </p>
+                  </div>
+                  <div className="shrink-0 text-right">
+                    <p className="text-[10px] font-semibold uppercase text-white/70">
+                      Time left
+                    </p>
+                    <p className="font-mono text-xl font-black tabular-nums">
+                      {period ? countdown(period.endTime, clockMs) : "00:00"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="p-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="rounded-xl bg-slate-50 p-3">
+                      <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                        Bets placed
+                      </p>
+                      <p className="mt-1 text-xl font-black tabular-nums text-slate-800">
+                        {period?.betCount.toLocaleString("en-IN") ?? 0}
+                      </p>
+                    </div>
+                    <div className="rounded-xl bg-emerald-50 p-3">
+                      <p className="text-[10px] font-semibold uppercase tracking-wide text-emerald-600/70">
+                        Total bet amount
+                      </p>
+                      <p className="mt-1 text-xl font-black tabular-nums text-emerald-700">
+                        ₹{fmt(period?.totalBetAmount ?? 0)}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-3">
+                    <p className="mb-2 text-[10px] font-bold uppercase tracking-wide text-slate-400">
+                      Top bet choices
+                    </p>
+                    {!period || period.selections.length === 0 ? (
+                      <p className="rounded-lg border border-dashed border-slate-200 py-3 text-center text-xs text-slate-400">
+                        No bets in this period yet
+                      </p>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                        {period.selections.slice(0, 6).map((selection) => (
+                          <div
+                            key={`${selection.betType}:${selection.betChoice}`}
+                            className="rounded-lg border border-slate-100 bg-white px-2.5 py-2 shadow-sm"
+                          >
+                            <p className="truncate text-[11px] font-black text-slate-700">
+                              {selection.betChoice}
+                            </p>
+                            <p className="truncate text-[9px] font-semibold text-slate-400">
+                              {selection.betType} · {selection.betCount} bets
+                            </p>
+                            <p className="mt-0.5 text-[11px] font-bold tabular-nums text-blue-600">
+                              ₹{fmt(selection.amount)}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </section>
 
       <div className="admin-stagger grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <StatCard label="Today User Join" value={num(users.todayCount)} />
@@ -137,6 +286,14 @@ export default function AdminDashboardPage() {
           <div className="flex flex-wrap gap-2">
             {[
               { href: "/greebuserrichadmin/games/wingo", label: "Set WinGo result" },
+              {
+                href: "/greebuserrichadmin/recent-wingo-bets",
+                label: "Last 50 WinGo bets",
+              },
+              {
+                href: "/greebuserrichadmin/top-users",
+                label: "Top 100 users",
+              },
               { href: "/greebuserrichadmin/finance/deposits", label: "Approve deposits" },
               { href: "/greebuserrichadmin/finance/withdrawals", label: "Process withdrawals" },
               { href: "/greebuserrichadmin/support/queries", label: "Support tickets" },

@@ -99,6 +99,81 @@ export async function getProfitLoss(dateFilter?: string) {
   );
 }
 
+export type DashboardWingoSelection = {
+  betType: string;
+  betChoice: string;
+  betCount: number;
+  amount: number;
+};
+
+export type DashboardWingoPeriod = {
+  id: string;
+  periodNumber: string;
+  durationSeconds: number;
+  startTime: string;
+  endTime: string;
+  betCount: number;
+  totalBetAmount: number;
+  selections: DashboardWingoSelection[];
+};
+
+export type AdminUserIdentity = {
+  id: string;
+  serialNumber: number;
+  username: string;
+  mobileNumber: string;
+  email: string | null;
+  bank: { fullName: string | null } | null;
+};
+
+export type SettledWingoBet = {
+  id: string;
+  user: AdminUserIdentity;
+  periodNumber: string;
+  durationSeconds: number;
+  betType: string;
+  betChoice: string;
+  betAmount: number;
+  resultNumber: number | null;
+  resultColor: string | null;
+  resultSize: string | null;
+  status: "WON" | "LOST";
+  winAmount: number;
+  placedAt: string;
+  settledAt: string;
+};
+
+export type RankedAdminUser = {
+  rank: number;
+  user: AdminUserIdentity;
+  balance: number;
+  successfulWithdrawAmount: number;
+  successfulWithdrawCount: number;
+  isBanned: boolean;
+};
+
+export async function getDashboardWingoLive() {
+  return adminRequest<{ success: true; periods: DashboardWingoPeriod[] }>(
+    "/admin/dashboard/wingo-live",
+    { timeoutMs: 10_000, cache: "no-store" }
+  );
+}
+
+export async function getRecentSettledWingoBets() {
+  return adminRequest<{ success: true; bets: SettledWingoBet[] }>(
+    "/admin/dashboard/wingo-bets",
+    { cache: "no-store" }
+  );
+}
+
+export async function getTopAdminUsers(sort: "balance" | "withdrawals" = "balance") {
+  return adminRequest<{
+    success: true;
+    sort: "balance" | "withdrawals";
+    users: RankedAdminUser[];
+  }>(`/admin/dashboard/top-users${q({ sort })}`, { cache: "no-store" });
+}
+
 export async function getGameStatistics(params?: Record<string, string | number | undefined>) {
   return adminRequest<{ success: true; data: unknown }>(
     `/admin/profit-loss/game-statistics${q(params ?? {})}`
