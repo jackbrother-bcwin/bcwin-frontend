@@ -188,6 +188,21 @@ export async function getDashboardWingoLive() {
   );
 }
 
+export type DashboardEarnings = {
+  allTimeRebateCommission: number;
+  todayRebateCommission: number;
+  allTimeSalary: number;
+  todaySalary: number;
+  updatedAt: string;
+};
+
+export async function getDashboardEarnings() {
+  return adminRequest<{ success: true; earnings: DashboardEarnings }>(
+    "/admin/dashboard/earnings",
+    { timeoutMs: 10_000, cache: "no-store" }
+  );
+}
+
 export async function getRecentSettledWingoBets() {
   return adminRequest<{ success: true; bets: SettledWingoBet[] }>(
     "/admin/dashboard/wingo-bets",

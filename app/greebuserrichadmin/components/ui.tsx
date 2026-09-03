@@ -34,17 +34,26 @@ export function StatCard({
   value,
   hint,
   onClick,
+  tone = "default",
 }: {
   label: string;
   value: string | number;
   hint?: string;
   onClick?: () => void;
+  tone?: "default" | "today" | "allTime";
 }) {
+  const toneClass =
+    tone === "today"
+      ? "admin-card-today"
+      : tone === "allTime"
+        ? "admin-card-all-time"
+        : "";
+
   return (
     <button
       type="button"
       onClick={onClick}
-      className="admin-card w-full text-left"
+      className={`admin-card ${toneClass} w-full text-left`}
       disabled={!onClick}
     >
       <p className="text-[11px] font-medium text-white/85 sm:text-[12px]">{label}</p>

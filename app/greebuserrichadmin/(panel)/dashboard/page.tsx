@@ -62,6 +62,7 @@ export default function AdminDashboardPage() {
   const [data, setData] = useState<Record<string, unknown> | null>(null);
   const [pl, setPl] = useState<Record<string, unknown> | null>(null);
   const [livePeriods, setLivePeriods] = useState<admin.DashboardWingoPeriod[]>([]);
+  const [earnings, setEarnings] = useState<admin.DashboardEarnings | null>(null);
   const [liveLoading, setLiveLoading] = useState(true);
   const [liveError, setLiveError] = useState("");
   const [clockMs, setClockMs] = useState(() => Date.now());
@@ -118,6 +119,24 @@ export default function AdminDashboardPage() {
       window.clearInterval(refreshTimer);
     };
   }, [loadLive]);
+
+  const loadEarnings = useCallback(async () => {
+    try {
+      const response = await admin.getDashboardEarnings();
+      setEarnings(response.earnings);
+    } catch {
+      // Keep the last good totals during a transient refresh failure.
+    }
+  }, []);
+
+  useEffect(() => {
+    const initialTimer = window.setTimeout(() => void loadEarnings(), 0);
+    const refreshTimer = window.setInterval(() => void loadEarnings(), 2_000);
+    return () => {
+      window.clearTimeout(initialTimer);
+      window.clearInterval(refreshTimer);
+    };
+  }, [loadEarnings]);
 
   useEffect(() => {
     const clockTimer = window.setInterval(() => setClockMs(Date.now()), 1_000);
@@ -314,17 +333,23 @@ export default function AdminDashboardPage() {
       </section>
 
       <div className="admin-stagger grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        <StatCard label="Today User Join" value={num(users.todayCount)} />
+        <StatCard
+          label="Today User Join"
+          value={num(users.todayCount)}
+          tone="today"
+        />
         <StatCard
           label="Today's Recharge"
           value={fmt(deposits.todayAmount)}
           hint="SUCCESS only"
+          tone="today"
           onClick={() => router.push("/greebuserrichadmin/finance/deposits?status=SUCCESS")}
         />
         <StatCard
           label="Today's Withdrawal"
           value={fmt(withdrawals.todayAmount)}
           hint="SUCCESS only"
+          tone="today"
           onClick={() => router.push("/greebuserrichadmin/finance/withdrawals?status=SUCCESS")}
         />
         <StatCard
@@ -366,14 +391,41 @@ export default function AdminDashboardPage() {
         <StatCard
           label="Today's total bet"
           value={fmt(bets.todayTotalBet ?? cards.totalInvested)}
+          tone="today"
         />
         <StatCard
           label="Today's total win"
           value={fmt(bets.todayTotalWin ?? cards.totalWon)}
+          tone="today"
         />
         <StatCard
           label="Today's profit"
           value={fmt(bets.todayProfit ?? cards.netPL)}
+          tone="today"
+        />
+        <StatCard
+          label="All-time rebate commission"
+          value={earnings ? `₹${fmt(earnings.allTimeRebateCommission)}` : "Loading…"}
+          hint="Settled rebates · refreshes every 2s"
+          tone="allTime"
+        />
+        <StatCard
+          label="All-time salary"
+          value={earnings ? `₹${fmt(earnings.allTimeSalary)}` : "Loading…"}
+          hint="Paid salary · refreshes every 2s"
+          tone="allTime"
+        />
+        <StatCard
+          label="Today's rebate commission"
+          value={earnings ? `₹${fmt(earnings.todayRebateCommission)}` : "Loading…"}
+          hint="Settled today (IST)"
+          tone="today"
+        />
+        <StatCard
+          label="Today's salary"
+          value={earnings ? `₹${fmt(earnings.todaySalary)}` : "Loading…"}
+          hint="Paid today (IST)"
+          tone="today"
         />
       </div>
 

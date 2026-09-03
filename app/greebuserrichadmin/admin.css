@@ -253,6 +253,14 @@
   box-shadow: 0 4px 14px rgba(37, 99, 235, 0.22);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+.admin-card.admin-card-today {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.24);
+}
+.admin-card.admin-card-all-time {
+  background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%);
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.24);
+}
 /* hover lift only on hover-capable devices — see @media (hover: hover) below */
 
 .admin-surface {
@@ -476,6 +484,12 @@
   .admin-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
+  }
+  .admin-card.admin-card-today:hover {
+    box-shadow: 0 8px 24px rgba(5, 150, 105, 0.34);
+  }
+  .admin-card.admin-card-all-time:hover {
+    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.34);
   }
   .admin-table tr:hover td {
     background: #f8fafc;

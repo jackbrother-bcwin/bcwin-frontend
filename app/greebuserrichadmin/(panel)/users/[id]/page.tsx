@@ -369,8 +369,10 @@ export default function UserDetailPage() {
         value: Number(stats.totalBet ?? 0),
       },
       {
-        name: "Commission",
-        value: Number(stats.totalCommission ?? 0),
+        name: "Rebate commission",
+        value: Number(
+          stats.totalRebateCommission ?? stats.totalCommission ?? 0
+        ),
       },
     ].filter((x) => x.value > 0);
   }, [stats]);
@@ -433,7 +435,7 @@ export default function UserDetailPage() {
       />
 
       {/* Identity strip */}
-      <div className="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <div className="admin-card">
           <p className="text-xs text-white/80">Balance</p>
           <p className="mt-1 text-2xl font-black tabular-nums">
@@ -474,6 +476,12 @@ export default function UserDetailPage() {
             By: {String(user.referredBy ?? "—")}
           </p>
         </div>
+        <div className="admin-surface p-4">
+          <p className="text-xs text-slate-500">Joining date</p>
+          <p className="mt-1 text-sm font-bold text-slate-800">
+            {fmtDate(user.createdAt)}
+          </p>
+        </div>
       </div>
 
       {/* Tabs */}
@@ -511,8 +519,14 @@ export default function UserDetailPage() {
             <StatMini label="Total withdraw" value={money(stats.totalWithdraw)} />
             <StatMini label="Total bets" value={money(stats.totalBet)} />
             <StatMini
-              label="Commission"
-              value={money(stats.totalCommission)}
+              label="Rebate commission"
+              value={money(
+                stats.totalRebateCommission ?? stats.totalCommission
+              )}
+            />
+            <StatMini
+              label="Total salary received"
+              value={money(stats.totalSalaryReceived)}
             />
             <StatMini
               label="Direct team"
@@ -575,9 +589,6 @@ export default function UserDetailPage() {
               </button>
             </Surface>
             <Surface title="Moderation & Salary">
-              <p className="mb-3 text-sm text-slate-600">
-                Joined {fmtDate(user.createdAt)}
-              </p>
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
@@ -606,7 +617,7 @@ export default function UserDetailPage() {
                     setPenaltyFactorInput(String(user.illegalBetPenaltyFactor ?? 3));
                     setShowPenaltyModal(true);
                   }}
-                  className="admin-btn-secondary text-xs"
+                  className="inline-flex min-h-10 items-center justify-center rounded-lg bg-amber-500 px-3.5 py-2 text-xs font-bold text-white shadow-sm transition-colors hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {user.hasIllegalBetPenalty ? "Edit penalty factor" : "Set penalty factor"}
                 </button>
