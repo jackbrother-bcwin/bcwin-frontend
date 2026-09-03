@@ -16,6 +16,7 @@ import {
 import BulkBar from "../../../components/BulkBar";
 import { AdminPieChart } from "../../../components/Charts";
 import { AdminHubLink, AdminUserCell } from "../../../components/AdminUserCell";
+import { formatIstDateTime } from "../../../../lib/ist-day";
 
 function WithdrawalsInner() {
   const { toast } = useToast();
@@ -195,6 +196,7 @@ function WithdrawalsInner() {
                   <th>Amount</th>
                   <th>Method</th>
                   <th>Status</th>
+                  <th>Generated at</th>
                   <th>Remark</th>
                   <th>Actions</th>
                 </tr>
@@ -230,6 +232,9 @@ function WithdrawalsInner() {
                       <td className="font-semibold">₹{Number(r.amount ?? 0).toLocaleString("en-IN")}</td>
                       <td>{String(r.method ?? "—")}</td>
                       <td><Badge status={st} /></td>
+                      <td className="whitespace-nowrap text-[11px] text-slate-500">
+                        {formatIstDateTime(r.createdAt)}
+                      </td>
                       <td className="max-w-[220px] text-xs text-slate-600">
                         <span className="line-clamp-2" title={String(r.note ?? "")}>
                           {String(r.note ?? "—")}
