@@ -418,7 +418,7 @@ export default function AdminDashboardPage() {
         <StatCard
           label="Today's rebate commission"
           value={earnings ? `₹${fmt(earnings.todayRebateCommission)}` : "Loading…"}
-          hint="Accrued · unsettled today (IST)"
+          hint="Live estimate from today's bets (IST)"
           tone="today"
         />
         <StatCard
