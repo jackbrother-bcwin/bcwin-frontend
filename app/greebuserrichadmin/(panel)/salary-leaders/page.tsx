@@ -84,7 +84,7 @@ export default function SalaryLeadersPage() {
     event.preventDefault();
     const search = userSearch.trim();
     if (!search) {
-      toast("Enter a username, mobile number, serial number, or email", "error");
+      toast("Enter a mobile number, username, email, or #UID", "error");
       return;
     }
 
@@ -153,7 +153,7 @@ export default function SalaryLeadersPage() {
             className="admin-input min-w-0 flex-1"
             value={userSearch}
             onChange={(event) => setUserSearch(event.target.value)}
-            placeholder="Search username, mobile, serial, email, or user ID"
+            placeholder="Mobile, name, email, UUID, or #UID"
             aria-label="Search users to add"
           />
           <button
@@ -229,7 +229,7 @@ export default function SalaryLeadersPage() {
               className="admin-input !h-9 min-w-0 w-52 !text-xs"
               value={listSearch}
               onChange={(event) => setListSearch(event.target.value)}
-              placeholder="Search this list…"
+              placeholder="Mobile, name, or #UID"
               aria-label="Search Salary Leaders"
             />
             <button type="submit" className="admin-btn-ghost min-h-9 text-xs">

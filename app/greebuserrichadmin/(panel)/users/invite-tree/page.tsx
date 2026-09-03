@@ -33,14 +33,15 @@ function buildInviteTreeParams(raw: string): Record<string, string> {
     return { userId: q };
   }
 
-  // 10-digit mobile
-  if (/^\d{10}$/.test(q)) {
-    return { mobile: q };
+  // A leading # explicitly selects an exact serial/UID lookup.
+  const serialMatch = q.match(/^#\s*(\d+)$/);
+  if (serialMatch) {
+    return { serialNumber: serialMatch[1]! };
   }
 
-  // Serial number (numeric, not 10 digits or short ids)
+  // Any all-digit value is a mobile-number lookup, regardless of length.
   if (/^\d+$/.test(q)) {
-    return { serialNumber: q };
+    return { mobile: q };
   }
 
   // Username / referral code → backend search
@@ -149,7 +150,7 @@ export default function InviteTreePage() {
   const runSearch = async (rawInput?: string) => {
     const raw = (rawInput ?? query).trim();
     if (!raw) {
-      toast("Enter a serial number, mobile, username, or user UUID", "error");
+      toast("Enter a mobile, username, #UID, or user UUID", "error");
       return;
     }
     setQuery(raw);
@@ -215,13 +216,13 @@ export default function InviteTreePage() {
     <div>
       <PageTitle
         title="Invite tree"
-        subtitle="Lookup by serial · mobile · username · UUID"
+        subtitle="Lookup by mobile · username · #UID · UUID"
       />
       <Surface className="mb-4 max-w-xl">
         <form onSubmit={search} className="flex flex-col gap-2 sm:flex-row">
           <input
             className="admin-input"
-            placeholder="e.g. 8400 · 9855641885 · username · UUID"
+            placeholder="e.g. 9855641885 · username · #8400 · UUID"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             aria-label="User identifier"
@@ -235,8 +236,8 @@ export default function InviteTreePage() {
           </button>
         </form>
         <p className="mt-2 text-[11px] text-slate-500">
-          Use serial number (e.g. 8400), 10-digit mobile, username, or full user
-          UUID from the users list.
+          Use # before an exact UID (e.g. #8400). Digits without # search mobile;
+          names and full user UUIDs also work.
         </p>
       </Surface>
 

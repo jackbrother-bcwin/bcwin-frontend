@@ -140,7 +140,7 @@ export default function AgentsPage() {
               <div className="flex gap-2">
                 <input
                   className="admin-input !h-8 !text-xs w-40"
-                  placeholder="Search…"
+                  placeholder="Mobile, name, or #UID"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && loadList()}

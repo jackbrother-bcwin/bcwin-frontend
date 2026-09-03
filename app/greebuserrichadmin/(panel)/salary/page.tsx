@@ -557,7 +557,7 @@ export default function SalaryPage() {
               <div className="min-w-[200px] flex-1">
                 <input
                   className="admin-input"
-                  placeholder="Search user by Serial # / Username / Mobile"
+                  placeholder="Mobile, name, or #UID"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
@@ -831,7 +831,7 @@ export default function SalaryPage() {
               </label>
               <input
                 className="admin-input"
-                placeholder="Serial / username / mobile"
+                placeholder="Mobile, name, or #UID"
                 value={claimSearch}
                 onChange={(e) => setClaimSearch(e.target.value)}
               />

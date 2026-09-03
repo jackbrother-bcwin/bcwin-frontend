@@ -144,7 +144,7 @@ export default function BankAdminPage() {
         <form onSubmit={(ev) => void doSearch(ev)} className="flex gap-2">
           <input
             className="admin-input"
-            placeholder="UID, username, or mobile"
+            placeholder="Mobile, name, or #UID"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
