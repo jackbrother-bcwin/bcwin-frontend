@@ -34,6 +34,26 @@ function countdown(endTime: string, nowMs: number): string {
   return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 }
 
+type WingoAlgorithm = "RANDOM" | "WINNING" | "TRX";
+
+const WINGO_ALGORITHMS: ReadonlyArray<{
+  id: WingoAlgorithm;
+  label: string;
+  description: string;
+}> = [
+  { id: "RANDOM", label: "Random", description: "Pure random 0–9" },
+  {
+    id: "WINNING",
+    label: "Winning",
+    description: "House edge — lowest liability number",
+  },
+  {
+    id: "TRX",
+    label: "TRX result",
+    description: "Last digit of latest Tron block hash",
+  },
+];
+
 export default function AdminDashboardPage() {
   const { user } = useAuthState();
   const { toast } = useToast();
@@ -45,16 +65,25 @@ export default function AdminDashboardPage() {
   const [liveLoading, setLiveLoading] = useState(true);
   const [liveError, setLiveError] = useState("");
   const [clockMs, setClockMs] = useState(() => Date.now());
+  const [wingoAlgorithm, setWingoAlgorithm] = useState<WingoAlgorithm | null>(null);
+  const [algorithmSaving, setAlgorithmSaving] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [ov, profit] = await Promise.all([
+      const [ov, profit, configResponse] = await Promise.all([
         admin.getOverview(),
         admin.getProfitLoss("today").catch(() => null),
+        admin.getConfig().catch(() => null),
       ]);
       setData((ov.data as Record<string, unknown>) ?? null);
       setPl((profit?.data as Record<string, unknown>) ?? null);
+      const algorithm = String(
+        configResponse?.config?.wingoAlgorithm ?? ""
+      ).toUpperCase();
+      if (algorithm === "RANDOM" || algorithm === "WINNING" || algorithm === "TRX") {
+        setWingoAlgorithm(algorithm);
+      }
     } catch (e: unknown) {
       toast(e instanceof Error ? e.message : "Failed to load overview", "error");
     } finally {
@@ -94,6 +123,23 @@ export default function AdminDashboardPage() {
     const clockTimer = window.setInterval(() => setClockMs(Date.now()), 1_000);
     return () => window.clearInterval(clockTimer);
   }, []);
+
+  const saveWingoAlgorithm = async (next: WingoAlgorithm) => {
+    if (!wingoAlgorithm || next === wingoAlgorithm || algorithmSaving) return;
+    setAlgorithmSaving(true);
+    try {
+      await admin.updateConfig({ wingoAlgorithm: next });
+      setWingoAlgorithm(next);
+      toast(`Wingo result mode → ${next}`, "success");
+    } catch (error: unknown) {
+      toast(
+        error instanceof Error ? error.message : "Failed to update Wingo result mode",
+        "error"
+      );
+    } finally {
+      setAlgorithmSaving(false);
+    }
+  };
 
   const users = (data?.users as Record<string, unknown>) ?? {};
   const deposits = (data?.deposits as Record<string, unknown>) ?? {};
@@ -213,6 +259,57 @@ export default function AdminDashboardPage() {
               </article>
             );
           })}
+        </div>
+
+        <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 className="text-sm font-bold text-slate-700">WinGo result mode</h3>
+              <p className="text-[11px] text-slate-400">
+                Same global setting as Manage WinGo
+              </p>
+            </div>
+            <span className="rounded-full bg-blue-50 px-2.5 py-1 font-mono text-[10px] font-black text-blue-700">
+              {wingoAlgorithm ? `${wingoAlgorithm} · ACTIVE` : "LOADING…"}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+            {WINGO_ALGORITHMS.map((option) => {
+              const active = wingoAlgorithm === option.id;
+              return (
+                <button
+                  key={option.id}
+                  type="button"
+                  disabled={!wingoAlgorithm || algorithmSaving}
+                  onClick={() => void saveWingoAlgorithm(option.id)}
+                  className={`rounded-xl border px-3 py-3 text-left transition-all active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 ${
+                    active
+                      ? "border-blue-500 bg-blue-50 shadow-sm ring-1 ring-blue-500/30"
+                      : "border-slate-200 bg-white hover:border-blue-200 hover:bg-slate-50"
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <p
+                      className={`text-sm font-black ${
+                        active ? "text-blue-800" : "text-slate-800"
+                      }`}
+                    >
+                      {option.label}
+                    </p>
+                    {active ? (
+                      <span className="text-[10px] font-black uppercase text-blue-600">
+                        Active
+                      </span>
+                    ) : null}
+                  </div>
+                  <p className="mt-0.5 text-[11px] leading-snug text-slate-500">
+                    {option.description}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </section>
 
