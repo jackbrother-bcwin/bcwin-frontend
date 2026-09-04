@@ -160,7 +160,7 @@ export default function AgencyHub({ onOpen, onNavigate }: Props) {
           INVITATION LINK
         </button>
 
-        {!AUTO_SALARY_LIVE ? (
+        {/* {!AUTO_SALARY_LIVE ? (
           <div
             className="mx-3 mb-3 rounded-[12px] px-3 py-2.5 text-[13px] leading-relaxed text-[#FDE4BC]"
             style={{
@@ -170,7 +170,7 @@ export default function AgencyHub({ onOpen, onNavigate }: Props) {
           >
             {SALARY_DASHBOARD_NOTICE}
           </div>
-        ) : null}
+        ) : null} */}
 
         <div className="agency-menu">
           <MenuRow
