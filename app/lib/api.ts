@@ -1322,6 +1322,67 @@ export async function getSalaryDashboard(): Promise<{
   return request("/user/salary/dashboard");
 }
 
+export type SalaryBusinessDay = "today" | "yesterday";
+export type SalaryBusinessSort = "deposit" | "withdrawal";
+
+export interface SalaryBusinessMetric {
+  amount: number;
+  share: number;
+}
+
+export interface SalaryBusinessLeg {
+  uid: number;
+  name: string;
+  deposit: SalaryBusinessMetric;
+  withdrawal: SalaryBusinessMetric;
+}
+
+export interface SalaryBusinessReport {
+  success: true;
+  day: SalaryBusinessDay;
+  date: string;
+  timezone: "Asia/Kolkata";
+  team: {
+    l1Count: number;
+    deposit: number;
+    withdrawal: number;
+  };
+  levels: Array<{
+    level: number;
+    deposit: number;
+    withdrawal: number;
+  }>;
+  concentration: {
+    status: "none" | "balanced" | "concentrated";
+    threshold: number;
+    leader: {
+      uid: number;
+      name: string;
+      deposit: SalaryBusinessMetric;
+    } | null;
+  };
+  legs: SalaryBusinessLeg[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+  sortBy: SalaryBusinessSort;
+  updatedAt: string;
+}
+
+export async function getSalaryBusinessReport(params?: {
+  day?: SalaryBusinessDay;
+  sortBy?: SalaryBusinessSort;
+  page?: number;
+  limit?: number;
+}): Promise<SalaryBusinessReport> {
+  return request(
+    `/user/salary/business-report${buildQuery(params ?? {})}`
+  );
+}
+
 export interface DailyCommissionRow {
   date: string;
   totalCommission: number;

@@ -8,15 +8,16 @@ import type {
 } from "../../lib/api";
 import { formatDateTime, formatINR } from "../../lib/format";
 import DatePickerSheet from "./shared/DatePickerSheet";
+import SalaryBusinessReport from "./SalaryBusinessReport";
 import { type DatePreset, rangeForPreset, ymdLocal } from "./dateRange";
-import { AUTO_SALARY_LIVE, SALARY_DASHBOARD_NOTICE } from "../../lib/auto-salary";
+import { AUTO_SALARY_LIVE } from "../../lib/auto-salary";
 
 interface Props {
   onBack: () => void;
   onOpenDepositGenealogy?: () => void;
 }
 
-function SalaryDashboardMaintenance({ onBack }: { onBack: () => void }) {
+function SalaryBusinessOnlyPage({ onBack }: { onBack: () => void }) {
   return (
     <div className="sal-page">
       <header className="sal-topbar">
@@ -32,16 +33,7 @@ function SalaryDashboardMaintenance({ onBack }: { onBack: () => void }) {
       </header>
       <div className="sal-topbar-spacer-flow" aria-hidden />
       <div className="sal-body">
-        <div
-          className="rounded-[14px] px-4 py-8 text-center"
-          style={{
-            background: "#201c26",
-            border: "1px solid rgba(254,211,88,0.35)",
-          }}
-        >
-          <p className="text-[15px] font-bold text-[#FED358] mb-2">Under maintenance</p>
-          <p className="text-[14px] text-[#FDE4BC] leading-relaxed">{SALARY_DASHBOARD_NOTICE}</p>
-        </div>
+        <SalaryBusinessReport />
       </div>
     </div>
   );
@@ -49,7 +41,7 @@ function SalaryDashboardMaintenance({ onBack }: { onBack: () => void }) {
 
 export default function SalaryDashboardPage(props: Props) {
   if (!AUTO_SALARY_LIVE) {
-    return <SalaryDashboardMaintenance onBack={props.onBack} />;
+    return <SalaryBusinessOnlyPage onBack={props.onBack} />;
   }
   return <SalaryDashboardLive {...props} />;
 }
@@ -367,20 +359,7 @@ function SalaryDashboardLive({
           </div>
         </div>
 
-        <div className="sal-dep-grid">
-          <div className="sal-dep">
-            <p className="sal-dep-val">{formatINR(m.todayTeamDeposit, 0)}</p>
-            <p className="sal-dep-lab">TODAY&apos;S TEAM DEPOSIT</p>
-          </div>
-          <div className="sal-dep">
-            <p className="sal-dep-val">{formatINR(m.yesterdayTeamDeposit, 0)}</p>
-            <p className="sal-dep-lab">YESTERDAY&apos;S TEAM DEPOSIT</p>
-          </div>
-          <div className="sal-dep">
-            <p className="sal-dep-val">{formatINR(m.dayBeforeTeamDeposit, 0)}</p>
-            <p className="sal-dep-lab">DBY&apos;S TEAM DEPOSIT</p>
-          </div>
-        </div>
+        <SalaryBusinessReport />
 
         {/* Levels */}
         <section className="sal-card">
