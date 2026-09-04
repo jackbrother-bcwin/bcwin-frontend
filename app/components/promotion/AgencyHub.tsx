@@ -182,7 +182,8 @@ export default function AgencyHub({ onOpen, onNavigate }: Props) {
           <MenuRow
             icon={<MenuIconSalaryNew />}
             label="Salary dashboard"
-            subtitle={!AUTO_SALARY_LIVE ? "Maintenance" : undefined}
+            // subtitle={!AUTO_SALARY_LIVE ? "Maintenance" : undefined}
+            subtitle="Salary Data"
             isNew={AUTO_SALARY_LIVE}
             onClick={() => onOpen("salary")}
           />
