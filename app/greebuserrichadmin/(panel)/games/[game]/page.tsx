@@ -364,6 +364,7 @@ export default function GameManagerPage() {
   const totalBet = activeLiveBook?.totalBetAmount ?? 0;
   const cdParts = formatCd(countdown).split(":");
   const urgent = countdown > 0 && countdown <= 10;
+  const wingoResultFrozen = meta.api === "wingo" && countdown <= 3;
 
   const confirmPrediction = async () => {
     if (!meta.canSetResult) {
@@ -372,6 +373,10 @@ export default function GameManagerPage() {
     }
     if (!period?.id) {
       toast("No active period", "error");
+      return;
+    }
+    if (meta.api === "wingo" && countdown <= 3) {
+      toast("Result is frozen for this period", "error");
       return;
     }
     let body: SetResultBody;
@@ -477,7 +482,7 @@ export default function GameManagerPage() {
           <p className="mb-3 text-[12px] leading-relaxed text-slate-500">
             Default settlement for periods{" "}
             <b>without</b> a manual fixed prediction. Manual set always wins for
-            that period. Same setting as Platform config.
+            that period until 3 seconds remain. Same setting as Platform config.
           </p>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
             {(
@@ -655,8 +660,8 @@ export default function GameManagerPage() {
                     {fixedLabel}
                   </span>
                   {" · "}
-                  will be used when the period settles. You can change it and
-                  confirm again.
+                  will be used when the period settles. You can change it until
+                  3 seconds remain.
                 </p>
               </div>
               {fixed?.kind === "wingo" && (
@@ -933,16 +938,18 @@ export default function GameManagerPage() {
           <div className="flex flex-col gap-2 pt-1 sm:flex-row sm:flex-wrap">
             <button
               type="button"
-              disabled={saving || !meta.canSetResult}
+              disabled={saving || !meta.canSetResult || wingoResultFrozen}
               onClick={confirmPrediction}
               className="admin-btn-primary inline-flex w-full items-center justify-center gap-2 !px-5 !py-2.5 disabled:opacity-50 sm:w-auto"
             >
               <IoFlashOutline size={16} />
               {saving
                 ? "Locking…"
-                : fixed
-                  ? "Update fixed prediction"
-                  : "Confirm next prediction"}
+                : wingoResultFrozen
+                  ? "Frozen at 3s"
+                  : fixed
+                    ? "Update fixed prediction"
+                    : "Confirm next prediction"}
             </button>
             <button
               type="button"
