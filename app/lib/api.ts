@@ -1710,7 +1710,9 @@ export async function getWithdrawInfo(): Promise<{
   success: true;
   data: WithdrawInfo;
 }> {
-  return request("/payment/withdraw/info");
+  return request(`/payment/withdraw/info?_=${Date.now()}`, {
+    cache: "no-store",
+  });
 }
 
 export async function initiateDeposit(opts: {

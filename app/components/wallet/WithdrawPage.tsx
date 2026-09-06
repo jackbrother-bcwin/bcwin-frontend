@@ -137,6 +137,18 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
   }, [loadBank, loadWithdrawInfo]);
 
   useEffect(() => {
+    const onShow = () => {
+      if (document.visibilityState === "visible") void loadWithdrawInfo();
+    };
+    document.addEventListener("visibilitychange", onShow);
+    window.addEventListener("focus", onShow);
+    return () => {
+      document.removeEventListener("visibilitychange", onShow);
+      window.removeEventListener("focus", onShow);
+    };
+  }, [loadWithdrawInfo]);
+
+  useEffect(() => {
     api
       .getPaymentRates()
       .then((r) => {
@@ -325,7 +337,10 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
               </p>
               <button
                 type="button"
-                onClick={() => refreshUser()}
+                onClick={() => {
+                  void refreshUser();
+                  void loadWithdrawInfo();
+                }}
                 className="p-1 rounded-full active:opacity-70"
                 style={{ background: "rgba(255,255,255,0.35)" }}
                 aria-label="Refresh"
