@@ -37,6 +37,7 @@ import AttendancePage from "./activity/AttendancePage";
 import InvitationBonusPage from "./activity/InvitationBonusPage";
 import SalaryChartPage from "./activity/SalaryChartPage";
 import ActivityPosterPage from "./activity/ActivityPosterPage";
+import CreativeVideoPoster from "./activity/CreativeVideoPoster";
 import SelfRebatePage from "./activity/SelfRebatePage";
 import {
   activityNavigateTarget,
@@ -166,9 +167,17 @@ export default function ActivityPage({
   const back = onBack ?? (() => undefined);
 
   if (posterId) {
+    const title = ACTIVITY_POSTER_TITLES[posterId] ?? "Event details";
+    if (posterId === "creativeVideo") {
+      return (
+        <ActivityPosterPage title={title} onBack={back}>
+          <CreativeVideoPoster />
+        </ActivityPosterPage>
+      );
+    }
     return (
       <ActivityPosterPage
-        title={ACTIVITY_POSTER_TITLES[posterId] ?? "Event details"}
+        title={title}
         image={activityPosterUrl(posterId)}
         onBack={back}
       />

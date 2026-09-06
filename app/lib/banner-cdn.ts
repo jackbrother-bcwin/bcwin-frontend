@@ -42,8 +42,8 @@ export const CDN_ACTIVITY_POSTERS = {
   firstDeposit: `${IK}/20260801_210458.png?updatedAt=1785599210384`,
   /** App download / share gift code */
   appDownload: `${IK}/20260801_210458.png?updatedAt=1785599210384`,
-  /** Creative video event */
-  creativeVideo: `${IK}/20260801_211315.jpg?updatedAt=1785599210430`,
+  /** Inner page is CSS (`CreativeVideoPoster`) — old TashanWin JPG is unused. */
+  creativeVideo: "",
   /** Chicken Road full detail (inner page) */
   chickenRoad: `${IK}/20260801_205059.png?updatedAt=1785599210461`,
 } as const;
