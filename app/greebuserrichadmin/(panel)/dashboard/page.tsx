@@ -197,7 +197,7 @@ export default function AdminDashboardPage() {
         </div>
 
         <div className="grid gap-4 lg:grid-cols-2">
-          {[30, 60].map((duration) => {
+          {[30, 60, 180, 300].map((duration) => {
             const period = livePeriods.find(
               (item) => item.durationSeconds === duration
             );
