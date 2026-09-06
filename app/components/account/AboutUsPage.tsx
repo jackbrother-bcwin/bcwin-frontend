@@ -66,7 +66,7 @@ const CONFIDENTIALITY: DocBlock[] = [
     text: "Website refers to BCWIN, accessible from BCWIN.",
   },
   { t: "p", text: "Service refers to the Website." },
-  { t: "p", text: "Country refers to: United States." },
+  { t: "p", text: "Country refers to: UK" },
   {
     t: "p",
     text: "Service Provider means any natural or legal person who processes the data on behalf of the Company. It refers to third-party companies or individuals employed by the Company to facilitate the Service, to provide the Service on behalf of the Company, to perform services related to the Service or to assist the Company in analyzing how the Service is used.",
