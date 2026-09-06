@@ -4,11 +4,13 @@ import { asset } from "../../lib/cdn";
 import React from "react";
 import Image from "next/image";
 
+const SPLASH_IMG = "https://ik.imagekit.io/BCwin/assets/images/bcwinsplash.png";
+
 /**
  * Full-screen BCWin branded loading:
- *  - BG: splashimagebg (casino table)
- *  - Foreground promo: loadingimage (character + free chips art)
- *  - BCWin logo top · spinner bottom
+ *  - Splash artwork: https://ik.imagekit.io/BCwin/assets/images/bcwinsplash.png
+ *  - BCWin logo on top
+ *  - Gold spinner + status label bottom
  */
 export default function BrandSplash({
   label = "Loading…",
@@ -47,31 +49,17 @@ export default function BrandSplash({
       aria-live="polite"
       aria-label={label}
     >
-      {/* Layer 1 — full-screen background */}
-      <div className="absolute inset-0">
-        <Image
-          src={asset("/assets/png/splashimagebg.png")}
-          alt=""
-          fill
-          sizes="100vw"
-          className="object-cover object-center"
-          priority
-        />
-      </div>
-
-      {/* Layer 2 — earlier splash promo (character art), slightly zoomed out so full text fits */}
+      {/* Splash artwork */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div
-          className="relative h-full w-full max-w-[430px]"
-          style={{ transform: "scale(0.88)", transformOrigin: "center center" }}
-        >
+        <div className="relative h-full w-full max-w-[480px]">
           <Image
-            src={asset("/assets/png/loadingimage.png")}
-            alt=""
+            src={SPLASH_IMG}
+            alt="BCWin"
             fill
-            sizes="(max-width: 480px) 100vw, 430px"
-            className="object-contain object-center"
+            sizes="(max-width: 480px) 100vw, 480px"
+            className="object-cover object-center sm:object-contain"
             priority
+            unoptimized
           />
         </div>
       </div>
@@ -91,7 +79,7 @@ export default function BrandSplash({
         }}
       />
 
-      {/* BCWin logo */}
+      {/* BCWin logo on top */}
       <div className="relative z-10 flex flex-col items-center pt-[max(16px,env(safe-area-inset-top))] px-4">
         <div
           className="relative mt-3 h-11 w-[148px] sm:h-12 sm:w-[168px]"

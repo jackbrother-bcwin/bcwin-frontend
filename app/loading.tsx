@@ -1,5 +1,8 @@
 import { asset } from "./lib/cdn";
-/** Route-level loading — same layered splash as BrandSplash (no client JS). */
+
+const SPLASH_IMG = "https://ik.imagekit.io/BCwin/assets/images/bcwinsplash.png";
+
+/** Route-level loading — same splash as BrandSplash (no client JS). */
 export default function Loading() {
   return (
     <div
@@ -8,31 +11,19 @@ export default function Loading() {
       aria-live="polite"
       aria-label="Loading BCWin"
     >
-      {/* Layer 1 — full-screen background */}
-      <div className="absolute inset-0">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={asset("/assets/png/splashimagebg.png")}
-          alt=""
-          className="h-full w-full object-cover object-center"
-        />
-      </div>
-
-      {/* Layer 2 — original character splash (scaled so text fits) */}
+      {/* Splash artwork */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div
-          className="relative h-full w-full max-w-[430px]"
-          style={{ transform: "scale(0.88)", transformOrigin: "center center" }}
-        >
+        <div className="relative h-full w-full max-w-[480px]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={asset("/assets/png/loadingimage.png")}
-            alt=""
-            className="h-full w-full object-contain object-center"
+            src={SPLASH_IMG}
+            alt="BCWin"
+            className="h-full w-full object-cover object-center sm:object-contain"
           />
         </div>
       </div>
 
+      {/* Soft scrims for logo / spinner */}
       <div
         className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-24"
         style={{
@@ -47,7 +38,7 @@ export default function Loading() {
         }}
       />
 
-      {/* BCWin logo */}
+      {/* BCWin logo on top */}
       <div className="relative z-10 flex flex-col items-center pt-[max(16px,env(safe-area-inset-top))] px-4">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
