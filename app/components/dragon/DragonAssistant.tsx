@@ -24,6 +24,10 @@ import {
   type StreakItem,
 } from "./streaks";
 import { useSpaBackClose } from "../../hooks/useSpaBackClose";
+import {
+  TRX_WINGO_BETS_LIVE,
+  TRX_WINGO_PAUSE_MESSAGE,
+} from "../../lib/trx-wingo";
 
 type PanelTab = "lottery" | "history";
 
@@ -221,6 +225,10 @@ export default function DragonAssistant({ showFloatingButton = true }: DragonAss
       toast("Please log in to place a bet", "error");
       return;
     }
+    if (streak.game === "trxwingo" && !TRX_WINGO_BETS_LIVE) {
+      toast(TRX_WINGO_PAUSE_MESSAGE, "info");
+      return;
+    }
     const payload = side === "same" ? streak.sameBet : streak.oppositeBet;
     const label = side === "same" ? streak.marketLabel : streak.oppositeLabel;
     const theme = (
@@ -282,6 +290,11 @@ export default function DragonAssistant({ showFloatingButton = true }: DragonAss
 
   const confirmBet = async (slip: BetSlipConfirmPayload) => {
     if (!pending) return;
+    if (pending.game === "trxwingo" && !TRX_WINGO_BETS_LIVE) {
+      toast(TRX_WINGO_PAUSE_MESSAGE, "info");
+      setPending(null);
+      return;
+    }
     const amount = slip.total;
     if (user && amount > user.balance) {
       toast("Insufficient balance", "error");

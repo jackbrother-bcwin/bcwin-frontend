@@ -52,6 +52,10 @@ import {
   useSettledResultPopup,
   samePeriodId,
 } from "./game/useSettledResultPopup";
+import {
+  TRX_WINGO_BETS_LIVE,
+  TRX_WINGO_PAUSE_MESSAGE,
+} from "../lib/trx-wingo";
 
 /** Tronscan block explorer — matches product deep-link */
 function tronscanBlockUrl(blockNumber: number): string {
@@ -95,6 +99,7 @@ interface Props {
 
 export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Props) {
   const isTrx = variant === "trxwingo";
+  const isTrxPaused = isTrx && !TRX_WINGO_BETS_LIVE;
   const tabs = isTrx ? TRX_TABS : WINGO_TABS;
   const gameApi = isTrx ? "trxwingo" : "wingo";
   const wsPeriodTopic = isTrx ? "trx-wingo-period-creation" : "wingo-period-creation";
@@ -497,6 +502,10 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
   }, []);
 
   const openBet = (betType: "COLOR" | "NUMBER" | "SIZE", betChoice: string, label: string) => {
+    if (isTrxPaused) {
+      toast(TRX_WINGO_PAUSE_MESSAGE, "info");
+      return;
+    }
     if (randomSpinning) return;
     if (isBettingLocked(countdown, duration)) return;
     if (!period?.id) {
@@ -546,6 +555,10 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
   }, [countdown, duration, randomSpinning, clearRandomTimer]);
 
   const pickRandom = useCallback(() => {
+    if (isTrxPaused) {
+      toast(TRX_WINGO_PAUSE_MESSAGE, "info");
+      return;
+    }
     if (randomSpinning) return;
     if (isBettingLocked(countdown, duration)) return;
     if (!period?.id) {
@@ -598,6 +611,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
     };
     runStep();
   }, [
+    isTrxPaused,
     randomSpinning,
     countdown,
     duration,
@@ -616,6 +630,12 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
     const releaseRejectedSlip = () => {
       if (submittedSlipRef.current === sheet) submittedSlipRef.current = null;
     };
+    if (isTrxPaused) {
+      toast(TRX_WINGO_PAUSE_MESSAGE, "info");
+      releaseRejectedSlip();
+      setBetSheet(null);
+      return;
+    }
     let canBet = false;
     try {
       canBet = await ensureCanBet();
@@ -667,6 +687,8 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
 
   // Lock window depends on duration (30s→5s, longer→10s)
   const isLocked = isBettingLocked(countdown, duration);
+  // Pause keeps the board clickable so the toast can fire (not lock-board dim).
+  const lockBoard = isLocked && !isTrxPaused;
 
   // Close slip if period enters lock while sheet is open
   useEffect(() => {
@@ -736,8 +758,8 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
         style={{
           background: "#201c26",
           border: "1px solid rgba(255,255,255,0.05)",
-          opacity: isLocked ? 0.72 : 1,
-          pointerEvents: isLocked ? "none" : "auto",
+          opacity: lockBoard ? 0.72 : 1,
+          pointerEvents: lockBoard ? "none" : "auto",
         }}
       >
         {/* Color bets: Green, Violet, Red */}
@@ -754,7 +776,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
               <button
                 key={c.key}
                 type="button"
-                disabled={randomSpinning || isLocked}
+                disabled={randomSpinning || lockBoard}
                 onClick={() => openBet("COLOR", c.choice, c.label)}
                 className={`h-[44px] rounded-[10px] font-extrabold text-[18px] text-white active:scale-95 transition-all duration-100 ${
                   hl ? "scale-105 z-[2]" : ""
@@ -789,7 +811,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
                 <button
                   key={i}
                   type="button"
-                  disabled={randomSpinning || isLocked}
+                  disabled={randomSpinning || lockBoard}
                   onClick={() => openBet("NUMBER", String(i), `Number ${i}`)}
                   className={`relative active:scale-90 transition-all duration-100 rounded-full ${
                     hl ? "scale-110 z-[2]" : ""
@@ -812,7 +834,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
         <div className="flex items-center gap-1.5 mb-3">
           <button
             type="button"
-            disabled={randomSpinning || isLocked}
+            disabled={randomSpinning || lockBoard}
             onClick={pickRandom}
             className="h-[34px] px-3.5 rounded-[8px] text-[14px] font-extrabold text-[#DA3735] active:scale-95 transition-all disabled:opacity-50"
             style={{
@@ -857,7 +879,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
         <div className="flex gap-0 overflow-hidden rounded-full h-[44px] shadow-md">
           <button
             type="button"
-            disabled={randomSpinning || isLocked}
+            disabled={randomSpinning || lockBoard}
             onClick={() => openBet("SIZE", "BIG", "Big")}
             className={`flex-1 font-black text-[19px] text-white active:opacity-90 transition-all duration-100 ${
               isRandomHl("SIZE:BIG") ? "scale-[1.03] z-[2] brightness-110" : ""
@@ -873,7 +895,7 @@ export default function WingoPage({ onBack, onNavigate, variant = "wingo" }: Pro
           </button>
           <button
             type="button"
-            disabled={randomSpinning || isLocked}
+            disabled={randomSpinning || lockBoard}
             onClick={() => openBet("SIZE", "SMALL", "Small")}
             className={`flex-1 font-black text-[19px] text-white active:opacity-90 transition-all duration-100 ${
               isRandomHl("SIZE:SMALL") ? "scale-[1.03] z-[2] brightness-110" : ""
