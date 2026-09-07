@@ -7,12 +7,14 @@ import React, {
   useEffect,
   useCallback,
   useMemo,
+  useRef,
   type ReactNode,
 } from "react";
 import * as api from "../lib/api";
 import type { User } from "../lib/api";
 import { gameWs } from "../lib/ws";
 import { clearDailyPromoHide } from "../lib/promo-storage";
+import { ACCOUNT_BANNED_EVENT } from "../lib/account-ban";
 
 // ─── Split contexts: state changes often; actions are stable ─────────────────
 
@@ -47,11 +49,27 @@ const AuthActionsContext = createContext<AuthActions | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showBanMessage, setShowBanMessage] = useState(false);
+  const banned = useRef(false);
+
+  useEffect(() => {
+    const onBanned = () => {
+      banned.current = true;
+      setUser(null);
+      setIsLoading(false);
+      setShowBanMessage(true);
+      gameWs.disconnect();
+      clearDailyPromoHide();
+    };
+    window.addEventListener(ACCOUNT_BANNED_EVENT, onBanned);
+    return () => window.removeEventListener(ACCOUNT_BANNED_EVENT, onBanned);
+  }, []);
 
   const refreshUser = useCallback(async () => {
     try {
       const res = await api.getUser();
-      setUser(res.user);
+      // A response started before the ban must not restore the session.
+      if (!banned.current) setUser(res.user);
     } catch {
       setUser(null);
     }
@@ -100,6 +118,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(
     async (opts: api.LoginOpts) => {
       await api.login(opts);
+      banned.current = false;
+      setShowBanMessage(false);
       // Always show daily promo after a fresh login (HomePopups may be unmounted)
       clearDailyPromoHide();
       await refreshUser();
@@ -118,6 +138,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       referredBy: string;
     }) => {
       await api.register(opts);
+      banned.current = false;
+      setShowBanMessage(false);
       clearDailyPromoHide();
       await refreshUser();
     },
@@ -160,6 +182,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <AuthStateContext.Provider value={state}>
       <AuthActionsContext.Provider value={actions}>
         {children}
+        {showBanMessage && (
+          <div
+            role="alert"
+            className="fixed inset-x-4 top-4 z-[99999] mx-auto flex max-w-md items-center justify-between gap-4 rounded-xl bg-red-950 p-4 text-sm text-white shadow-lg"
+          >
+            <span>Your account is banned. Please contact support.</span>
+            <button
+              type="button"
+              aria-label="Dismiss ban message"
+              onClick={() => setShowBanMessage(false)}
+              className="shrink-0 rounded px-2 py-1"
+            >
+              Close
+            </button>
+          </div>
+        )}
       </AuthActionsContext.Provider>
     </AuthStateContext.Provider>
   );

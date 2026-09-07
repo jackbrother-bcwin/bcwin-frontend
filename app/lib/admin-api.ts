@@ -3,6 +3,8 @@
  * Auth: same auth-token cookie; requires ADMIN | SUB_ADMIN role
  */
 
+import { handleAccountBan } from "./account-ban";
+
 const BASE = "/api/v1";
 
 export class AdminApiError extends Error {
@@ -66,6 +68,7 @@ async function adminRequest<T>(
   }
 
   if (!res.ok) {
+    handleAccountBan(res.status, data);
     const raw =
       data && typeof data === "object" && data !== null && "error" in data
         ? String((data as { error?: string }).error ?? "")

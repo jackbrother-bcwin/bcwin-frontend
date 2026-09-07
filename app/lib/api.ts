@@ -6,6 +6,7 @@
  */
 
 import { sanitizeErrorMessage } from "./safe";
+import { handleAccountBan } from "./account-ban";
 
 const BASE = "/api/v1";
 
@@ -375,6 +376,7 @@ async function requestRaw<T>(path: string, options: RequestInit = {}): Promise<T
   }
 
   if (!res.ok) {
+    handleAccountBan(res.status, data);
     const raw =
       data && typeof data === "object" && data !== null && "error" in data
         ? String((data as ApiError).error ?? "")
