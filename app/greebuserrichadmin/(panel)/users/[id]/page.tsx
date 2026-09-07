@@ -82,6 +82,20 @@ export default function UserDetailPage() {
 
   const [penaltyFactorInput, setPenaltyFactorInput] = useState("3");
   const [showPenaltyModal, setShowPenaltyModal] = useState(false);
+  const [zeroWagerBusy, setZeroWagerBusy] = useState(false);
+
+  const handleZeroWager = async () => {
+    setZeroWagerBusy(true);
+    try {
+      const res = await admin.updateUserZeroWager(id, !user?.zeroWagerEnabled);
+      setUser((current) => current ? { ...current, ...res.user } : current);
+      toast(res.user.zeroWagerEnabled ? "Zero wager enabled" : "Zero wager disabled", "success");
+    } catch (error) {
+      toast(error instanceof Error ? error.message : "Failed to update zero wager", "error");
+    } finally {
+      setZeroWagerBusy(false);
+    }
+  };
 
   // ── Salary State ──────────────────────────────────────────
   const [salaryRules, setSalaryRules] = useState<Array<Record<string, unknown>>>([]);
@@ -173,6 +187,32 @@ export default function UserDetailPage() {
   useEffect(() => {
     void loadUser();
   }, [loadUser]);
+
+  useEffect(() => {
+    if (tab !== "overview" || !user?.zeroWagerEnabled || zeroWagerBusy) return;
+    let active = true;
+    const refreshZeroWager = async () => {
+      if (document.visibilityState !== "visible") return;
+      try {
+        const res = await admin.getUserDetails(id);
+        if (active) {
+          setUser((current) => current ? {
+            ...current,
+            zeroWagerEnabled: Boolean(res.user?.zeroWagerEnabled),
+          } : current);
+        }
+      } catch {
+        // Retry on the next refresh without interrupting the current view.
+      }
+    };
+    const timer = window.setInterval(() => void refreshZeroWager(), 10_000);
+    window.addEventListener("focus", refreshZeroWager);
+    return () => {
+      active = false;
+      window.clearInterval(timer);
+      window.removeEventListener("focus", refreshZeroWager);
+    };
+  }, [id, tab, user?.zeroWagerEnabled, zeroWagerBusy]);
 
   // This existing tab loader intentionally owns several independent list setters.
   // eslint-disable-next-line react-hooks/preserve-manual-memoization
@@ -514,6 +554,30 @@ export default function UserDetailPage() {
       {/* ── Overview ── */}
       {tab === "overview" && (
         <div className="space-y-4 admin-fade-up">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-4">
+            <div>
+              <h2 className="text-sm font-semibold">Zero wager</h2>
+              <span className="text-xs text-slate-500">One withdrawal</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="w-14 text-right text-sm text-slate-600" aria-live="polite">
+                {zeroWagerBusy ? "Saving..." : user.zeroWagerEnabled ? "On" : "Off"}
+              </span>
+              <button
+                type="button"
+                role="switch"
+                aria-label="Zero wager for one withdrawal"
+                aria-checked={Boolean(user.zeroWagerEnabled)}
+                disabled={zeroWagerBusy}
+                onClick={() => void handleZeroWager()}
+                className="flex h-11 w-12 shrink-0 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 disabled:cursor-wait disabled:opacity-50"
+              >
+                <span className={`relative block h-6 w-11 rounded-full transition-colors ${user.zeroWagerEnabled ? "bg-emerald-600" : "bg-slate-300"}`}>
+                  <span className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${user.zeroWagerEnabled ? "translate-x-5" : "translate-x-0"}`} />
+                </span>
+              </button>
+            </div>
+          </div>
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <StatMini label="Total recharge" value={money(stats.totalRecharge)} />
             <StatMini label="Total withdraw" value={money(stats.totalWithdraw)} />

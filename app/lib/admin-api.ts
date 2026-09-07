@@ -462,6 +462,16 @@ export async function updateUserPenalty(
   });
 }
 
+export async function updateUserZeroWager(id: string, zeroWagerEnabled: boolean) {
+  return adminRequest<{
+    success: true;
+    user: { id: string; zeroWagerEnabled: boolean };
+  }>(`/admin/users/${id}/zero-wager`, {
+    method: "POST",
+    body: JSON.stringify({ zeroWagerEnabled }),
+  });
+}
+
 export async function createUser(body: {
   username: string;
   mobileNumber: string;
