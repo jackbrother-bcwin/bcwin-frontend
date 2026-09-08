@@ -81,6 +81,7 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
   const [needToBet, setNeedToBet] = useState<number | null>(null);
   const [depositWagerNeeded, setDepositWagerNeeded] = useState<number>(0);
   const [rewardWagerNeeded, setRewardWagerNeeded] = useState<number>(0);
+  const [trxWagerNeeded, setTrxWagerNeeded] = useState<number>(0);
   const [remainingWdToday, setRemainingWdToday] = useState(3);
   const [maxWdPerDay, setMaxWdPerDay] = useState(3);
 
@@ -112,6 +113,7 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
       setNeedToBet(Math.max(0, Number.isFinite(need) ? need : 0));
       setDepositWagerNeeded(Number((d as api.WithdrawInfo)?.depositWagerNeeded ?? 0));
       setRewardWagerNeeded(Number((d as api.WithdrawInfo)?.rewardWagerNeeded ?? 0));
+      setTrxWagerNeeded(Number((d as api.WithdrawInfo)?.trxWagerNeeded ?? 0));
       setRemainingWdToday(
         Math.max(
           0,
@@ -165,7 +167,7 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
   /** Any open wager (recharge / bonus / penalty-on-recharge) ≥ ₹1 → nothing withdrawable */
   const wagerLocked =
     needToBet != null &&
-    (needToBet >= 1 || depositWagerNeeded >= 1 || rewardWagerNeeded >= 1);
+    (needToBet >= 1 || depositWagerNeeded >= 1 || rewardWagerNeeded >= 1 || trxWagerNeeded >= 1);
   const withdrawable = wagerLocked ? 0 : needToBet == null ? null : balance;
 
   const usdtAddrs = useMemo(() => resolveUsdtAddresses(bank), [bank]);
@@ -641,6 +643,13 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
             <span className="text-white/40">↳</span>
             <span>
               Deposit Wager: <strong className="text-white/85">{formatINR(depositWagerNeeded)}</strong>
+            </span>
+          </li>
+        )}
+        {trxWagerNeeded > 0 && (
+          <li className="flex gap-2 pl-4 text-[12px]">
+            <span>
+              TRX Entry Wager: <strong className="text-white/85">{formatINR(trxWagerNeeded)}</strong>
             </span>
           </li>
         )}
