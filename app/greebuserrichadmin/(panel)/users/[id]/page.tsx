@@ -16,6 +16,7 @@ import {
   IoCardOutline,
   IoStatsChartOutline,
   IoCalendarOutline,
+  IoCheckmarkDoneOutline,
 } from "react-icons/io5";
 import * as admin from "../../../../lib/admin-api";
 import { useToast } from "../../../../components/ui/Toast";
@@ -82,18 +83,30 @@ export default function UserDetailPage() {
 
   const [penaltyFactorInput, setPenaltyFactorInput] = useState("3");
   const [showPenaltyModal, setShowPenaltyModal] = useState(false);
-  const [zeroWagerBusy, setZeroWagerBusy] = useState(false);
+  const [clearWagerBusy, setClearWagerBusy] = useState(false);
+  const [showClearWagerModal, setShowClearWagerModal] = useState(false);
+  const [clearWagerReason, setClearWagerReason] = useState("");
 
-  const handleZeroWager = async () => {
-    setZeroWagerBusy(true);
+  const handleClearWager = async () => {
+    const trimmedReason = clearWagerReason.trim();
+    if (trimmedReason.length < 3) {
+      toast("Enter a reason for clearing the wager", "error");
+      return;
+    }
+    setClearWagerBusy(true);
     try {
-      const res = await admin.updateUserZeroWager(id, !user?.zeroWagerEnabled);
-      setUser((current) => current ? { ...current, ...res.user } : current);
-      toast(res.user.zeroWagerEnabled ? "Zero wager enabled" : "Zero wager disabled", "success");
+      const res = await admin.clearUserExtraWagers(id, trimmedReason);
+      toast(
+        `Cleared ${money(res.clearedWagerAmount)}; ${money(res.after.totalWagerAmount)} remains`,
+        "success"
+      );
+      setShowClearWagerModal(false);
+      setClearWagerReason("");
+      await loadUser();
     } catch (error) {
-      toast(error instanceof Error ? error.message : "Failed to update zero wager", "error");
+      toast(error instanceof Error ? error.message : "Failed to clear wager", "error");
     } finally {
-      setZeroWagerBusy(false);
+      setClearWagerBusy(false);
     }
   };
 
@@ -187,32 +200,6 @@ export default function UserDetailPage() {
   useEffect(() => {
     void loadUser();
   }, [loadUser]);
-
-  useEffect(() => {
-    if (tab !== "overview" || !user?.zeroWagerEnabled || zeroWagerBusy) return;
-    let active = true;
-    const refreshZeroWager = async () => {
-      if (document.visibilityState !== "visible") return;
-      try {
-        const res = await admin.getUserDetails(id);
-        if (active) {
-          setUser((current) => current ? {
-            ...current,
-            zeroWagerEnabled: Boolean(res.user?.zeroWagerEnabled),
-          } : current);
-        }
-      } catch {
-        // Retry on the next refresh without interrupting the current view.
-      }
-    };
-    const timer = window.setInterval(() => void refreshZeroWager(), 10_000);
-    window.addEventListener("focus", refreshZeroWager);
-    return () => {
-      active = false;
-      window.clearInterval(timer);
-      window.removeEventListener("focus", refreshZeroWager);
-    };
-  }, [id, tab, user?.zeroWagerEnabled, zeroWagerBusy]);
 
   // This existing tab loader intentionally owns several independent list setters.
   // eslint-disable-next-line react-hooks/preserve-manual-memoization
@@ -554,29 +541,57 @@ export default function UserDetailPage() {
       {/* ── Overview ── */}
       {tab === "overview" && (
         <div className="space-y-4 admin-fade-up">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-4">
-            <div>
-              <h2 className="text-sm font-semibold">Zero wager</h2>
-              <span className="text-xs text-slate-500">One withdrawal</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="w-14 text-right text-sm text-slate-600" aria-live="polite">
-                {zeroWagerBusy ? "Saving..." : user.zeroWagerEnabled ? "On" : "Off"}
-              </span>
+          <div className="border-b border-slate-200 pb-4">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <h2 className="text-sm font-semibold text-slate-800">Wager clearance</h2>
+                <p className="mt-1 text-xs text-slate-500">Extra wager can be cleared while basic deposit wager remains.</p>
+              </div>
               <button
                 type="button"
-                role="switch"
-                aria-label="Zero wager for one withdrawal"
-                aria-checked={Boolean(user.zeroWagerEnabled)}
-                disabled={zeroWagerBusy}
-                onClick={() => void handleZeroWager()}
-                className="flex h-11 w-12 shrink-0 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 disabled:cursor-wait disabled:opacity-50"
+                disabled={
+                  clearWagerBusy ||
+                  (!user.hasIllegalBetPenalty && Number(user.rewardWagerNeeded ?? 0) < 1)
+                }
+                onClick={() => setShowClearWagerModal(true)}
+                className="admin-btn-primary inline-flex items-center gap-2 text-xs"
               >
-                <span className={`relative block h-6 w-11 rounded-full transition-colors ${user.zeroWagerEnabled ? "bg-emerald-600" : "bg-slate-300"}`}>
-                  <span className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${user.zeroWagerEnabled ? "translate-x-5" : "translate-x-0"}`} />
-                </span>
+                <IoCheckmarkDoneOutline size={16} aria-hidden="true" />
+                Clear extra wagers
               </button>
             </div>
+            <dl className="mt-4 grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3 xl:grid-cols-5">
+              <div>
+                <dt className="text-[11px] font-medium text-slate-500">Current wager</dt>
+                <dd className="mt-1 text-lg font-black tabular-nums text-slate-800">
+                  {Number(user.currentWagerMultiplier ?? 1).toLocaleString("en-IN")}x
+                </dd>
+              </div>
+              <div>
+                <dt className="text-[11px] font-medium text-slate-500">Total wager amount</dt>
+                <dd className="mt-1 text-lg font-black tabular-nums text-slate-800">
+                  {money(user.totalWagerAmount)}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-[11px] font-medium text-slate-500">Deposit wager</dt>
+                <dd className="mt-1 text-sm font-bold tabular-nums text-slate-700">
+                  {money(user.depositWagerNeeded)}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-[11px] font-medium text-slate-500">Penalty wager</dt>
+                <dd className="mt-1 text-sm font-bold tabular-nums text-rose-700">
+                  {money(user.penaltyWagerNeeded)}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-[11px] font-medium text-slate-500">Reward wager</dt>
+                <dd className="mt-1 text-sm font-bold tabular-nums text-slate-700">
+                  {money(user.rewardWagerNeeded)}
+                </dd>
+              </div>
+            </dl>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <StatMini label="Total recharge" value={money(stats.totalRecharge)} />
@@ -1259,6 +1274,80 @@ export default function UserDetailPage() {
                 className="admin-btn-primary text-xs"
               >
                 Apply Penalty
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showClearWagerModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
+            <h3 className="text-base font-bold text-slate-800">Clear extra wagers</h3>
+            <dl className="mt-4 grid grid-cols-2 gap-3 border-y border-slate-200 py-4">
+              <div>
+                <dt className="text-[11px] text-slate-500">Current wager</dt>
+                <dd className="mt-1 text-sm font-bold text-slate-800">
+                  {Number(user.currentWagerMultiplier ?? 1).toLocaleString("en-IN")}x
+                </dd>
+              </div>
+              <div>
+                <dt className="text-[11px] text-slate-500">Total amount</dt>
+                <dd className="mt-1 text-sm font-bold text-slate-800">
+                  {money(user.totalWagerAmount)}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-[11px] text-slate-500">Deposit wager</dt>
+                <dd className="mt-1 text-sm font-bold text-slate-800">
+                  {money(user.depositWagerNeeded)}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-[11px] text-slate-500">Penalty wager cleared</dt>
+                <dd className="mt-1 text-sm font-bold text-rose-700">
+                  {money(user.penaltyWagerNeeded)}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-[11px] text-slate-500">Reward wager cleared</dt>
+                <dd className="mt-1 text-sm font-bold text-emerald-700">
+                  {money(user.rewardWagerNeeded)}
+                </dd>
+              </div>
+            </dl>
+            <label className="mt-4 block text-xs font-semibold text-slate-700" htmlFor="clearWagerReason">
+              Admin reason
+            </label>
+            <textarea
+              id="clearWagerReason"
+              rows={3}
+              maxLength={500}
+              value={clearWagerReason}
+              onChange={(event) => setClearWagerReason(event.target.value)}
+              className="admin-input mt-1 w-full resize-none"
+              placeholder="Reason for clearing extra wagers"
+            />
+            <div className="mt-6 flex justify-end gap-2">
+              <button
+                type="button"
+                disabled={clearWagerBusy}
+                onClick={() => {
+                  setShowClearWagerModal(false);
+                  setClearWagerReason("");
+                }}
+                className="admin-btn-ghost text-xs"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={clearWagerBusy || clearWagerReason.trim().length < 3}
+                onClick={() => void handleClearWager()}
+                className="admin-btn-primary inline-flex items-center gap-2 text-xs"
+              >
+                <IoCheckmarkDoneOutline size={16} aria-hidden="true" />
+                {clearWagerBusy ? "Clearing..." : "Confirm clear"}
               </button>
             </div>
           </div>

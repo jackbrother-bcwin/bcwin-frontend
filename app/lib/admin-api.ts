@@ -465,13 +465,29 @@ export async function updateUserPenalty(
   });
 }
 
-export async function updateUserZeroWager(id: string, zeroWagerEnabled: boolean) {
+export async function clearUserExtraWagers(id: string, reason: string) {
   return adminRequest<{
     success: true;
-    user: { id: string; zeroWagerEnabled: boolean };
-  }>(`/admin/users/${id}/zero-wager`, {
+    message: string;
+    clearedAt: string;
+    clearedWagerAmount: number;
+    before: {
+      multiplier: number;
+      depositWagerNeeded: number;
+      penaltyWagerNeeded: number;
+      rewardWagerNeeded: number;
+      totalWagerAmount: number;
+    };
+    after: {
+      multiplier: number;
+      depositWagerNeeded: number;
+      penaltyWagerNeeded: number;
+      rewardWagerNeeded: number;
+      totalWagerAmount: number;
+    };
+  }>(`/admin/users/${id}/clear-extra-wagers`, {
     method: "POST",
-    body: JSON.stringify({ zeroWagerEnabled }),
+    body: JSON.stringify({ reason }),
   });
 }
 
