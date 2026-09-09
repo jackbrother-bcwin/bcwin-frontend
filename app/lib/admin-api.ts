@@ -213,6 +213,13 @@ export async function getRecentSettledWingoBets() {
   );
 }
 
+export async function getRecentSettledTrxBets() {
+  return adminRequest<{ success: true; bets: SettledWingoBet[] }>(
+    "/admin/dashboard/trx-bets",
+    { cache: "no-store" }
+  );
+}
+
 export async function getTopAdminUsers(sort: "balance" | "withdrawals" = "balance") {
   return adminRequest<{
     success: true;

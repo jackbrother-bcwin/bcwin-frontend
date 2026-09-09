@@ -437,7 +437,11 @@ export default function AdminDashboardPage() {
               { href: "/greebuserrichadmin/games/wingo", label: "Set WinGo result" },
               {
                 href: "/greebuserrichadmin/recent-wingo-bets",
-                label: "Last 50 WinGo bets",
+                label: "Last 100 WinGo bets",
+              },
+              {
+                href: "/greebuserrichadmin/recent-trx-bets",
+                label: "Last 100 TRX bets",
               },
               {
                 href: "/greebuserrichadmin/top-users",
