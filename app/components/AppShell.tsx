@@ -10,8 +10,6 @@ import React, {
 } from "react";
 import dynamic from "next/dynamic";
 import BottomNav from "./BottomNav";
-import TrxEntryGate from "./TrxEntryGate";
-import { leaveTrxVisit } from "../lib/trx-entry";
 import HomeFloatingColumn from "./HomeFloatingColumn";
 import DragonAssistant from "./dragon/DragonAssistant";
 import BrandSplash from "./ui/BrandSplash";
@@ -199,13 +197,6 @@ export default function AppShell() {
   isLoggedInRef.current = isLoggedIn;
 
   const activeTab = navStack[navStack.length - 1] ?? "home";
-  const previousTab = useRef(activeTab);
-  useEffect(() => {
-    if (previousTab.current === "trxwingo" && activeTab !== "trxwingo") {
-      void leaveTrxVisit().catch(() => { /* Pending exit is retried before another entry. */ });
-    }
-    previousTab.current = activeTab;
-  }, [activeTab]);
 
   // ─── Apply stack + optionally write browser history ─────────────────────
   const commitStack = useCallback(
@@ -613,9 +604,7 @@ export default function AppShell() {
             <WingoPage variant="wingo" onBack={goBack} onNavigate={pushScreen} />
           )}
           {activeTab === "trxwingo" && (
-            <TrxEntryGate onBack={goBack}>
-              <WingoPage variant="trxwingo" onBack={goBack} onNavigate={pushScreen} />
-            </TrxEntryGate>
+            <WingoPage variant="trxwingo" onBack={goBack} onNavigate={pushScreen} />
           )}
           {activeTab === "k3" && <K3Page onBack={goBack} onNavigate={pushScreen} />}
           {activeTab === "5d" && <FiveDPage onBack={goBack} onNavigate={pushScreen} />}

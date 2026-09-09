@@ -1700,7 +1700,6 @@ export type WithdrawInfo = {
   needToBet: number;
   depositWagerNeeded?: number;
   rewardWagerNeeded?: number;
-  trxWagerNeeded?: number;
   isWithdrawalFrozen?: boolean;
   totalRecharge: number;
   totalBets: number;
@@ -1906,31 +1905,6 @@ export async function placeWingoBet(opts: {
   betAmount: number;
 }): Promise<{ success: true; bet: WingoBet }> {
   return request("/wingo/bet", { method: "POST", body: JSON.stringify(opts) });
-}
-
-export type TrxEntryState = {
-  available: boolean;
-  active: boolean;
-  visitId?: string;
-  quote?: string;
-  balance?: number;
-  remainingBefore?: number;
-  remainingAfter?: number;
-  addedWager?: number;
-  totalAfter?: number;
-  zeroWagerEnabled?: boolean;
-};
-
-export async function getTrxEntry(): Promise<{ success: true; data: TrxEntryState }> {
-  return request("/trxwingo/entry");
-}
-
-export async function acceptTrxEntry(quote: string): Promise<{ success: true; data: TrxEntryState }> {
-  return request("/trxwingo/entry", { method: "POST", body: JSON.stringify({ quote }) });
-}
-
-export async function exitTrxEntry(visitId: string): Promise<{ success: true }> {
-  return request("/trxwingo/entry/exit", { method: "POST", body: JSON.stringify({ visitId }), keepalive: true });
 }
 
 export async function placeTrxWingoBet(opts: {
