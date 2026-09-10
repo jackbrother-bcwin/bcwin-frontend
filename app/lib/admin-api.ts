@@ -456,6 +456,7 @@ export async function updateUserPenalty(
   data: {
     hasIllegalBetPenalty: boolean;
     illegalBetPenaltyFactor?: number;
+    reason?: "ADMIN" | "SAME_IP";
   }
 ) {
   return adminRequest<{

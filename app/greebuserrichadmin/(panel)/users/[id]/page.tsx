@@ -82,6 +82,7 @@ export default function UserDetailPage() {
   const [busy, setBusy] = useState(false);
 
   const [penaltyFactorInput, setPenaltyFactorInput] = useState("3");
+  const [penaltyReason, setPenaltyReason] = useState<"ADMIN" | "SAME_IP">("ADMIN");
   const [showPenaltyModal, setShowPenaltyModal] = useState(false);
   const [clearWagerBusy, setClearWagerBusy] = useState(false);
   const [showClearWagerModal, setShowClearWagerModal] = useState(false);
@@ -129,6 +130,7 @@ export default function UserDetailPage() {
       const res = await admin.updateUserPenalty(id, {
         hasIllegalBetPenalty: hasPenalty,
         illegalBetPenaltyFactor: factor,
+        reason: hasPenalty ? penaltyReason : "ADMIN",
       });
       toast(res.message || "Penalty updated", "success");
       setShowPenaltyModal(false);
@@ -694,6 +696,7 @@ export default function UserDetailPage() {
                   disabled={busy}
                   onClick={() => {
                     setPenaltyFactorInput(String(user.illegalBetPenaltyFactor ?? 3));
+                    setPenaltyReason("ADMIN");
                     setShowPenaltyModal(true);
                   }}
                   className="inline-flex min-h-10 items-center justify-center rounded-lg bg-amber-500 px-3.5 py-2 text-xs font-bold text-white shadow-sm transition-colors hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
@@ -1256,6 +1259,14 @@ export default function UserDetailPage() {
                 className="admin-input mt-1 w-full"
                 placeholder="e.g. 3"
               />
+              <label className="mt-3 block text-xs font-semibold text-slate-700">
+                Reason
+                <select className="admin-input mt-1 w-full" value={penaltyReason}
+                  onChange={(e) => setPenaltyReason(e.target.value as "ADMIN" | "SAME_IP")}>
+                  <option value="ADMIN">Admin adjustment</option>
+                  <option value="SAME_IP">Same-IP activity</option>
+                </select>
+              </label>
             </div>
             <div className="mt-6 flex justify-end gap-2">
               <button

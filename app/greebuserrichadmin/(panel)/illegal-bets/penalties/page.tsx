@@ -42,6 +42,7 @@ export default function IllegalBetPenaltiesPage() {
 
   const [editUser, setEditUser] = useState<PenaltyUser | null>(null);
   const [factorInput, setFactorInput] = useState("3");
+  const [penaltyReason, setPenaltyReason] = useState<"ADMIN" | "SAME_IP">("ADMIN");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -65,7 +66,7 @@ export default function IllegalBetPenaltiesPage() {
     void load();
   }, [load]);
 
-  const applyFactor = async (userId: string, factor: number) => {
+  const applyFactor = async (userId: string, factor: number, reason: "ADMIN" | "SAME_IP" = "ADMIN") => {
     if (!Number.isFinite(factor) || factor < 1) {
       toast("Factor must be ≥ 1", "error");
       return;
@@ -75,6 +76,7 @@ export default function IllegalBetPenaltiesPage() {
       const res = await admin.updateUserPenalty(userId, {
         hasIllegalBetPenalty: true,
         illegalBetPenaltyFactor: factor,
+        reason,
       });
       toast(res.message || `Penalty set to ${factor}x`, "success");
       setEditUser(null);
@@ -215,6 +217,7 @@ export default function IllegalBetPenaltiesPage() {
                           className="admin-btn-ghost text-xs"
                           onClick={() => {
                             setEditUser(u);
+                            setPenaltyReason("ADMIN");
                             setFactorInput(String(factor));
                           }}
                         >
@@ -276,6 +279,14 @@ export default function IllegalBetPenaltiesPage() {
               value={factorInput}
               onChange={(e) => setFactorInput(e.target.value)}
             />
+            <label className="mt-3 block text-xs font-semibold text-slate-700">
+              Reason
+              <select className="admin-input mt-1 w-full" value={penaltyReason}
+                onChange={(e) => setPenaltyReason(e.target.value as "ADMIN" | "SAME_IP")}>
+                <option value="ADMIN">Admin adjustment</option>
+                <option value="SAME_IP">Same-IP activity</option>
+              </select>
+            </label>
             <div className="mt-5 flex justify-end gap-2">
               <button
                 type="button"
@@ -289,7 +300,7 @@ export default function IllegalBetPenaltiesPage() {
                 className="admin-btn-primary text-xs"
                 disabled={busyId === editUser.id}
                 onClick={() =>
-                  void applyFactor(editUser.id, Number(factorInput))
+                  void applyFactor(editUser.id, Number(factorInput), penaltyReason)
                 }
               >
                 Apply

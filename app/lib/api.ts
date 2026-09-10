@@ -629,6 +629,40 @@ export async function getGameHistory(params?: {
   return request(`/user/game-history${buildQuery(params ?? {})}`);
 }
 
+export type PenaltyHistoryEntry = {
+  id: string;
+  action: string;
+  reason: string;
+  legacy: boolean;
+  game: string | null;
+  periodNumber: string | null;
+  createdAt: string;
+  evidence: Array<{
+    id: string; selection: string; amount: number; betType?: string;
+    scope?: string | null; recordedStakeOnly?: boolean;
+  }>;
+  previousFactor: number | null;
+  resultingFactor: number | null;
+  beforeNeedToBet: number | null;
+  afterNeedToBet: number | null;
+  beforePenaltyWager: number | null;
+  afterPenaltyWager: number | null;
+  beforeRewardWager: number | null;
+  afterRewardWager: number | null;
+};
+
+export type PenaltyHistoryResponse = {
+  success: true; items: PenaltyHistoryEntry[]; total: number;
+  currentPage: number; totalPages: number; asOf: string;
+  current: { penaltyWagerNeeded: number; totalNeedToBet: number };
+};
+
+export async function getIllegalActivity(params: {
+  page?: number; reason?: string; startDate?: string; endDate?: string; asOf?: string;
+}): Promise<PenaltyHistoryResponse> {
+  return request(`/user/illegal-activity${buildQuery({ ...params, limit: 20 })}`);
+}
+
 export async function getNotifications(): Promise<{
   success: true;
   notifications: Notification[];

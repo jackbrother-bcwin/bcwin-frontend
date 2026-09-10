@@ -11,6 +11,7 @@ import {
   MdCreditCard,
   MdDiamond,
   MdHistoryEdu,
+  MdGppBad,
   MdReceiptLong,
   MdCallReceived,
   MdCallMade,
@@ -319,6 +320,11 @@ export default function ProfilePage({ onLogout, onNavigate }: ProfilePageProps) 
       {/* List items selection panel */}
       <div className="mx-4 mb-4 bg-bg-level-3 rounded-lg overflow-hidden border border-bg-level-3/45 shadow-sm divide-y divide-bg-level-4/30">
         {[
+          {
+            id: "illegal-activity",
+            label: t("profile.illegalActivity", "Illegal activity"),
+            icon: <MdGppBad size={20} color="#FED358" />,
+          },
           {
             id: "notice",
             label: t("profile.notification"),

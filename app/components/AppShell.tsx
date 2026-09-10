@@ -67,6 +67,7 @@ const TransactionHistoryPage = dynamic(
 );
 const VipPage = dynamic(() => import("./account/VipPage"), { loading: loadFallback });
 const NotificationsPage = dynamic(() => import("./account/NotificationsPage"), { loading: loadFallback });
+const IllegalActivityPage = dynamic(() => import("./account/IllegalActivityPage"), { loading: loadFallback });
 const GiftsPage = dynamic(() => import("./account/GiftsPage"), { loading: loadFallback });
 const FeedbackPage = dynamic(() => import("./account/FeedbackPage"), { loading: loadFallback });
 const SettingsPage = dynamic(() => import("./account/SettingsPage"), { loading: loadFallback });
@@ -103,6 +104,7 @@ const HIDE_NAV = new Set([
   "transaction-history",
   "vip",
   "notifications",
+  "illegal-activity",
   "gifts",
   "feedback",
   "settings",
@@ -148,6 +150,7 @@ const KNOWN_SCREENS = new Set([
   "transaction-history",
   "vip",
   "notifications",
+  "illegal-activity",
   "gifts",
   "feedback",
   "settings",
@@ -652,6 +655,7 @@ export default function AppShell() {
           )}
           {activeTab === "vip" && <VipPage onBack={goBack} />}
           {activeTab === "notifications" && <NotificationsPage onBack={goBack} />}
+          {activeTab === "illegal-activity" && <IllegalActivityPage onBack={goBack} />}
           {activeTab === "gifts" && (
             <GiftsPage onBack={goBack} onNavigate={pushScreen} />
           )}
