@@ -50,8 +50,8 @@ function HistoryEntry({ entry }: { entry: PenaltyHistoryEntry }) {
       <dl className="py-2">
         {entry.legacy && <Field label="Record">Older record</Field>}
         {entry.game && <Field label="Period">{entry.periodNumber ?? "Not recorded"}</Field>}
-        <Field label="Previous multiplier">{factor(entry.previousFactor)}</Field>
-        <Field label="Resulting multiplier">{factor(entry.resultingFactor)}</Field>
+        <Field label="Previous penalty factor">{factor(entry.previousFactor)}</Field>
+        <Field label="Resulting penalty factor">{factor(entry.resultingFactor)}</Field>
         <Field label="Need to bet before">{money(entry.beforeNeedToBet)}</Field>
         <Field label="Need to bet after">{money(entry.afterNeedToBet)}</Field>
         <Field label={change != null && change < 0 ? "Wager reduced" : "Additional need to bet"}>

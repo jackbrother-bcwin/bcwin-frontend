@@ -1733,6 +1733,7 @@ export async function getPaymentRates(): Promise<PaymentRates> {
 export type WithdrawInfo = {
   needToBet: number;
   depositWagerNeeded?: number;
+  penaltyWagerNeeded?: number;
   rewardWagerNeeded?: number;
   isWithdrawalFrozen?: boolean;
   totalRecharge: number;

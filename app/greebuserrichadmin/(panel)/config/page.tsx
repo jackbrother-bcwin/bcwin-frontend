@@ -159,7 +159,7 @@ export default function ConfigPage() {
             ["minWithdrawAmount", "Min withdraw"],
             ["wager", "Wager factor (standard deposit)"],
             ["rewardWagerFactor", "Reward Wager Factor (default 1.0x)"],
-            ["illegalBetPenaltyFactor", "Illegal Bet Penalty Wager Factor (default 3x)"],
+            ["illegalBetPenaltyFactor", "Illegal Bet Penalty Factor (default 3x on wallet at apply)"],
           ] as const
         ).map(([k, label]) => (
           <div key={k}>

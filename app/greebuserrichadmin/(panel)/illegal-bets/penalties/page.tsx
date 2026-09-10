@@ -265,7 +265,7 @@ export default function IllegalBetPenaltiesPage() {
             </h3>
             <p className="mt-1 text-xs text-slate-500">
               {editUser.username} · current{" "}
-              {Number(editUser.illegalBetPenaltyFactor ?? 3)}x · wager multiplier
+              {Number(editUser.illegalBetPenaltyFactor ?? 3)}x · wallet balance at apply
               for withdrawals
             </p>
             <label className="mt-4 block text-xs font-semibold text-slate-700">

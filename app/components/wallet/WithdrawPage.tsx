@@ -80,6 +80,7 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
   /** Remaining wager (INR) required before withdraw is allowed */
   const [needToBet, setNeedToBet] = useState<number | null>(null);
   const [depositWagerNeeded, setDepositWagerNeeded] = useState<number>(0);
+  const [penaltyWagerNeeded, setPenaltyWagerNeeded] = useState<number>(0);
   const [rewardWagerNeeded, setRewardWagerNeeded] = useState<number>(0);
   const [remainingWdToday, setRemainingWdToday] = useState(3);
   const [maxWdPerDay, setMaxWdPerDay] = useState(3);
@@ -111,6 +112,7 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
       );
       setNeedToBet(Math.max(0, Number.isFinite(need) ? need : 0));
       setDepositWagerNeeded(Number((d as api.WithdrawInfo)?.depositWagerNeeded ?? 0));
+      setPenaltyWagerNeeded(Number((d as api.WithdrawInfo)?.penaltyWagerNeeded ?? 0));
       setRewardWagerNeeded(Number((d as api.WithdrawInfo)?.rewardWagerNeeded ?? 0));
       setRemainingWdToday(
         Math.max(
@@ -162,10 +164,10 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
 
   const balance = Number(user?.balance ?? 0);
   const amount = Number(amountStr) || 0;
-  /** Any open wager (recharge / bonus / penalty-on-recharge) ≥ ₹1 → nothing withdrawable */
+  /** Any open wager (deposit / bonus / balance×factor penalty) ≥ ₹1 → nothing withdrawable */
   const wagerLocked =
     needToBet != null &&
-    (needToBet >= 1 || depositWagerNeeded >= 1 || rewardWagerNeeded >= 1);
+    (needToBet >= 1 || depositWagerNeeded >= 1 || penaltyWagerNeeded >= 1 || rewardWagerNeeded >= 1);
   const withdrawable = wagerLocked ? 0 : needToBet == null ? null : balance;
 
   const usdtAddrs = useMemo(() => resolveUsdtAddresses(bank), [bank]);
@@ -641,6 +643,14 @@ export default function WithdrawPage({ onBack, onNavigate }: Props) {
             <span className="text-white/40">↳</span>
             <span>
               Deposit Wager: <strong className="text-white/85">{formatINR(depositWagerNeeded)}</strong>
+            </span>
+          </li>
+        )}
+        {penaltyWagerNeeded > 0 && (
+          <li className="flex gap-2 pl-4 text-[12px]">
+            <span className="text-white/40">↳</span>
+            <span>
+              Penalty Wager: <strong className="text-white/85">{formatINR(penaltyWagerNeeded)}</strong>
             </span>
           </li>
         )}

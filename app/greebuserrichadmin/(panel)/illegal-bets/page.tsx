@@ -33,7 +33,7 @@ export default function Page() {
               Users with active penalty
             </p>
             <p className="mt-0.5 text-xs text-slate-500">
-              See only players with illegal-bet wager factor (e.g. 3x), and
+              See only players with an illegal-bet / Hub penalty factor (e.g. 3x wallet), and
               increase / decrease / clear — not mixed with the detection list.
             </p>
           </div>

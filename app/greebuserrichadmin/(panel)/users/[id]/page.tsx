@@ -1244,11 +1244,11 @@ export default function UserDetailPage() {
               Withdrawal Turnover Penalty
             </h3>
             <p className="mt-1 text-xs text-slate-500">
-              Set the wager multiplier factor (e.g. 2, 3, 4) for this user&apos;s withdrawal requirements.
+              Sets a penalty wager of wallet balance × factor at apply time. Deposit wager stays on the config deposit factor.
             </p>
             <div className="mt-4">
               <label className="block text-xs font-semibold text-slate-700">
-                Penalty Factor (x multiplier)
+                Penalty factor (× wallet balance)
               </label>
               <input
                 type="number"
