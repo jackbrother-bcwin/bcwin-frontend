@@ -148,7 +148,7 @@ export default function ForgotPasswordPage({ onBack, onLoginClick }: Props) {
         <p className="text-[14px] text-white/45 mb-5">Verify OTP and set a new password</p>
 
         <label className="text-[13px] text-white/50 mb-1">Mobile number</label>
-        <div className="flex gap-2 mb-3">
+        <div className="flex min-w-0 gap-2 mb-3">
           <CountryCodeSelect
             value={countryCode}
             onChange={(code) => {
@@ -165,31 +165,33 @@ export default function ForgotPasswordPage({ onBack, onLoginClick }: Props) {
               )
             }
             placeholder={countryMeta.placeholder}
-            className="flex-1 h-11 rounded-xl px-4 text-sm text-white outline-none"
+            className="flex-1 min-w-0 h-11 rounded-xl px-4 text-sm text-white outline-none"
             style={{
               background: "#382E35",
               border: "1px solid rgba(254,211,88,0.18)",
             }}
           />
+        </div>
+
+        <label className="text-[13px] text-white/50 mb-1">OTP</label>
+        <div className="flex min-w-0 gap-2 mb-3">
+          <input
+            value={otp}
+            onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+            placeholder="6-digit OTP"
+            className="flex-1 min-w-0 h-11 rounded-xl px-4 text-sm text-white outline-none tracking-widest"
+            style={{ background: "#382E35", border: "1px solid rgba(255,255,255,0.08)" }}
+          />
           <button
             type="button"
             disabled={sending || countdown > 0}
             onClick={sendOtp}
-            className="px-3 h-11 rounded-xl text-[13px] font-bold text-[#110D14] disabled:opacity-50"
+            className="h-11 shrink-0 px-3.5 rounded-xl text-[13px] font-bold text-[#110D14] disabled:opacity-50 min-w-[4.5rem] flex items-center justify-center"
             style={{ background: "linear-gradient(180deg, #FED358 0%, #FFB472 100%)" }}
           >
             {countdown > 0 ? `${countdown}s` : sending ? "…" : "OTP"}
           </button>
         </div>
-
-        <label className="text-[13px] text-white/50 mb-1">OTP</label>
-        <input
-          value={otp}
-          onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-          placeholder="6-digit OTP"
-          className="w-full h-11 rounded-xl px-4 text-sm text-white outline-none mb-3 tracking-widest"
-          style={{ background: "#382E35", border: "1px solid rgba(255,255,255,0.08)" }}
-        />
 
         <label className="text-[13px] text-white/50 mb-1">New password</label>
         <div className="relative mb-3">
