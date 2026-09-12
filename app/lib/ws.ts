@@ -15,6 +15,7 @@ import { isOfficialWebHost, OFFICIAL_WS_URL } from "./official-hosts";
 export const WS_PATH = "/api/v1/ws";
 
 export type WsTopic =
+  | "invitation-bonus-update"
   | "account-balance"
   | "bet-settlement"
   | "wingo-period-creation"
@@ -119,7 +120,11 @@ class GameWebSocket {
       try {
         const msg = JSON.parse(raw) as { topic?: string; data?: unknown };
         if (msg.topic) {
-          const set = this.handlers.get(msg.topic);
+          // The server routes invitation updates through a private user topic.
+          const topic = msg.topic.startsWith("invitation-bonus-update:")
+            ? "invitation-bonus-update"
+            : msg.topic;
+          const set = this.handlers.get(topic);
           set?.forEach((h) => h(msg.data, msg.topic!));
           // also fire wildcard
           this.handlers.get("*")?.forEach((h) => h(msg.data, msg.topic!));

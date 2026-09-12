@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   IoDocumentTextOutline,
   IoNewspaperOutline,
@@ -16,6 +16,7 @@ import { formatINR } from "../../lib/format";
 import { requireBankForCollect } from "../../lib/require-bank";
 import { INVITATION_RULES_TABLE } from "./catalog";
 import { useSpaBackClose } from "../../hooks/useSpaBackClose";
+import { gameWs } from "../../lib/ws";
 
 interface Props {
   onBack: () => void;
@@ -47,38 +48,46 @@ export default function InvitationBonusPage({
   const [loading, setLoading] = useState(true);
   const [tiers, setTiers] = useState<ActivityTierProgress[]>([]);
   const [claiming, setClaiming] = useState<string | null>(null);
-  const [records, setRecords] = useState<
-    { id: string; amount: number; status: string; createdAt?: string }[]
-  >([]);
+  const loadVersion = useRef(0);
 
   const load = useCallback(async () => {
-    setLoading(true);
+    const version = ++loadVersion.current;
     try {
-      const [prog, hist] = await Promise.all([
-        api.getActivityProgress(),
-        api.getActivityHistory({ page: 1, limit: 50 }).catch(() => null),
-      ]);
-      setTiers(prog.data?.invitation ?? []);
-      const inv = (hist?.data ?? []).filter((b) =>
-        String(b.type ?? "")
-          .toUpperCase()
-          .includes("INVIT")
-      );
-      setRecords(
-        inv.map((b) => ({
-          id: b.id,
-          amount: b.amount,
-          status: b.status,
-          createdAt: b.createdAt,
-        }))
-      );
+      const prog = await api.getActivityProgress();
+      if (version === loadVersion.current) setTiers(prog.data?.invitation ?? []);
+    } catch {
+      // Keep the last progress during a connection interruption; refresh on recovery.
     } finally {
-      setLoading(false);
+      if (version === loadVersion.current) setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    void load();
+    let active = true;
+    const requestVersion = loadVersion;
+    const refresh = () => { void load(); };
+    queueMicrotask(() => { if (active) refresh(); });
+    const refreshVisible = () => {
+      if (document.visibilityState === "visible") refresh();
+    };
+    const unsubscribe = gameWs.subscribe("invitation-bonus-update", refresh);
+    const unsubscribeConnection = gameWs.onConnectionChange((open) => {
+      if (open) refreshVisible();
+    });
+    window.addEventListener("focus", refreshVisible);
+    document.addEventListener("visibilitychange", refreshVisible);
+    const timer = window.setInterval(() => {
+      if (!gameWs.isOpen()) refreshVisible();
+    }, 5000);
+    return () => {
+      active = false;
+      requestVersion.current++;
+      unsubscribe();
+      unsubscribeConnection();
+      window.removeEventListener("focus", refreshVisible);
+      document.removeEventListener("visibilitychange", refreshVisible);
+      window.clearInterval(timer);
+    };
   }, [load]);
 
   const claim = async (bonusId: string) => {
@@ -123,9 +132,11 @@ export default function InvitationBonusPage({
   }, []);
 
   useEffect(() => {
+    let active = true;
     if (sub === "record") {
-      void fetchInvitees();
+      queueMicrotask(() => { if (active) void fetchInvitees(); });
     }
+    return () => { active = false; };
   }, [sub, fetchInvitees]);
 
   if (sub === "rules") {
