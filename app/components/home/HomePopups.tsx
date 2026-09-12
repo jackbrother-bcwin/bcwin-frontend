@@ -11,7 +11,7 @@ import {
   writeDailyPromoHideUntil,
 } from "../../lib/promo-storage";
 import { useToast } from "../ui/Toast";
-import DailyPromoPopup from "./DailyPromoPopup";
+import LoginGiftPopup from "./LoginGiftPopup";
 import FirstDepositPopup, {
   fetchFirstDepositProgress,
   type FirstDepositTierRow,
@@ -107,9 +107,10 @@ export default function HomePopups({ onNavigate }: Props) {
       timerRef.current = null;
       const force = forcePopupsFromUrl();
       const hideUntil = readDailyPromoHideUntil();
-      const showDaily = force || Date.now() >= hideUntil;
+      const showGiftPopup =
+        (isLoggedIn || force) && (force || Date.now() >= hideUntil);
 
-      if (showDaily) {
+      if (showGiftPopup) {
         setPhase("daily");
         return;
       }
@@ -201,10 +202,9 @@ export default function HomePopups({ onNavigate }: Props) {
 
   return (
     <>
-      <DailyPromoPopup
+      <LoginGiftPopup
         open={phase === "daily"}
         onConfirm={handleDailyConfirm}
-        onNavigate={onNavigate}
       />
       <FirstDepositPopup
         open={phase === "firstDeposit"}
