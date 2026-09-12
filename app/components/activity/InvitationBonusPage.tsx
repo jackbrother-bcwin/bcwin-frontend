@@ -225,7 +225,7 @@ export default function InvitationBonusPage({
               wallet balance immediately (after bank details are bound).
             </li>
             <li>
-              Unclaimed invitation bonuses expire after 7 days once created.
+              Unclaimed invitation bonuses do not expire.
             </li>
           </ul>
         </div>
