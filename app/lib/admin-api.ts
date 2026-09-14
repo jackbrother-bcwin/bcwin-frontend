@@ -191,6 +191,40 @@ export async function getDashboardWingoLive() {
   );
 }
 
+export type DashboardGame = "wingo" | "trxwingo" | "thirdparty";
+export type GameDashboardTotals = {
+  betCount: number;
+  betAmount: number;
+  settledBetAmount: number;
+  pendingBetAmount: number;
+  payouts: number;
+  userWinnings: number;
+  userLosses: number;
+  companyProfit: number;
+};
+export type GameDashboardSummary = {
+  game: DashboardGame;
+  day: string;
+  timezone: "Asia/Kolkata";
+  updatedAt: string;
+  today: GameDashboardTotals;
+  allTime: GameDashboardTotals;
+};
+
+export async function getGameDashboardSummary(game: DashboardGame) {
+  return adminRequest<{ success: true; data: GameDashboardSummary }>(
+    `/admin/dashboard/game-summary${q({ game })}`,
+    { timeoutMs: 20_000, cache: "no-store" }
+  );
+}
+
+export async function getDashboardLotteryLive(game: Exclude<DashboardGame, "thirdparty">) {
+  return adminRequest<{ success: true; periods: DashboardWingoPeriod[] }>(
+    `/admin/dashboard/${game === "wingo" ? "wingo" : "trx"}-live`,
+    { timeoutMs: 10_000, cache: "no-store" }
+  );
+}
+
 export type DashboardEarnings = {
   allTimeRebateCommission: number;
   todayRebateCommission: number;

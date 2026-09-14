@@ -30,11 +30,19 @@ type NavItem = {
   href: string;
   label: string;
   icon: React.ReactNode;
-  children?: { href: string; label: string }[];
+  children?: { href: string; label: string; exact?: boolean }[];
 };
 
 const NAV: NavItem[] = [
-  { href: "/greebuserrichadmin/dashboard", label: "Dashboard", icon: <IoGridOutline size={18} /> },
+  {
+    href: "/greebuserrichadmin/dashboard", label: "Dashboard", icon: <IoGridOutline size={18} />,
+    children: [
+      { href: "/greebuserrichadmin/dashboard", label: "Overview", exact: true },
+      { href: "/greebuserrichadmin/dashboard/wingo", label: "WinGo Dashboard" },
+      { href: "/greebuserrichadmin/dashboard/trxwingo", label: "TRX Dashboard" },
+      { href: "/greebuserrichadmin/dashboard/thirdparty", label: "Third-party Dashboard" },
+    ],
+  },
   {
     href: "/greebuserrichadmin/games",
     label: "Game Managers",
@@ -154,7 +162,8 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
 
   // Desktop: sidebar open by default. Mobile: closed (drawer).
   const [open, setOpen] = useState(false);
-  const [expanded, setExpanded] = useState<string | null>("Game Managers");
+  const [expanded, setExpanded] = useState<string | null>(null);
+  const [collapsed, setCollapsed] = useState<string | null>(null);
 
   useEffect(() => {
     if (isDesktop) setOpen(true);
@@ -259,17 +268,20 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
         {NAV.map((item) => {
           const hasChildren = !!item.children?.length;
           const childActive = item.children?.some(
-            (c) => pathname === c.href || pathname.startsWith(c.href + "/")
+            (c) => pathname === c.href || (!c.exact && pathname.startsWith(c.href + "/"))
           );
           const active = isActive(item.href) || !!childActive;
-          const isOpen = expanded === item.label || !!childActive;
+          const isOpen = expanded === item.label || (!!childActive && collapsed !== pathname);
 
           return (
             <div key={item.label}>
               {hasChildren ? (
                 <button
                   type="button"
-                  onClick={() => setExpanded(isOpen ? null : item.label)}
+                  onClick={() => {
+                    setExpanded(isOpen ? null : item.label);
+                    setCollapsed(isOpen && childActive ? pathname : null);
+                  }}
                   className={navLinkClass(!!active)}
                   aria-expanded={isOpen}
                 >
@@ -296,11 +308,12 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
                 <div className="ml-3 mt-0.5 space-y-0.5 border-l border-white/15 pl-2 sm:ml-4">
                   {item.children!.map((c) => {
                     const cActive =
-                      pathname === c.href || pathname.startsWith(c.href + "/");
+                      pathname === c.href || (!c.exact && pathname.startsWith(c.href + "/"));
                     return (
                       <Link
                         key={c.href}
                         href={c.href}
+                        aria-current={cActive ? "page" : undefined}
                         onClick={closeMobile}
                         className={`block rounded-md px-3 py-2 text-[12px] transition-colors active:bg-white/20 ${
                           cActive
